@@ -1,8 +1,8 @@
 #pragma once
 
+#include <d3d12.h>
 #include <math\Matrix4x4.h>
 #include <math\Vector3.h>
-#include <d3d12.h>
 #include <type_traits>
 #include <wrl.h>
 
@@ -48,6 +48,8 @@ public:
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();
+
+	void UpdateMatrix();
 	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>
