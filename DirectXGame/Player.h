@@ -1,11 +1,14 @@
 #pragma once
 
+#include "KamataEngine.h"
+#include "MathUtilityFortext.h"
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
-#include "KamataEngine.h"
-#include "MathUtilityFortext.h"
+#include <math/Vector3.h>
+
+using namespace KamataEngine;
 
 class MapChipField;
 

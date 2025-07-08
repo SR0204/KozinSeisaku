@@ -3,7 +3,7 @@
 #include<audio/Audio.h>
 #include <3d/DebugCamera.h>
 #include "Player.h"
-//#include "Skydome.h"
+#include "Skydome.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/Model.h>

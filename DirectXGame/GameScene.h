@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CameraController.h"
 #include "KamataEngine.h"
 #include "MapChipField.h"
 #include "MathUtilityForText.h"
@@ -15,6 +14,8 @@
 #include <base/DirectXCommon.h>
 
 #include <vector>
+
+class CameraController;
 
 class GameScene {
 
@@ -93,5 +94,5 @@ private: // メンバ変数
 	KamataEngine::Camera* CameraViewProjection_;
 
 	// カメラコントローラー
-	CameraController* CameraController_;
+	CameraController* CameraController_ = nullptr;
 };

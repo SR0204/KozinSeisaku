@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "Player.h"
 #include "MapChipField.h"
+#include <algorithm>
 
 using namespace KamataEngine;
 

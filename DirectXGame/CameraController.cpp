@@ -2,6 +2,7 @@
 #define NOMINMIN
 #include "CameraController.h"
 #include "Player.h"
+#include "MathUtilityForText.h"
 
 using namespace KamataEngine;
 
@@ -13,7 +14,7 @@ void CameraController::Initialize() {
 
 void CameraController::Update() {
 
-	const Vector3& targetVelocity = target_->GetVelocity();
+	Vector3 targetVelocity = target_->GetVelocity();
 
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
