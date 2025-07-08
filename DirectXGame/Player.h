@@ -43,7 +43,7 @@ public: // 引数を書くところ
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(ID3D12GraphicsCommandList* cmdList);
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 

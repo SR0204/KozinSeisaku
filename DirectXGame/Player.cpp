@@ -63,7 +63,7 @@ void Player::Update() {
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
+void Player::Draw(ID3D12GraphicsCommandList* cmdList) { model_->Draw(worldTransform_, *camera_); }
 
 void Player::InputMove() {
 
