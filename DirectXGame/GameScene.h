@@ -13,17 +13,23 @@
 #include <audio/Audio.h>
 #include <base/DirectXCommon.h>
 
-#include <vector>
-
 class CameraController;
 
+/// <summary>
+/// ゲームシーン
+/// </summary>
 class GameScene {
 
-public: // メンバ関数
+public: // メンバ関数(引数）
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
 	GameScene();
+
+	// 敵
+	// Enemy* enemy_ = nullptr;
+
+	Model* EnemyModel_ = nullptr;
 
 	/// <summary>
 	/// デストラクタ
@@ -47,52 +53,88 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
-private: // メンバ変数
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
-	KamataEngine::Input* input_ = nullptr;
-	KamataEngine::Audio* audio_ = nullptr;
+	// 全ての当たり判定を行う
+	void CheckAllCollisions();
 
-	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+	// ゲームのフェーズ(型)
+	enum class Phase {
 
-	/// ゲームシーン用
-	uint32_t textureHandle_ = 0;
+		kPlay,  // ゲームプレイ
+		kDeath, // デス演出
+	};
 
-	// 3Dモデルの生成
-	KamataEngine::Model* model_ = nullptr;
+	// フェーズ切り替え
+	void ChangePhase();
 
-	// 自キャラ
-	Player* player_ = nullptr;
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
 
-	// 3Dモデルデータ
-	KamataEngine::Model* modelBlock_ = nullptr;
+	// デスフラグのgeeter
+	bool IsFinished() const { return finished_; }
 
-	// 天球
-	Skydome* skyDome_ = nullptr;
+private: // メンバ変数（関数）
+	DirectXCommon* dxCommon_ = nullptr;
+	Input* input_ = nullptr;
+	Audio* audio_ = nullptr;
 
-	// 天球モデルデータ
-	KamataEngine::Model* modelSkydome_ = nullptr;
-
-	KamataEngine::Model* modelPlayer_ = nullptr;
+	// マップチップフィールド
+	MapChipField* mapChipField_;
 
 	// ビュープロジェクション
 	KamataEngine::Camera camera_;
 
+	// 3Dモデルの生成
+	Model* model_ = nullptr;
+
+	// プレイヤーの生成
+	Player* player_ = nullptr;
+
+	// 天球の生成
+	Skydome* skydome_ = nullptr;
+
+	// 3Dモデル
+	Model* modelSkydome_ = nullptr;
+
+	// プレイヤーモデル
+	Model* modelPlayer_ = nullptr;
+
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0;
+
+	// ブロックのモデルを読み込む
+	Model* modelBlock_ = 0;
+
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
-	// デバッグカメラ有効
+	// 敵の複数化
+	//std::list<Enemy*> enemies_;
+
+	// 敵
+	Model* modelEnemy_;
+
+	// デバッグカメラの有効
 	bool isDebugCameraActive_ = false;
 
-	// デバッグカメラ
+	// デバッグカメラの生成
 	DebugCamera* debugCamera_ = nullptr;
 
-	// マップチップフィールド
-	MapChipField* mapChipFiled_;
-
-	// カメラビュープロジェクション
-	KamataEngine::Camera* CameraViewProjection_;
-
 	// カメラコントローラー
-	CameraController* CameraController_ = nullptr;
+	CameraController* cameraController_ = nullptr;
+
+	//DeathParticles* deathParticles_ = nullptr;
+
+	Model* deathParticleModel_ = nullptr;
+
+	// ゲームの現在のフェーズ(変数)
+	Phase phase_;
+
+	// デスフラグ
+	bool isDead_ = false;
+
+	// 終了フラグ
+	bool finished_ = false;
+
+	/// <summary>
+	/// ゲームシーン用
+	/// </summary>
 };
