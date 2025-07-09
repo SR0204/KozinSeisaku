@@ -31,11 +31,11 @@ GameScene::~GameScene() {
 	}
 
 	// 解放
-	/*for (Enemy* enemy : enemies_) {
+	for (Enemy* enemy : enemies_) {
 		delete enemy;
-	}*/
+	}
 
-	// worldTransformBlocks_.clear();
+	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
 
@@ -56,34 +56,26 @@ void GameScene::Initialize() {
 	camera_.farZ = 600; // これを５００とかにすると後ろの方ででっかい弾が出る。
 
 	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+	mapChipField_->LoadMapchipCsv("./Resources/blocks.csv");
 
 	// 敵初期化
 	EnemyModel_ = Model::CreateFromOBJ("enemy", true);
 
-	// Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(17, 18);
+	///*Vector3 DeathParticlePosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 
-	// enemy_ = new Enemy();
+	// deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
 
-	// enemy_->Initialize(EnemyModel_, &viewProjection_, enemyPosition);
-
-	// 仮の生成処理。後で消す
-
-	/*Vector3 DeathParticlePosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
-
-	deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
-
-	deathParticles_ = new DeathParticles;
-	deathParticles_->Initialize(deathParticleModel_, &viewProjection_, DeathParticlePosition);*/
+	// deathParticles_ = new DeathParticles;
+	// deathParticles_->Initialize(deathParticleModel_, &viewProjection_, DeathParticlePosition);*/
 
 	// 敵の生成
-	/*for (int32_t i = 0; i < 3; ++i) {
+	for (int32_t i = 0; i < 3; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = {10 + i * 5.0f, 5, 0};
-		newEnemy->Initialize(EnemyModel_, &viewProjection_, enemyPosition);
+		newEnemy->Initialize(EnemyModel_, &camera_, enemyPosition);
 
 		enemies_.push_back(newEnemy);
-	}*/
+	}
 
 	// ゲームプレイフェーズから開始
 	phase_ = Phase::kPlay;
@@ -95,7 +87,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	// 画像の読み込み
-	textureHandle_ = TextureManager::Load("player.png");
+	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// ３Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
@@ -150,8 +142,6 @@ void GameScene::Update() {
 		isDebugCameraActive_ = true;
 	}
 
-	player_->Update();
-
 #endif // _DEBUG
 
 	if (isDebugCameraActive_) {
@@ -174,35 +164,30 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
-	// --- 背景スプライト ---
+	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
 
-
+	// スプライト描画後処理
 	Sprite::PostDraw();
+	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	// --- 3D描画 ---
-	KamataEngine::ModelCommon::PipelineSetKey pipelineKey{};
-	pipelineKey.cullingMode = KamataEngine::ModelCommon::CullingMode::kBack;
-	pipelineKey.blendMode = KamataEngine::ModelCommon::BlendMode::kNormal;
-	pipelineKey.depthTestMode = KamataEngine::ModelCommon::DepthTestMode::kOn;
+	Model::PreDraw(Model::CullingMode::kBack, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 
-	// モデル共通でcommandListをセット
-	KamataEngine::ModelCommon::GetInstance()->PreDraw(pipelineKey, commandList);
-
-	// モデル側の描画設定（省略可）
-	KamataEngine::Model::PreDraw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
 	// プレイヤーの描画処理
 	if (phase_ == Phase::kPlay) {
-		player_->Draw(commandList);
+		player_->Draw();
 	}
 
 	// 天球の描画処理
@@ -211,12 +196,12 @@ void GameScene::Draw() {
 	// 敵の描画処理
 	// enemy_->Draw();
 
-	/*for (Enemy* enemy : enemies_) {
+	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
 	}
 
-	if (deathParticles_) {
-		deathParticles_->Draw();
+	/*if (deathParticles_) {
+	    deathParticles_->Draw();
 	}*/
 
 	// ブロックの描画
@@ -265,7 +250,7 @@ void GameScene::GenerateBlocks() {
 	// キューブの生成
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+			if (mapChipField_->GetMapchipTypeByIndex(j, i) == MapChipType::kBlock) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
@@ -277,27 +262,27 @@ void GameScene::GenerateBlocks() {
 
 void GameScene::CheckAllCollisions() {
 
-//	// 自キャラと敵キャラの当たり判定
-//#pragma region
-//
-//	// 判定対象１と２の座標(宣言)
-//	AABB aabb1, aabb2;
-//
-//	// 自キャラの座標
-//	aabb1 = player_->GetAABB();
-//
-//	for (Enemy* enemy : enemies_) {
-//		// 敵弾の座標
-//		aabb2 = enemy->GetAABB();
-//
-//		// AABB同士の交差判定
-//		if (IsColision(aabb1, aabb2)) {
-//			// 自キャラの衝突時コールバックを呼び出す
-//			player_->OnCollision(enemy);
-//			// 敵弾の衝突時コールバックを呼び出す
-//			enemy->OnCollision(player_);
-//		}
-//	}
+	// 自キャラと敵キャラの当たり判定
+#pragma region
+
+	// 判定対象１と２の座標(宣言)
+	AABB aabb1, aabb2;
+
+	// 自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	for (Enemy* enemy : enemies_) {
+		// 敵弾の座標
+		aabb2 = enemy->GetAABB();
+
+		// AABB同士の交差判定
+		if (IsColision(aabb1, aabb2)) {
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision(enemy);
+			// 敵弾の衝突時コールバックを呼び出す
+			enemy->OnCollision(player_);
+		}
+	}
 
 #pragma endregion
 }
@@ -317,9 +302,9 @@ void GameScene::ChangePhase() {
 		// enemy_->Update();
 		//
 		// 敵の更新
-		/*for (Enemy* enemy : enemies_) {
+		for (Enemy* enemy : enemies_) {
 			enemy->Update();
-		}*/
+		}
 
 		// カメラコントローラーの更新
 		cameraController_->Update();
@@ -332,41 +317,28 @@ void GameScene::ChangePhase() {
 				if (!worldTransformBlock)
 					continue;
 
-				//// 平行移動行列
-				// Matrix4x4 result = {
-				//     1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, worldTransformBlock->translation_.x, worldTransformBlock->translation_.y,
-				//     worldTransformBlock->translation_.z, 1.0f};
-
-				// Matrix4x4 matWorld = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-				//// 平行移動だけ代入
-				// worldTransformBlock->matWorld_ = matWorld;
-
-				//// 定数バッファに転送する
-				// worldTransformBlock->TransferMatrix();
-
 				worldTransformBlock->UpdateMatrix();
 			}
 		}
 
-		//isDead_ = player_->IsDead();
+		isDead_ = player_->IsDead();
 
-		//if (isDead_ == true) {
+		if (isDead_ == true) {
 
-		//	// 死亡演出フェーズに切り替え
-		//	phase_ = Phase::kDeath;
+			// 死亡演出フェーズに切り替え
+			phase_ = Phase::kDeath;
 
-		//	// 自キャラの座標を取得
-		//	const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+			// 自キャラの座標を取得
+			// const Vector3& deathParticlesPosition = player_->GetWorldPosition();
 
-		//	// デスパーティクル初期化
-		//	// Vector3 DeathParticlePosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
+			// デスパーティクル初期化
+			// Vector3 DeathParticlePosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 
-		//	deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+			deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
 
-		//	deathParticles_ = new DeathParticles;
-		//	deathParticles_->Initialize(deathParticleModel_, &viewProjection_, deathParticlesPosition);
-		//}
+			/*deathParticles_ = new DeathParticles;
+			deathParticles_->Initialize(deathParticleModel_, &camera_, deathParticlesPosition);*/
+		}
 
 		// 全ての当たり判定を行う
 		CheckAllCollisions();
@@ -379,12 +351,12 @@ void GameScene::ChangePhase() {
 		skydome_->Update();
 
 		// 敵の更新
-		/*for (Enemy* enemy : enemies_) {
+		for (Enemy* enemy : enemies_) {
 			enemy->Update();
-		}*/
+		}
 
 		// デスパーティクル
-		//deathParticles_->Update();
+		// deathParticles_->Update();
 
 		// カメラコントローラーの更新
 		cameraController_->Update();
@@ -397,26 +369,13 @@ void GameScene::ChangePhase() {
 				if (!worldTransformBlock)
 					continue;
 
-				//// 平行移動行列
-				// Matrix4x4 result = {
-				//     1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, worldTransformBlock->translation_.x, worldTransformBlock->translation_.y,
-				//     worldTransformBlock->translation_.z, 1.0f};
-
-				// Matrix4x4 matWorld = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-				//// 平行移動だけ代入
-				// worldTransformBlock->matWorld_ = matWorld;
-
-				//// 定数バッファに転送する
-				// worldTransformBlock->TransferMatrix();
-
 				worldTransformBlock->UpdateMatrix();
 			}
 		}
 
 		/*if (deathParticles_ && deathParticles_->IsFinished()) {
 
-			finished_ = true;
+		    finished_ = true;
 		}*/
 
 		break;

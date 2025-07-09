@@ -1,19 +1,21 @@
 #pragma once
 
-#include "KamataEngine.h"
+#include "CameraController.h"
+#include <audio/Audio.h>
+// #include "DeathParticles.h"
+#include "Enemy.h"
 #include "MapChipField.h"
-#include "MathUtilityForText.h"
 #include "Player.h"
 #include "Skydome.h"
 #include <2d/Sprite.h>
-#include <3d/Camera.h>
 #include <3d/DebugCamera.h>
 #include <3d/Model.h>
-#include <3d/WorldTransform.h>
-#include <audio/Audio.h>
 #include <base/DirectXCommon.h>
-
-class CameraController;
+#include <input/Input.h>
+// #include "TitleScene.h"
+#include <3d/Camera.h>
+#include <3d/WorldTransform.h>
+#include <vector>
 
 /// <summary>
 /// ゲームシーン
@@ -80,8 +82,8 @@ private: // メンバ変数（関数）
 	// マップチップフィールド
 	MapChipField* mapChipField_;
 
-	// ビュープロジェクション
-	KamataEngine::Camera camera_;
+	// ビュープロジェクション生成
+	Camera camera_;
 
 	// 3Dモデルの生成
 	Model* model_ = nullptr;
@@ -107,7 +109,7 @@ private: // メンバ変数（関数）
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
 	// 敵の複数化
-	//std::list<Enemy*> enemies_;
+	std::list<Enemy*> enemies_;
 
 	// 敵
 	Model* modelEnemy_;
@@ -119,9 +121,9 @@ private: // メンバ変数（関数）
 	DebugCamera* debugCamera_ = nullptr;
 
 	// カメラコントローラー
-	CameraController* cameraController_ = nullptr;
+	CameraController* cameraController_;
 
-	//DeathParticles* deathParticles_ = nullptr;
+	// DeathParticles* deathParticles_ = nullptr;
 
 	Model* deathParticleModel_ = nullptr;
 

@@ -1,8 +1,6 @@
 #include "Skydome.h"
 #include <cassert>
 
-using namespace KamataEngine;
-
 // インストラクタ
 Skydome::Skydome() {}
 
@@ -20,9 +18,6 @@ void Skydome::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camer
 
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
-
-	// 引数の内容をメンバ変数に記録
-	camera_ = camera;
 }
 
 void Skydome::Update() {}
@@ -31,5 +26,4 @@ void Skydome::Draw() {
 
 	// 3Dモデルの描画
 	model_->Draw(worldTransform_, *camera_);
-
 }

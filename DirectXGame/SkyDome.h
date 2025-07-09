@@ -1,12 +1,12 @@
 #pragma once
-#include <audio/Audio.h>
-#include <base/DirectXCommon.h>
-
-#include "KamataEngine.h"
 #include <2d/Sprite.h>
+#include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
-#include <3d/camera.h>
+#include <KamataEngine.h>
+#include <audio/Audio.h>
+#include <base/DirectXCommon.h>
+#include <input/Input.h>
 
 /// <summary>
 /// 天球
