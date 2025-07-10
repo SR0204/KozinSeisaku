@@ -155,11 +155,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="MathUtilityForText.cpp" />
+    <ClCompile Include="PhaseManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="worldTransformEx.cpp" />
@@ -264,10 +268,14 @@
   <ItemGroup>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="MapChipField.h" />
+    <ClInclude Include="MapManager.h" />
     <ClInclude Include="MathUtilityForText.h" />
+    <ClInclude Include="PhaseManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SkyDome.h" />
   </ItemGroup>

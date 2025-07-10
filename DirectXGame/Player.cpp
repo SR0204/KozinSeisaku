@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "Player.h"
-#include "MapChipField.h"
+#include "MapManager.h"
 #include "MathUtilityFortext.h"
 #include <2d/DebugText.h>
 #include <algorithm>
@@ -168,7 +168,7 @@ void Player::InputMove() {
 		// めり込み排斥
 		worldTransform_.translation_.y = 1.0f;
 		// 摩擦で横方向速度が減衰する
-		velocity_.x *= (1.0f, -kAttenuation);
+		velocity_.x *= (1.0f - kAttenuation);
 		// 下方向速度をリセット
 		velocity_.y = 0.0f;
 		// 接地状態
