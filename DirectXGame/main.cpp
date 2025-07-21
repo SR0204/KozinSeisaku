@@ -9,7 +9,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 初期化
 	// エンジンの初期化
-	KamataEngine::Initialize(L"LE3C_13_スズキレオ_CG4");
+	KamataEngine::Initialize(L"LE3C_13_スズキレオ_個人製作");
 
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
