@@ -12,8 +12,8 @@ void MapManager::Load(const std::string& path) {
 }
 
 std::vector<std::vector<WorldTransform*>> MapManager::GenerateBlockTransforms(MapChipType type) {
-	constexpr uint32_t kNumBlockVertical = 20;   // ← あなたのプロジェクトに合わせて
-	constexpr uint32_t kNumBlockHorizontal = 30; // ← これも合わせて
+	constexpr uint32_t kNumBlockVertical = 200;   // ← あなたのプロジェクトに合わせて
+	constexpr uint32_t kNumBlockHorizontal = 300; // ← これも合わせて
 
 	std::vector<std::vector<WorldTransform*>> blockList(kNumBlockVertical);
 	for (uint32_t i = 0; i < kNumBlockVertical; i++) {
