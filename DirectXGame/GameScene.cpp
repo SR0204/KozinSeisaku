@@ -109,12 +109,14 @@ void GameScene::Draw() {
 
 	Model::PreDraw(Model::CullingMode::kBack, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 
-	if (phase_ == Phase::kPlay) {
+	if (phase_ == Phase::kPlay && !player_->IsDead()) {
 		player_->Draw();
 	}
 	skydome_->Draw();
 
 	enemyManager_->Draw();
+
+	phaseManager_->Draw();
 
 	for (auto& line : worldTransformBlocks_) {
 		for (WorldTransform* block : line) {

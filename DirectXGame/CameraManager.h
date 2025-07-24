@@ -15,7 +15,7 @@ public:
 	void SetDebugCameraActive(bool isActive);
 	bool IsDebugCameraActive() const;
 
-	const Camera& GetViewProjection() const;
+	KamataEngine::Camera* GetViewProjection();
 
 	void SetMovableArea(const Rect& area);
 

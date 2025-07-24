@@ -1,8 +1,7 @@
 #pragma once
 
 #include "CameraManager.h"
-#include <audio/Audio.h>
-// #include "DeathParticles.h"
+#include "DeathParticles.h"
 #include "EnemyManager.h"
 #include "MapManager.h"
 #include "Player.h"
@@ -10,13 +9,14 @@
 #include <2d/Sprite.h>
 #include <3d/DebugCamera.h>
 #include <3d/Model.h>
+#include <audio/Audio.h>
 #include <base/DirectXCommon.h>
 #include <input/Input.h>
 // #include "TitleScene.h"
+#include "PhaseManager.h"
 #include <3d/Camera.h>
 #include <3d/WorldTransform.h>
 #include <vector>
-#include"PhaseManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -78,8 +78,6 @@ private: // メンバ変数（関数）
 
 	//--------------------マネージャー系統----------------------------//
 
-	
-
 	//-----------------------3Dモデルの生成-----------------------//
 	Model* model_ = nullptr;
 
@@ -120,6 +118,10 @@ private: // メンバ変数（関数）
 
 	// 終了フラグ
 	bool finished_ = false;
+	
+	//デスパーティクル
+	DeathParticles* deathParticles_ = nullptr;
+
 
 	/// <summary>
 	/// ゲームシーン用

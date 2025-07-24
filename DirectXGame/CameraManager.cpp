@@ -34,4 +34,4 @@ void CameraManager::SetDebugCameraActive(bool isActive) { isDebugCameraActive_ =
 
 bool CameraManager::IsDebugCameraActive() const { return isDebugCameraActive_; }
 
-const Camera& CameraManager::GetViewProjection() const { return *camera_; }
+KamataEngine::Camera* CameraManager::GetViewProjection() { return camera_; }

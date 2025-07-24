@@ -38,6 +38,12 @@ void PhaseManager::Update() {
 		enemyManager_->Update();
 		cameraManager_->Update();
 
+		if (!deathParticles_) {
+			deathParticles_ = new DeathParticles();
+			deathParticles_->Initialize(deathParticleModel_, cameraManager_->GetViewProjection(), player_->GetWorldPosition());
+		}
+		deathParticles_->Update();
+
 		for (auto& line : *blocks_) {
 			for (WorldTransform* block : line) {
 				if (block)
@@ -45,5 +51,11 @@ void PhaseManager::Update() {
 			}
 		}
 		break;
+	}
+}
+
+void PhaseManager::Draw() {
+	if (phase_ == Phase::kDeath && deathParticles_) {
+		deathParticles_->Draw();
 	}
 }

@@ -6,6 +6,7 @@
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
+#include"DeathParticles.h"
 
 class PhaseManager {
 public:
@@ -14,6 +15,8 @@ public:
 	void Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks);
 
 	void Update();
+
+	void Draw();
 
 	Phase GetPhase() const { return phase_; }
 
@@ -32,4 +35,5 @@ private:
 
 	bool isDead_ = false;
 	Model* deathParticleModel_ = nullptr;
+	DeathParticles* deathParticles_ = nullptr;
 };
