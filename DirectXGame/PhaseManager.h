@@ -1,12 +1,12 @@
 #pragma once
 #include "CameraManager.h"
+#include "DeathParticles.h"
 #include "EnemyManager.h"
 #include "Player.h"
 #include "Skydome.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
-#include"DeathParticles.h"
 
 class PhaseManager {
 public:
