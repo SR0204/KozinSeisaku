@@ -13,6 +13,7 @@ void CameraController::Update() {
 
 	const Vector3& targetVelocity = target_->GetVelocity();
 
+
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 
