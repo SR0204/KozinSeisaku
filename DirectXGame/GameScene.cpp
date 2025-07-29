@@ -90,11 +90,11 @@ void GameScene::Update() {
 	// フェーズマネージャー更新
 	phaseManager_->Update();
 
-#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_SPACE)) {
-		cameraManager_->SetDebugCameraActive(true);
-	}
-#endif
+//#ifdef _DEBUG
+//	if (input_->TriggerKey(DIK_SPACE)) {
+//		cameraManager_->SetDebugCameraActive(true);
+//	}
+//#endif
 
 	cameraManager_->Update();
 	cameraManager_->TransferMatrix();

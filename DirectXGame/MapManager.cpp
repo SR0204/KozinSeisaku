@@ -38,13 +38,13 @@ std::vector<std::vector<WorldTransform*>> MapManager::GenerateBlockTransforms(Ma
 }
 
 Vector3 MapManager::GetPlayerSpawnPos() const {
-	Vector3 pos = mapChipField_->GetMapChipPositionByIndex(14, 3); // ← 必要なら外部指定に
+	Vector3 pos = mapChipField_->GetMapChipPositionByIndex(1, 3); // ← 必要なら外部指定に
 	pos.y = 2.0f;
 	return pos;
 }
 
 Vector3 MapManager::GetEnemySpawnPos() const {
-	Vector3 pos = mapChipField_->GetMapChipPositionByIndex(5, 3); // ← これも必要に応じて
+	Vector3 pos = mapChipField_->GetMapChipPositionByIndex(3, 3); // ← これも必要に応じて
 	pos.y = 2.0f;
 	return pos;
 }
