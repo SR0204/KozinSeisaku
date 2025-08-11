@@ -2,37 +2,63 @@
 #include "MathUtilityFortext.h"
 #include <cassert>
 #include <numbers>
+
 void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
-
 	assert(model);
-	// ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = position; // 初期配置
-
-	/*worldTransform_.translation_.x = 1;
-	worldTransform_.translation_.y = 1;*/
+	worldTransform_.translation_ = position;
 
 	model_ = model;
-
 	camera_ = camera;
 
-	// 初期回転
-	worldTransform_.rotation_.y = std::numbers::pi_v<float> / -2.0f;
-
-	// 速度を設定する
+	// 初期回転（左向き）
+	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	velocity_ = {-kWalkSpeed, 0, 0};
 
 	walkTimer_ = 0.0f;
 }
 
-void Enemy::Update() {
+void Enemy::Update(MapChipField* mapField) {
+	// ===== X方向の壁判定 =====
+	Vector3 nextPos = worldTransform_.translation_ + Vector3(velocity_.x, 0, 0);
 
-	// 移動
-	worldTransform_.translation_ += velocity_;
+	// 進行方向の先端
+	Vector3 checkPos = nextPos;
+	checkPos.x += (velocity_.x > 0) ? kWidth / 2.0f : -kWidth / 2.0f;
 
+	MapChipField::IndexSet idx = mapField->GetMapChipIndexSetByPosition(checkPos);
+	if (mapField->GetMapchipTypeByIndex(idx.xIndex, idx.yIndex) == MapChipType::kBlock) {
+		// 壁 → 方向転換
+		velocity_.x *= -1;
+		worldTransform_.rotation_.y = (velocity_.x > 0) ? std::numbers::pi_v<float> / -2.0f : std::numbers::pi_v<float> / 2.0f;
+	} else {
+		// 移動
+		worldTransform_.translation_.x = nextPos.x;
+	}
+
+	// ===== 重力適用 =====
+	velocity_.y += kEnemyGravityAcceleration;
+	if (velocity_.y < kEnemyLimitFallSpeed) {
+		velocity_.y = kEnemyLimitFallSpeed;
+	}
+
+	// 足元座標
+	Vector3 footPos = worldTransform_.translation_;
+	footPos.y -= kHeight / 2.0f;
+	MapChipField::IndexSet footIdx = mapField->GetMapChipIndexSetByPosition(footPos);
+
+	if (mapField->GetMapchipTypeByIndex(footIdx.xIndex, footIdx.yIndex) == MapChipType::kBlock) {
+		// 地面あり → 高さをそろえて落下停止
+		MapChipField::Rect blockRect = mapField->GetRectByIndex(footIdx.xIndex, footIdx.yIndex);
+		worldTransform_.translation_.y = blockRect.top + kHeight / 2.0f;
+		velocity_.y = 0;
+	} else {
+		// 落下
+		worldTransform_.translation_.y += velocity_.y;
+	}
+
+	// ===== アニメーション =====
 	walkTimer_ += 1.0f / 60.0f;
-
-	// 回転アニメーション
 	worldTransform_.rotation_.x = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
 
 	worldTransform_.UpdateMatrix();
@@ -43,26 +69,17 @@ void Enemy::Draw() { model_->Draw(worldTransform_, *camera_); }
 void Enemy::OnCollision(const Player* player) { (void)player; }
 
 Vector3 Enemy::GetWorldPosition() {
-
-	// ワールド座標を入れる変数
 	Vector3 worldPos;
-
-	// ワールド行列の平行移動成分を取得（ワールド座標）
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
-
 	return worldPos;
 }
 
 AABB Enemy::GetAABB() {
-
 	Vector3 worldPos = GetWorldPosition();
-
 	AABB aabb;
-
 	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
-
 	return aabb;
 }

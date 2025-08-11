@@ -1,9 +1,8 @@
 #pragma once
 #include "Enemy.h"
-#include <3d/Model.h>
+#include "MapChipField.h"
 #include "Player.h"
 #include <vector>
-#include<KamataEngine.h>
 
 class EnemyManager {
 public:
@@ -11,7 +10,7 @@ public:
 	~EnemyManager();
 
 	void Initialize(KamataEngine::Model* enemyModel, Camera* camera);
-	void Update();
+	void Update(MapChipField* mapField);
 	void Draw();
 	void CheckAllCollisions(Player* player);
 

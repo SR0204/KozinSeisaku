@@ -1,18 +1,19 @@
 #pragma once
 #include "CameraManager.h"
+#include "DeathParticles.h"
 #include "EnemyManager.h"
+#include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
-#include"DeathParticles.h"
 
 class PhaseManager {
 public:
 	enum class Phase { kPlay, kDeath };
 
-	void Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks);
+	void Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField);
 
 	void Update();
 
@@ -36,4 +37,5 @@ private:
 	bool isDead_ = false;
 	Model* deathParticleModel_ = nullptr;
 	DeathParticles* deathParticles_ = nullptr;
+	MapChipField* mapChipField_ = nullptr;
 };

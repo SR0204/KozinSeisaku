@@ -1,12 +1,14 @@
 #include "PhaseManager.h"
 using namespace KamataEngine;
 
-void PhaseManager::Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks) {
+void PhaseManager::Initialize(
+    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField) {
 	player_ = player;
 	enemyManager_ = enemyManager;
 	skydome_ = skydome;
 	cameraManager_ = cameraManager;
 	blocks_ = blocks;
+	mapChipField_ = mapChipField;
 }
 
 void PhaseManager::Update() {
@@ -14,7 +16,7 @@ void PhaseManager::Update() {
 	case Phase::kPlay:
 		skydome_->Update();
 		player_->Update();
-		enemyManager_->Update();
+		enemyManager_->Update(mapChipField_);
 		cameraManager_->Update();
 
 		for (auto& line : *blocks_) {
@@ -35,7 +37,7 @@ void PhaseManager::Update() {
 
 	case Phase::kDeath:
 		skydome_->Update();
-		enemyManager_->Update();
+		enemyManager_->Update(mapChipField_);
 		cameraManager_->Update();
 
 		if (!deathParticles_) {

@@ -1,26 +1,25 @@
 #pragma once
 #include "AABB.h"
+#include "MapChipField.h" // 追加
+#include "Player.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
-#include "Player.h"
 
 // 前方宣言
 class Player;
 
 // 敵
 class Enemy {
-
-public: // 引数を書くところ
+public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	// 初期化
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
 
 	/// <summary>
-	/// 更新処理
+	/// 更新処理（MapChipFieldを使う）
 	/// </summary>
-	void Update();
+	void Update(MapChipField* mapField);
 
 	/// <summary>
 	/// 描画処理
@@ -33,15 +32,14 @@ public: // 引数を書くところ
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
-	// キャラクターの当たり判定サイズ(0.0fとかにするとキャラクターが埋まったりする)
+	// キャラクターの当たり判定サイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
 
 	AABB GetAABB();
 
 private:
-	// 渡して3D描画
-	//  ワールド変換データ
+	// ワールド変換データ
 	WorldTransform worldTransform_;
 
 	// 敵モデル
@@ -51,20 +49,16 @@ private:
 	Camera* camera_ = nullptr;
 
 	// 歩行の速さ
-	static inline const float kWalkSpeed = 0.01f;
+	static inline const float kWalkSpeed = 0.03f;
 
 	// 速度
 	Vector3 velocity_ = {};
 
-	// 最初の角度[度]
-	static inline const float kWalkMotionAngleStart = 0.01f;
-
-	// 最後の角度[度]
-	static inline const float kWalkMotionAngleEnd = 0.1f;
-
-	// アニメーションの周期となる時間[秒]
+	// 歩行アニメーション関連
 	static inline const float kWalkMotionTime = 3.0f;
-
-	// 経過時間
 	float walkTimer_ = 0.0f;
+
+	// 重力関連
+	static inline const float kEnemyGravityAcceleration = -0.05f;
+	static inline const float kEnemyLimitFallSpeed = -0.5f;
 };

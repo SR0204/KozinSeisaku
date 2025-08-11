@@ -1,7 +1,6 @@
 #include "EnemyManager.h"
-#include "MathUtilityForText.h"
-
-using namespace KamataEngine;
+#include "MathUtilityForText.h" // IsColision 用
+#include "Player.h"
 
 EnemyManager::EnemyManager() : enemyModel_(nullptr), camera_(nullptr) {}
 
@@ -16,7 +15,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 
-	// 敵の初期配置など
+	// 敵の初期配置
 	for (int i = 0; i < 3; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 pos = {10 + i * 5.0f, 5, 0};
@@ -25,9 +24,9 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	}
 }
 
-void EnemyManager::Update() {
+void EnemyManager::Update(MapChipField* mapField) {
 	for (Enemy* enemy : enemies_) {
-		enemy->Update();
+		enemy->Update(mapField); // MapChipField を渡して壁判定や重力処理を行う
 	}
 }
 

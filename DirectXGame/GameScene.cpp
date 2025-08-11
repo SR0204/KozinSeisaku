@@ -69,7 +69,7 @@ void GameScene::Initialize() {
 	//----------------------------カメラコントローラー関係初期化----------------------------//
 
 	phaseManager_ = new PhaseManager();
-	phaseManager_->Initialize(player_, enemyManager_, skydome_, cameraManager_, &worldTransformBlocks_);
+	phaseManager_->Initialize(player_, enemyManager_, skydome_, cameraManager_, &worldTransformBlocks_,mapManager_->GetMapChipField());
 
 	//----------------------------マネージャー系統初期化----------------------------//
 
