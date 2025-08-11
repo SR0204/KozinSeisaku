@@ -107,7 +107,7 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 	dxCommon_->ClearDepthBuffer();
 
-	Model::PreDraw(Model::CullingMode::kBack, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 
 	if (phase_ == Phase::kPlay && !player_->IsDead()) {
 		player_->Draw();
