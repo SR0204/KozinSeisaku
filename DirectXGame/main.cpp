@@ -1,6 +1,9 @@
+#include "ChangeScene.h"
 #include "GameScene.h"
 #include "KamataEngine.h"
+#include "SceneManager.h"
 #include <Windows.h>
+#include <iostream>
 
 using namespace KamataEngine;
 
@@ -17,6 +20,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	GameScene* gameScene = new GameScene();
 	// ゲームシーンの初期化
 	gameScene->Initialize();
+
+	SceneManager manager;
+	ChangeScene changer;
 
 	// メインループ
 	while (true) {
