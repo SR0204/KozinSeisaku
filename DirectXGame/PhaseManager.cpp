@@ -13,6 +13,8 @@ void PhaseManager::Initialize(
 
 void PhaseManager::Update() {
 	switch (phase_) {
+	case Phase::kTitle:
+
 	case Phase::kPlay:
 		skydome_->Update();
 		player_->Update();

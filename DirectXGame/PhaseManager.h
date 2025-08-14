@@ -11,7 +11,7 @@
 
 class PhaseManager {
 public:
-	enum class Phase { kPlay, kDeath };
+	enum class Phase { kTitle, kPlay, kDeath };
 
 	void Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField);
 

@@ -51,7 +51,7 @@ public: // メンバ関数(引数）
 
 	// ゲームのフェーズ(型)
 	enum class Phase {
-
+		kTitle,
 		kPlay,  // ゲームプレイ
 		kDeath, // デス演出
 	};
@@ -118,10 +118,23 @@ private: // メンバ変数（関数）
 
 	// 終了フラグ
 	bool finished_ = false;
-	
-	//デスパーティクル
+
+	// デスパーティクル
 	DeathParticles* deathParticles_ = nullptr;
 
+	// テクスチャハンドル
+	uint32_t TitleTextureHandle_ = 0;
+	uint32_t TitleTextureHandle2_ = 0;
+
+	// スプライト
+	KamataEngine::Sprite* sprite_ = nullptr;
+	KamataEngine::Sprite* sprite2_ = nullptr;
+
+	// メンバー変数に追加
+	int frameCount = 0;
+
+	bool isTitle = true;
+	bool isBackgroundStarted_ = false;
 
 	/// <summary>
 	/// ゲームシーン用
