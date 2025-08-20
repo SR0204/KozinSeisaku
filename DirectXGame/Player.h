@@ -4,7 +4,7 @@
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
-#include<math/Vector3.h>
+#include <math/Vector3.h>
 
 using namespace KamataEngine;
 
@@ -105,6 +105,8 @@ public: // 引数を書くところ
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
+	void SetVelocityY(float vy) { velocity_.y = vy; }
+
 private: // 関数（メンバ変数）
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -137,6 +139,9 @@ private: // 関数（メンバ変数）
 
 	// 最大速度制限
 	static inline const float kLimitRunSpeed = 0.1f;
+
+	// ダッシュスピード
+	const float kLimitDashSpeed = 0.35f;
 
 	LRDirection lrDirection_ = LRDirection::kRight;
 

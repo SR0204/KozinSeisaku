@@ -35,6 +35,7 @@ void PhaseManager::Update() {
 		}
 
 		enemyManager_->CheckAllCollisions(player_);
+		enemyManager_->HandleEnemyCollisions();
 		break;
 
 	case Phase::kDeath:

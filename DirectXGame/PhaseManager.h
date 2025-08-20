@@ -26,7 +26,7 @@ public:
 	Model* GetDeathParticleModel() const { return deathParticleModel_; }
 
 private:
-	Phase phase_ = Phase::kPlay;
+	Phase phase_ = Phase::kTitle;
 
 	Player* player_ = nullptr;
 	EnemyManager* enemyManager_ = nullptr;

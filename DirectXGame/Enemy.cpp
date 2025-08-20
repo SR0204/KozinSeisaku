@@ -19,6 +19,10 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 }
 
 void Enemy::Update(MapChipField* mapField) {
+
+	if (collisionCooldown_ > 0)
+		collisionCooldown_--;
+
 	// ===== X方向の壁判定 =====
 	Vector3 nextPos = worldTransform_.translation_ + Vector3(velocity_.x, 0, 0);
 
@@ -71,7 +75,6 @@ void Enemy::Update(MapChipField* mapField) {
 	// ===== 行列更新 =====
 	worldTransform_.UpdateMatrix();
 }
-
 
 void Enemy::Draw() { model_->Draw(worldTransform_, *camera_); }
 

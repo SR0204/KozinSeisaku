@@ -160,7 +160,9 @@ void GameScene::Draw() {
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 
 	if (isBackgroundStarted_ == true) {
-		player_->Draw();
+		if (!player_->IsDead()) {
+			player_->Draw();
+		}
 		skydome_->Draw();
 
 		enemyManager_->Draw();

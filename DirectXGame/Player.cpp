@@ -125,8 +125,14 @@ void Player::InputMove() {
 			// 加速/減速
 			velocity_ += acceleration;
 
-			// 最大速度制限
-			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+			// ダッシュ入力チェック
+			float currentMaxSpeed = kLimitRunSpeed;
+			if (Input::GetInstance()->PushKey(DIK_LSHIFT)) {
+				currentMaxSpeed = kLimitDashSpeed;
+			}
+
+			// x方向の速度を制限
+			velocity_.x = std::clamp(velocity_.x, -currentMaxSpeed, currentMaxSpeed);
 
 		} else {
 			// 非入力時は移動減衰をかける（kAccelerationは速度減衰率）

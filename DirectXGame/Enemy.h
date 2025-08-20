@@ -38,6 +38,22 @@ public:
 
 	AABB GetAABB();
 
+	void SetAlive(bool alive) { isAlive_ = alive; }
+	bool IsAlive() const { return isAlive_; }
+
+	// 方向反転（velocity_.x も更新）
+	void ReverseDirection() {
+		direction_ *= -1;
+		velocity_.x = std::abs(velocity_.x) * direction_;
+	}
+	int GetDirection() const { return direction_; }
+
+	void SetWorldX(float x) { worldTransform_.translation_.x = x; }
+
+	void AddWorldX(float dx) { worldTransform_.translation_.x += dx; }
+
+	int collisionCooldown_ = 0; // フレーム単位
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -61,4 +77,8 @@ private:
 	// 重力関連
 	static inline const float kEnemyGravityAcceleration = -0.05f;
 	static inline const float kEnemyLimitFallSpeed = -0.5f;
+
+	bool isAlive_ = true;
+
+	int direction_ = 1; // 右向き = 1, 左向き = -1
 };

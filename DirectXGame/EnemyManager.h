@@ -13,6 +13,7 @@ public:
 	void Update(MapChipField* mapField);
 	void Draw();
 	void CheckAllCollisions(Player* player);
+	void HandleEnemyCollisions();
 
 private:
 	std::vector<Enemy*> enemies_;
