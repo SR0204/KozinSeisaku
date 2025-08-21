@@ -14,6 +14,7 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// 初期回転（左向き）
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	velocity_ = {kWalkSpeed, 0, 0};
+	direction_ = 1;
 
 	walkTimer_ = 0.0f;
 }
@@ -32,8 +33,8 @@ void Enemy::Update(MapChipField* mapField) {
 
 	MapChipField::IndexSet idx = mapField->GetMapChipIndexSetByPosition(checkPos);
 	if (mapField->GetMapchipTypeByIndex(idx.xIndex, idx.yIndex) == MapChipType::kBlock) {
-		// 壁 → 方向転換
-		velocity_.x *= -1;
+		// 壁 → ReverseDirection() を使う
+		ReverseDirection();
 	} else {
 		// 移動
 		worldTransform_.translation_.x = nextPos.x;

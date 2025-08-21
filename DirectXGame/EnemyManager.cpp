@@ -1,6 +1,8 @@
+#define NOMINMAX
 #include "EnemyManager.h"
 #include "MathUtilityForText.h" // IsColision 用
 #include "Player.h"
+#include <algorithm>
 
 EnemyManager::EnemyManager() : enemyModel_(nullptr), camera_(nullptr) {}
 
@@ -89,13 +91,24 @@ void EnemyManager::HandleEnemyCollisions() {
 				e1->ReverseDirection();
 				e2->ReverseDirection();
 
-				float pushBack = 0.05f;
-				e1->AddWorldX(pushBack * e1->GetDirection());
-				e2->AddWorldX(pushBack * e2->GetDirection());
+				// --- AABB の重なりを解消する ---
+				AABB a = e1->GetAABB();
+				AABB b = e2->GetAABB();
 
-				// 衝突後 5フレームは反転禁止
-				e1->collisionCooldown_ = 5;
-				e2->collisionCooldown_ = 5;
+				// 横方向の重なり量を計算
+				float overlapX1 = a.max.x - b.min.x;
+				float overlapX2 = b.max.x - a.min.x;
+				float overlapX = std::min(overlapX1, overlapX2);
+
+				if (overlapX > 0) {
+					// 双方を半分ずつ押し戻す
+					e1->AddWorldX(-overlapX * 0.5f);
+					e2->AddWorldX(overlapX * 0.5f);
+				}
+
+				// クールダウンを少し長めに
+				e1->collisionCooldown_ = 10;
+				e2->collisionCooldown_ = 10;
 			}
 		}
 	}

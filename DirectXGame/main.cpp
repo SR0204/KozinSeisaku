@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "ChangeScene.h"
 #include "GameScene.h"
 #include "KamataEngine.h"

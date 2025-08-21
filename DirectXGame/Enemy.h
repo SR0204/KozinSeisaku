@@ -44,8 +44,9 @@ public:
 	// 方向反転（velocity_.x も更新）
 	void ReverseDirection() {
 		direction_ *= -1;
-		velocity_.x = std::abs(velocity_.x) * direction_;
+		velocity_.x = kWalkSpeed * direction_;
 	}
+
 	int GetDirection() const { return direction_; }
 
 	void SetWorldX(float x) { worldTransform_.translation_.x = x; }
