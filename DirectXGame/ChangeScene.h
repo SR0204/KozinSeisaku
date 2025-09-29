@@ -1,4 +1,0 @@
-// ChangeScene.h
-
-class ChangeScene {
-};

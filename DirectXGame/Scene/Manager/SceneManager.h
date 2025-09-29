@@ -1,0 +1,3 @@
+// SceneManager.h
+
+class SceneManager {};

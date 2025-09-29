@@ -156,7 +156,6 @@
   <ItemGroup>
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="CameraManager.cpp" />
-    <ClCompile Include="ChangeScene.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
@@ -167,6 +166,7 @@
     <ClCompile Include="MathUtilityForText.cpp" />
     <ClCompile Include="PhaseManager.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="worldTransformEx.cpp" />
@@ -272,7 +272,6 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="CameraManager.h" />
-    <ClInclude Include="ChangeScene.h" />
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
@@ -282,6 +281,8 @@
     <ClInclude Include="MathUtilityForText.h" />
     <ClInclude Include="PhaseManager.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneID.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SkyDome.h" />
   </ItemGroup>
