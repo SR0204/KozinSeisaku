@@ -250,6 +250,15 @@
   <ItemGroup>
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathUtilityEX.cpp" />
+    <ClCompile Include="WorldTransformEX.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameScene.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
