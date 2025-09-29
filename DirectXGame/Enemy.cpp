@@ -1,5 +1,5 @@
 #include "Enemy.h"
-#include "MathUtilityFortext.h"
+#include "etc/MathUtilityFortext.h"
 #include <cassert>
 #include <numbers>
 

@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include "EnemyManager.h"
-#include "MathUtilityForText.h" // IsColision 用
-#include "Player.h"
+#include "etc/MathUtilityForText.h"
+#include "Game/Player/Player.h"
 #include <algorithm>
 
 EnemyManager::EnemyManager() : enemyModel_(nullptr), camera_(nullptr) {}

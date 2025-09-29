@@ -4,7 +4,7 @@
 #include "DeathParticles.h"
 #include "EnemyManager.h"
 #include "MapManager.h"
-#include "Player.h"
+#include "Game/Player/Player.h"
 #include "Skydome.h"
 #include <2d/Sprite.h>
 #include <3d/DebugCamera.h>

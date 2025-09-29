@@ -3,7 +3,7 @@
 #include "DeathParticles.h"
 #include "EnemyManager.h"
 #include "MapChipField.h"
-#include "Player.h"
+#include "Game/Player/Player.h"
 #include "Skydome.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>

@@ -1,7 +1,7 @@
 #pragma once
 #include "AABB.h"
-#include "MapChipField.h" // 追加
-#include "Player.h"
+#include "MapChipField.h"
+#include "Game/Player/Player.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 

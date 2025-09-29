@@ -1,7 +1,7 @@
 // CameraManager.h
 #pragma once
 #include "CameraController.h"
-#include "Player.h"
+#include "Game/Player/Player.h"
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
 #include <KamataEngine.h>

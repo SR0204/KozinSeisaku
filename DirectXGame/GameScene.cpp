@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include "CameraController.h"
-#include "MathUtilityForText.h"
+#include "etc/MathUtilityForText.h"
 #include <base/TextureManager.h>
 #include <cassert>
 
