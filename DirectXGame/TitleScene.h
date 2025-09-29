@@ -1,0 +1,32 @@
+#pragma once
+#include "KamataEngine.h"
+#include "Scene.h"
+
+class DirectXCommon; // 前方宣言
+class Input;         // 前方宣言
+class Sprite;        // 前方宣言
+class SceneManager;
+
+class TitleScene : public Scene {
+public:
+	TitleScene();
+	~TitleScene();
+
+	void Initialize(SceneManager* sceneManager) override;
+	void Update() override;
+	void Draw() override;
+
+private:
+	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
+	KamataEngine::Input* input_ = nullptr;
+
+	uint32_t TitleTextureHandle_ = 0;
+	uint32_t TitleTextureHandle2_ = 0;
+	KamataEngine::Sprite* sprite_ = nullptr;
+	KamataEngine::Sprite* sprite2_ = nullptr;
+
+	bool isTitle_ = true;
+	int frameCount_ = 0;
+
+	SceneManager* sceneManager_ = nullptr;
+};

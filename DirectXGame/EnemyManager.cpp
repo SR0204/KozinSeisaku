@@ -113,3 +113,5 @@ void EnemyManager::HandleEnemyCollisions() {
 		}
 	}
 }
+
+bool EnemyManager::IsAllEnemyDefeated() const { return enemies_.empty(); }

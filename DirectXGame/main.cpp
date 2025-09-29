@@ -3,25 +3,25 @@
 #include "GameScene.h"
 #include "KamataEngine.h"
 #include "SceneManager.h"
+#include "TitleScene.h"
 #include <Windows.h>
 #include <iostream>
 
 using namespace KamataEngine;
 
-
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
-	// 初期化
 	// エンジンの初期化
 	KamataEngine::Initialize(L"LE3C_13_スズキレオ_個人製作");
 
-	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+	KamataEngine::DirectXCommon* dxCommon = KamataEngine::DirectXCommon::GetInstance();
 
-	// ゲームシーンのインスタンス生成
-	GameScene* gameScene = new GameScene();
-	// ゲームシーンの初期化
-	gameScene->Initialize();
+	// ★ SceneManagerを作成
+	SceneManager* sceneManager = new SceneManager();
+
+	// ★ 最初のシーンをTitleSceneに設定
+	sceneManager->ChangeScene(SceneID::TitleScene);
 
 	// メインループ
 	while (true) {
@@ -30,27 +30,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 
-		// ゲームシーンの更新
-		gameScene->Update();
+		// 現在のシーンを更新
+		sceneManager->Update();
 
 		// 描画開始
 		dxCommon->PreDraw();
 
-		// ここから描画開始
-
-		// ゲームシーンの描画
-		gameScene->Draw();
+		// 現在のシーンを描画
+		sceneManager->Draw();
 
 		// 描画終了
 		dxCommon->PostDraw();
 	}
 
-	// 解放処理
-
-	// ゲームシーンの解放
-	delete gameScene;
-	// nullptrの代入
-	gameScene = nullptr;
+	// SceneManagerを解放
+	delete sceneManager;
+	sceneManager = nullptr;
 
 	// エンジンの終了処理
 	KamataEngine::Finalize();

@@ -1,3 +1,20 @@
-// SceneManager.h
+#pragma once
+#include "Scene.h"
+#include "SceneID.h"
+#include <memory>
 
-class SceneManager {};
+class SceneManager {
+public:
+	SceneManager();
+	~SceneManager();
+
+	void ChangeScene(SceneID nextScene);  // 実際に切り替える
+	void RequestScene(SceneID nextScene); // Update 内で切り替え要求
+	void Update();
+	void Draw();
+
+private:
+	std::unique_ptr<Scene> currentScene_;
+	SceneID currentID_;
+	SceneID nextScene_ = SceneID::None; // 切り替えフラグ
+};

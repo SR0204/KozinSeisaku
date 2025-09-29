@@ -157,9 +157,11 @@
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="ChangeScene.cpp" />
+    <ClCompile Include="ClearScene.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkyDome.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="worldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -273,17 +276,23 @@
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="ChangeScene.h" />
+    <ClInclude Include="ClearScene.h" />
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="MapChipField.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="MathUtilityForText.h" />
     <ClInclude Include="PhaseManager.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneID.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SkyDome.h" />
+    <ClInclude Include="StageID.h" />
+    <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

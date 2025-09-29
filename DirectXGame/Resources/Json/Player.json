@@ -1,9 +1,0 @@
-{
-  "Player": {
-    "speed": 0.1,
-    "gravity": -0.015,
-    "jumpPower": 0.3,
-    "groundY": 1.0,
-    "rotationSpeed": 0.1
-  }
-}

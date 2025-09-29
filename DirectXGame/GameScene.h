@@ -4,24 +4,24 @@
 #include "DeathParticles.h"
 #include "EnemyManager.h"
 #include "MapManager.h"
+#include "PhaseManager.h"
 #include "Player.h"
+#include "SceneManager.h"
 #include "Skydome.h"
 #include <2d/Sprite.h>
+#include <3d/Camera.h>
 #include <3d/DebugCamera.h>
 #include <3d/Model.h>
+#include <3d/WorldTransform.h>
 #include <audio/Audio.h>
 #include <base/DirectXCommon.h>
 #include <input/Input.h>
-// #include "TitleScene.h"
-#include "PhaseManager.h"
-#include <3d/Camera.h>
-#include <3d/WorldTransform.h>
 #include <vector>
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene {
+class GameScene : public Scene {
 
 public: // メンバ関数(引数）
 	/// <summary>
@@ -37,7 +37,7 @@ public: // メンバ関数(引数）
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(SceneManager* sceneManager) override;
 
 	/// <summary>
 	/// 毎フレーム処理
@@ -63,8 +63,8 @@ public: // メンバ関数(引数）
 	bool IsFinished() const { return finished_; }
 
 private: // メンバ変数（関数）
-	DirectXCommon* dxCommon_ = nullptr;
-	Input* input_ = nullptr;
+	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
+	KamataEngine::Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
 	//--------------------マネージャー系統----------------------------//
@@ -75,6 +75,9 @@ private: // メンバ変数（関数）
 	PhaseManager* phaseManager_ = nullptr;
 
 	CameraManager* cameraManager_ = nullptr;
+
+	SceneManager* sceneManager_ = nullptr;
+	SceneID nextScene_ = SceneID::None;
 
 	//--------------------マネージャー系統----------------------------//
 
@@ -122,18 +125,8 @@ private: // メンバ変数（関数）
 	// デスパーティクル
 	DeathParticles* deathParticles_ = nullptr;
 
-	// テクスチャハンドル
-	uint32_t TitleTextureHandle_ = 0;
-	uint32_t TitleTextureHandle2_ = 0;
-
-	// スプライト
-	KamataEngine::Sprite* sprite_ = nullptr;
-	KamataEngine::Sprite* sprite2_ = nullptr;
-
 	// メンバー変数に追加
-	int frameCount = 0;
 
-	bool isTitle = true;
 	bool isBackgroundStarted_ = false;
 
 	/// <summary>

@@ -15,6 +15,8 @@ public:
 	void CheckAllCollisions(Player* player);
 	void HandleEnemyCollisions();
 
+	bool IsAllEnemyDefeated()const;
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
