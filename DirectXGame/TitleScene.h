@@ -31,4 +31,7 @@ private:
 	int frameCount_ = 0;
 
 	SceneManager* sceneManager_ = nullptr;
+
+	uint32_t bgmHandle_ = 0;  // BGMのハンドル
+	int bgmVoiceHandle_ = -1; // 再生中のBGMの音声ハンドル
 };

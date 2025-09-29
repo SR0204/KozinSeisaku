@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "SceneID.h"
 #include "SceneManager.h"
+#include <Audio/Audio.h>
 #include <cmath>
 
 using namespace KamataEngine;
@@ -10,6 +11,11 @@ TitleScene::~TitleScene() {
 	delete sprite_;
 	delete sprite2_;
 	delete BackGround_;
+
+	// シーン終了時にBGM停止
+	if (bgmVoiceHandle_ != -1) {
+		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
+	}
 }
 
 void TitleScene::Initialize(SceneManager* sceneManager) {
@@ -25,6 +31,10 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	sprite_ = KamataEngine::Sprite::Create(TitleTextureHandle_, {0, 0});
 	sprite2_ = KamataEngine::Sprite::Create(TitleTextureHandle2_, {0, 0});
 	BackGround_ = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {0, 0});
+
+	// BGMロード＆再生
+	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
+	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true); // ループ再生
 }
 
 void TitleScene::Update() {
