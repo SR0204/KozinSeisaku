@@ -254,19 +254,30 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ColliderManager.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="GlobalSpriteManger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtilityEX.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="SpriteManager.cpp" />
+    <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="StageManager.cpp" />
     <ClCompile Include="WorldTransformEX.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderManager.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="GlobalSpriteManger.h" />
     <ClInclude Include="ObjID.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SkyDome.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SpriteManager.h" />
+    <ClInclude Include="Stage.h" />
+    <ClInclude Include="StageID.h" />
+    <ClInclude Include="StageManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
