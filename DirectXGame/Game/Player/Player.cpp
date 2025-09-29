@@ -1,12 +1,13 @@
 #define NOMINMAX
 #include "Player.h"
-#include "MapManager.h"
-#include "MathUtilityFortext.h"
+
 #include <2d/DebugText.h>
 #include <algorithm>
 #include <cassert>
 #include <input/Input.h>
 #include <numbers>
+#include "../../etc/MathUtilityForText.h"
+#include "../../MapChipField.h"
 
 using namespace KamataEngine;
 

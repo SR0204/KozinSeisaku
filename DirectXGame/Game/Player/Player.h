@@ -1,10 +1,10 @@
 #pragma once
-#include "AABB.h"
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
 #include <math/Vector3.h>
+#include "../../AABB.h"
 
 using namespace KamataEngine;
 

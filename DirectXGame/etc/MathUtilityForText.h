@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AABB.h"
+#include "../AABB.h"
 #include <KamataEngine.h>
 #include <math.h>
 #include <math/MathUtility.h>
