@@ -34,4 +34,6 @@ private:
 
 	uint32_t bgmHandle_ = 0;  // BGMのハンドル
 	int bgmVoiceHandle_ = -1; // 再生中のBGMの音声ハンドル
+	float bgmVolume_ = 1.0f;  // 現在のボリューム(1.0=最大)
+	bool isFadingOut_ = false; // フェードアウト中かどうか
 };

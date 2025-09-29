@@ -34,7 +34,9 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 
 	// BGMロード＆再生
 	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
-	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true); // ループ再生
+	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
+	bgmVolume_ = 1.0f;
+	isFadingOut_ = false;
 }
 
 void TitleScene::Update() {
@@ -42,6 +44,7 @@ void TitleScene::Update() {
 
 	if (isTitle_) {
 		if (input_->TriggerKey(DIK_SPACE)) {
+			isFadingOut_ = true;
 			isTitle_ = false;
 			// ゲーム本編に切り替え
 			sceneManager_->ChangeScene(SceneID::Game);
@@ -51,6 +54,20 @@ void TitleScene::Update() {
 		// タイトルキーの上下移動
 		float y = 10 * sin(frameCount_ * 0.05f);
 		sprite_->SetPosition({0.0f, y});
+	}
+
+	// フェードアウト中の音量調整
+	if (isFadingOut_ && bgmVoiceHandle_ != -1) {
+		bgmVolume_ -= 0.01f; // 音量を徐々に下げる
+		if (bgmVolume_ <= 0.0f) {
+			bgmVolume_ = 0.0f;
+			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
+			bgmVoiceHandle_ = -1;
+			// フェードアウトが終わったらシーン切り替え
+			sceneManager_->ChangeScene(SceneID::Game);
+			return;
+		}
+		Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
 	}
 
 	// タイトルロゴの落下演出
