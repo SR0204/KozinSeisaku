@@ -9,6 +9,7 @@ TitleScene::TitleScene() {}
 TitleScene::~TitleScene() {
 	delete sprite_;
 	delete sprite2_;
+	delete BackGround_;
 }
 
 void TitleScene::Initialize(SceneManager* sceneManager) {
@@ -19,16 +20,18 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 
 	TitleTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
 	TitleTextureHandle2_ = TextureManager::Load("./Resources/Title/Title.png");
+	TitleBackGroundTextureHandle_ = TextureManager::Load("./Resources/Title/TitleBack.png");
 
 	sprite_ = KamataEngine::Sprite::Create(TitleTextureHandle_, {0, 0});
 	sprite2_ = KamataEngine::Sprite::Create(TitleTextureHandle2_, {0, 0});
+	BackGround_ = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {0, 0});
 }
 
 void TitleScene::Update() {
 	frameCount_++;
 
 	if (isTitle_) {
-		if (input_->TriggerKey(DIK_RETURN)) {
+		if (input_->TriggerKey(DIK_SPACE)) {
 			isTitle_ = false;
 			// ゲーム本編に切り替え
 			sceneManager_->ChangeScene(SceneID::Game);
@@ -58,6 +61,11 @@ void TitleScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 	KamataEngine::Sprite::PreDraw(commandList);
+
+	if (BackGround_) {
+		BackGround_->Draw();
+	}
+
 	if (isTitle_ && frameCount_ % 150 >= 30) {
 		sprite_->Draw();
 	}

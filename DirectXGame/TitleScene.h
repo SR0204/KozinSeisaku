@@ -22,8 +22,10 @@ private:
 
 	uint32_t TitleTextureHandle_ = 0;
 	uint32_t TitleTextureHandle2_ = 0;
+	uint32_t TitleBackGroundTextureHandle_ = 0;
 	KamataEngine::Sprite* sprite_ = nullptr;
 	KamataEngine::Sprite* sprite2_ = nullptr;
+	KamataEngine::Sprite* BackGround_ = nullptr;
 
 	bool isTitle_ = true;
 	int frameCount_ = 0;
