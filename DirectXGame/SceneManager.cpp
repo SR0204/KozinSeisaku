@@ -41,6 +41,7 @@ void SceneManager::Update() {
 	// シーン切り替え要求がある場合
 	if (nextScene_ != SceneID::None) {
 		ChangeScene(nextScene_);
+		nextScene_ = SceneID::None;
 	}
 
 	if (currentScene_) {

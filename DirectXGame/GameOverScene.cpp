@@ -19,13 +19,15 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 }
 
 void GameOverScene::Update() {
-	if (!gameOverSprite_)return;
+	if (!gameOverSprite_)
+		return;
 
 	frameCount_++;
 
 	// Enterキーでタイトルに戻る
 	if (input_->TriggerKey(DIK_RETURN)) {
-		sceneManager_->ChangeScene(SceneID::TitleScene);
+		sceneManager_->RequestScene(SceneID::TitleScene);
+		return;
 	}
 
 	// 落下演出（例: 上からY=100まで）
