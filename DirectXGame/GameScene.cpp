@@ -4,6 +4,7 @@
 #include <base/TextureManager.h>
 #include <cassert>
 
+
 // コンストラクタ
 GameScene::GameScene() {}
 
