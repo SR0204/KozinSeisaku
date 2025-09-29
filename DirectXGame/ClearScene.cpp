@@ -21,7 +21,7 @@ void ClearScene::Update() {
 	frameCount_++;
 
 	// クリアシーンからタイトルに戻る
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		sceneManager_->ChangeScene(SceneID::TitleScene);
 	}
 }
