@@ -17,6 +17,8 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	direction_ = 1;
 
 	walkTimer_ = 0.0f;
+
+	worldTransform_.scale_ = {0.5, 0.5, 0.5};
 }
 
 void Enemy::Update(MapChipField* mapField) {

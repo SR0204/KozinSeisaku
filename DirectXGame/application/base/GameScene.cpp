@@ -46,7 +46,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	worldTransformBlocks_ = mapManager_->GenerateBlockTransforms(MapChipType::kBlock);
 
 	// 敵マネージャ初期化
-	EnemyModel_ = Model::CreateFromOBJ("enemy", true);
+	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_);
 
@@ -75,7 +75,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	//----------------------------マネージャー系統初期化----------------------------//
 
 	model_ = Model::Create();
-	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
+	//textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	skydome_ = new Skydome();

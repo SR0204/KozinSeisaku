@@ -49,7 +49,7 @@ void GameOverScene::Update() {
 	}
 
 	// PRESS SPACE の文字をなめらかに点滅
-	blinkAlpha_ = 0.5f + 0.5f * sin(frameCount_ * 0.2f); // 少し速めに
+	blinkAlpha_ = 0.5f + 0.5f * sin(frameCount_ * 0.1f);
 	if (pressSpaceSprite_) {
 		pressSpaceSprite_->SetColor({1.0f, 1.0f, 1.0f, blinkAlpha_});
 	}
