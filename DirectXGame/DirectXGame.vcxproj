@@ -154,24 +154,24 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CameraController.cpp" />
-    <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="engine\Camera\CameraController.cpp" />
+    <ClCompile Include="engine\Camera\CameraManager.cpp" />
     <ClCompile Include="ChangeScene.cpp" />
-    <ClCompile Include="ClearScene.cpp" />
+    <ClCompile Include="Scene\Scenes\ClearScene.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="EnemyManager.cpp" />
-    <ClCompile Include="GameOverScene.cpp" />
-    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="engine\Enemy\Enemy.cpp" />
+    <ClCompile Include="engine\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Scene\Scenes\GameOverScene.cpp" />
+    <ClCompile Include="application\base\GameScene.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapChipField.cpp" />
-    <ClCompile Include="MapManager.cpp" />
+    <ClCompile Include="Map\MapChipField.cpp" />
+    <ClCompile Include="Map\MapManager.cpp" />
     <ClCompile Include="MathUtilityForText.cpp" />
     <ClCompile Include="PhaseManager.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="SkyDome.cpp" />
-    <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="engine\Player\Player.cpp" />
+    <ClCompile Include="Scene\SceneManager\SceneManager.cpp" />
+    <ClCompile Include="Map\SkyDome\SkyDome.cpp" />
+    <ClCompile Include="Scene\Scenes\TitleScene.cpp" />
     <ClCompile Include="worldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -273,26 +273,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
-    <ClInclude Include="CameraController.h" />
-    <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="engine\Camera\CameraController.h" />
+    <ClInclude Include="engine\Camera\CameraManager.h" />
     <ClInclude Include="ChangeScene.h" />
-    <ClInclude Include="ClearScene.h" />
+    <ClInclude Include="Scene\Scenes\ClearScene.h" />
     <ClInclude Include="DeathParticles.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="EnemyManager.h" />
-    <ClInclude Include="GameOverScene.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="MapChipField.h" />
-    <ClInclude Include="MapManager.h" />
+    <ClInclude Include="engine\Enemy\Enemy.h" />
+    <ClInclude Include="engine\Enemy\EnemyManager.h" />
+    <ClInclude Include="Scene\Scenes\GameOverScene.h" />
+    <ClInclude Include="application\base\GameScene.h" />
+    <ClInclude Include="Map\MapChipField.h" />
+    <ClInclude Include="Map\MapManager.h" />
     <ClInclude Include="MathUtilityForText.h" />
     <ClInclude Include="PhaseManager.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneID.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SkyDome.h" />
-    <ClInclude Include="StageID.h" />
-    <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="engine\Player\Player.h" />
+    <ClInclude Include="Scene\SceneManager\Scene.h" />
+    <ClInclude Include="Scene\SceneManager\SceneID.h" />
+    <ClInclude Include="Scene\SceneManager\SceneManager.h" />
+    <ClInclude Include="Map\SkyDome\SkyDome.h" />
+    <ClInclude Include="Map\StageID.h" />
+    <ClInclude Include="Scene\Scenes\TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,8 @@
 #define NOMINMAX
 #define NOMINMIN
 #include "CameraController.h"
-#include "Player.h"
+#include "../Player/Player.h"
+
 
 void CameraController::Initialize() {
 

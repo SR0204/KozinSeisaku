@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include "Player.h"
-#include "MapManager.h"
-#include "MathUtilityFortext.h"
+#include "../../MapManager.h"
+#include "../../MathUtilityFortext.h"
 #include <2d/DebugText.h>
 #include <algorithm>
 #include <cassert>

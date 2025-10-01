@@ -1,6 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
-#include "Scene.h"
+#include "../../Scene/SceneManager/Scene.h"
 
 class DirectXCommon; // 前方宣言
 class Input;         // 前方宣言

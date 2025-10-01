@@ -1,6 +1,5 @@
 #include "GameScene.h"
-#include "CameraController.h"
-#include "MathUtilityForText.h"
+#include "../../MathUtilityForText.h"
 #include <base/TextureManager.h>
 #include <cassert>
 
@@ -93,12 +92,12 @@ void GameScene::Update() {
 	cameraManager_->Update();
 	cameraManager_->TransferMatrix();
 
-	//クリア判定
+	// クリア判定
 	if (enemyManager_->IsAllEnemyDefeated()) {
 		nextScene_ = SceneID::Clear; // フラグを立てるだけ
 	}
 
-	//ゲームオーバー判定
+	// ゲームオーバー判定
 	if (player_->IsDead()) {
 		nextScene_ = SceneID::GameOver; // フラグを立てるだけ
 	}

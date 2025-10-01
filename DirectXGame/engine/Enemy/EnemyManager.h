@@ -1,7 +1,7 @@
 #pragma once
+#include "../../DirectXGame/Map/MapChipField.h"
+#include "../../engine/Player/Player.h"
 #include "Enemy.h"
-#include "MapChipField.h"
-#include "Player.h"
 #include <vector>
 
 class EnemyManager {
@@ -15,7 +15,7 @@ public:
 	void CheckAllCollisions(Player* player);
 	void HandleEnemyCollisions();
 
-	bool IsAllEnemyDefeated()const;
+	bool IsAllEnemyDefeated() const;
 
 private:
 	std::vector<Enemy*> enemies_;

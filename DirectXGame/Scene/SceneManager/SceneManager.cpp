@@ -1,8 +1,8 @@
 #include "SceneManager.h"
-#include "ClearScene.h"
-#include "GameOverScene.h"
-#include "GameScene.h"
-#include "TitleScene.h"
+#include "../../DirectXGame/Scene/Scenes/ClearScene.h"
+#include "../../DirectXGame/Scene/Scenes/GameOverScene.h"
+#include "../../DirectXGame/Scene/Scenes/TitleScene.h"
+#include "../../DirectXGame/application/base/GameScene.h"
 
 SceneManager::SceneManager() : currentID_(SceneID::None) { RequestScene(SceneID::TitleScene); }
 

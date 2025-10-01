@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CameraManager.h"
-#include "DeathParticles.h"
-#include "EnemyManager.h"
-#include "MapManager.h"
-#include "PhaseManager.h"
-#include "Player.h"
-#include "SceneManager.h"
-#include "Skydome.h"
+#include "../../DeathParticles.h"
+#include "../../DirectXGame/Map/MapManager.h"
+#include "../../DirectXGame/Map/SkyDome/SkyDome.h"
+#include "../../PhaseManager.h"
+#include "../../Scene/SceneManager/SceneManager.h"
+#include "../../engine/Camera/CameraManager.h"
+#include "../../engine/Enemy/EnemyManager.h"
+#include "../../engine/Player/Player.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
@@ -65,7 +65,7 @@ public: // メンバ関数(引数）
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
-	Audio* audio_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
 	//--------------------マネージャー系統----------------------------//
 	MapManager* mapManager_;
