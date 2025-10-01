@@ -12,7 +12,7 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	camera_ = camera;
 
 	// 初期回転（左向き）
-	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
 	velocity_ = {kWalkSpeed, 0, 0};
 	direction_ = 1;
 
