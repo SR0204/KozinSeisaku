@@ -1,6 +1,6 @@
 #include "GameOverScene.h"
-#include "SceneID.h"
-#include "SceneManager.h"
+#include "../../Scene/SceneManager/SceneID.h"
+#include "../../Scene/SceneManager/SceneManager.h"
 #include <cmath> // sin を使うため
 
 using namespace KamataEngine;

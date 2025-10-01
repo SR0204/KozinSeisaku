@@ -1,12 +1,11 @@
 #pragma once
+#include "../../Scene/SceneManager/Scene.h"
 #include "KamataEngine.h"
-#include "Scene.h"
 
 class DirectXCommon; // 前方宣言
 class Input;         // 前方宣言
 class Sprite;        // 前方宣言
 class SceneManager;
-
 
 class ClearScene : public Scene {
 public:

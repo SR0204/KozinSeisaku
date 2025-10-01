@@ -1,6 +1,6 @@
 #include "ClearScene.h"
-#include "SceneID.h"
-#include "SceneManager.h"
+#include "../../Scene/SceneManager/SceneID.h"
+#include "../../Scene/SceneManager/SceneManager.h"
 #include <cmath>
 
 using namespace KamataEngine;

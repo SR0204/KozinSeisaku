@@ -26,6 +26,7 @@ void SceneManager::ChangeScene(SceneID nextScene) {
 	case SceneID::GameOver:
 		currentScene_ = std::make_unique<GameOverScene>();
 		break;
+
 	default:
 		currentScene_.reset();
 		break;

@@ -156,7 +156,6 @@
   <ItemGroup>
     <ClCompile Include="engine\Camera\CameraController.cpp" />
     <ClCompile Include="engine\Camera\CameraManager.cpp" />
-    <ClCompile Include="ChangeScene.cpp" />
     <ClCompile Include="Scene\Scenes\ClearScene.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="engine\Enemy\Enemy.cpp" />
@@ -275,7 +274,6 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="engine\Camera\CameraController.h" />
     <ClInclude Include="engine\Camera\CameraManager.h" />
-    <ClInclude Include="ChangeScene.h" />
     <ClInclude Include="Scene\Scenes\ClearScene.h" />
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="engine\Enemy\Enemy.h" />

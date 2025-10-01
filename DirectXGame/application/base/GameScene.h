@@ -129,6 +129,11 @@ private: // メンバ変数（関数）
 
 	bool isBackgroundStarted_ = false;
 
+	// フェード用
+	bool isFadingIn_ =false;
+	float fadeScele_ = 0.1f;
+	KamataEngine::Sprite* fadeSprite_ = nullptr;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

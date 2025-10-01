@@ -1,6 +1,5 @@
 #define NOMINMAX
 #include "../../DirectXGame/Scene/Scenes/TitleScene.h"
-#include "ChangeScene.h"
 #include "KamataEngine.h"
 #include "Scene/SceneManager/SceneManager.h"
 #include "application/base/GameScene.h"
@@ -13,7 +12,7 @@ using namespace KamataEngine;
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// エンジンの初期化
-	KamataEngine::Initialize(L"LE3C_13_スズキレオ_個人製作");
+	KamataEngine::Initialize(L"LE3C_13_スズキレオ_ゴールへの大冒険");
 
 	KamataEngine::DirectXCommon* dxCommon = KamataEngine::DirectXCommon::GetInstance();
 

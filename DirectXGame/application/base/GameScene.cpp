@@ -82,9 +82,29 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	skydome_->Initialize(modelSkydome_, &camera_);
 
 	modelBlock_ = Model::CreateFromOBJ("block", true);
+
+	// フェード初期化
+	uint32_t blackTex = TextureManager::Load("./Resources/Title/fadeTexture.png");
+	fadeSprite_ = Sprite::Create(blackTex, {640, 360});
+	fadeSprite_->SetAnchorPoint({0.5f, 0.5f}); // 中心基準で拡大縮小
+	fadeSprite_->SetSize({fadeScele_, fadeScele_});
+
+	isFadingIn_ = true;
+	fadeScele_ = 0.1f;
 }
 
 void GameScene::Update() {
+
+	// フェード処理
+	if (isFadingIn_) {
+		fadeScele_ += 0.03f; // 速度調整（0.02～0.05くらいで調整可能）
+		fadeSprite_->SetSize({fadeScele_, fadeScele_});
+
+		// 画面外まで広がったら終了
+		if (fadeScele_ >= 4.0f) {
+			isFadingIn_ = false;
+		}
+	}
 
 	// フェーズマネージャー更新
 	phaseManager_->Update();
@@ -136,4 +156,11 @@ void GameScene::Draw() {
 	phaseManager_->Draw();
 
 	Model::PostDraw();
+
+	// フェード用スプライト
+	if (isFadingIn_) {
+		Sprite::PreDraw(commandList);
+		fadeSprite_->Draw();
+		Sprite::PostDraw();
+	}
 }
