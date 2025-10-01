@@ -1,5 +1,5 @@
 #pragma once
-#include "../../AABB.h"
+#include "../../DirectXGame/etc/AABB.h"
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>

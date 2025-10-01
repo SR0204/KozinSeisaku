@@ -1,12 +1,12 @@
 #pragma once
 
-#include "MathUtilityForText.h"
-#include <3d/Model.h>
+#include "../../DirectXGame/etc/MathUtilityForText.h"
 #include <3d/Camera.h>
+#include <3d/Model.h>
 #include <3d/WorldTransform.h>
+#include <KamataEngine.h>
 #include <array>
 #include <numbers>
-#include<KamataEngine.h>
 
 class DeathParticles {
 

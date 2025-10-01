@@ -1,5 +1,5 @@
 #include "GameScene.h"
-#include "../../MathUtilityForText.h"
+#include "../../DirectXGame/etc/MathUtilityForText.h"
 #include <base/TextureManager.h>
 #include <cassert>
 

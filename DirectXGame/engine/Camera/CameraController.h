@@ -1,5 +1,5 @@
 #pragma once
-#include "../../MathUtilityForText.h"
+#include "../../DirectXGame/etc/MathUtilityForText.h"
 #include <3d/Camera.h>
 
 class Player;

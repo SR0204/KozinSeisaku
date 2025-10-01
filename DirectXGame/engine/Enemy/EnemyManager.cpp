@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "EnemyManager.h"
-#include "../../MathUtilityForText.h" // IsColision 用
+#include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
 #include <algorithm>
 

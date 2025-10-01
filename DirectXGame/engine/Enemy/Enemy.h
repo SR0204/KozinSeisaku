@@ -1,5 +1,5 @@
 #pragma once
-#include "../../AABB.h"
+#include "../../DirectXGame/etc/AABB.h"
 #include "../../DirectXGame/Map/MapChipField.h" // 追加
 #include "../Player/Player.h"
 #include <3d/Model.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../DirectXGame/AABB.h"
+#include "../../DirectXGame/etc/AABB.h"
 #include <KamataEngine.h>
 #include <math.h>
 #include <math/MathUtility.h>

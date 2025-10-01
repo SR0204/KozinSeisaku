@@ -165,13 +165,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapChipField.cpp" />
     <ClCompile Include="Map\MapManager.cpp" />
-    <ClCompile Include="MathUtilityForText.cpp" />
+    <ClCompile Include="etc\MathUtilityForText.cpp" />
     <ClCompile Include="PhaseManager.cpp" />
     <ClCompile Include="engine\Player\Player.cpp" />
     <ClCompile Include="Scene\SceneManager\SceneManager.cpp" />
     <ClCompile Include="Map\SkyDome\SkyDome.cpp" />
     <ClCompile Include="Scene\Scenes\TitleScene.cpp" />
-    <ClCompile Include="worldTransformEx.cpp" />
+    <ClCompile Include="etc\worldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -271,7 +271,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AABB.h" />
+    <ClInclude Include="etc\AABB.h" />
     <ClInclude Include="engine\Camera\CameraController.h" />
     <ClInclude Include="engine\Camera\CameraManager.h" />
     <ClInclude Include="Scene\Scenes\ClearScene.h" />
@@ -282,7 +282,7 @@
     <ClInclude Include="application\base\GameScene.h" />
     <ClInclude Include="Map\MapChipField.h" />
     <ClInclude Include="Map\MapManager.h" />
-    <ClInclude Include="MathUtilityForText.h" />
+    <ClInclude Include="etc\MathUtilityForText.h" />
     <ClInclude Include="PhaseManager.h" />
     <ClInclude Include="engine\Player\Player.h" />
     <ClInclude Include="Scene\SceneManager\Scene.h" />
