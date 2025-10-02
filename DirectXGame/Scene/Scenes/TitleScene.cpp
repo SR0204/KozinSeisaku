@@ -45,7 +45,8 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	// BGMロード＆再生
 	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
 	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
-	bgmVolume_ = 1.0f;
+	bgmVolume_ = 0.5f;
+	Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
 	isFadingOut_ = false;
 	fadeAlpha_ = 0.0f;
 }
@@ -85,7 +86,7 @@ void TitleScene::Update() {
 	// フェードアウト処理
 	if (isFadingOut_) {
 		// 音量下げる
-		bgmVolume_ -= 0.01f;
+		bgmVolume_ -= 0.1f;
 		if (bgmVolume_ < 0.0f)
 			bgmVolume_ = 0.0f;
 		Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
