@@ -134,7 +134,7 @@ private: // メンバ変数（関数）
 	float fadeScele_ = 0.1f;
 
 	//----------スプライト関係-----------------//
-	KamataEngine::Sprite* fadeSprite_ = nullptr;
+	KamataEngine::Sprite* blackSprite_ = nullptr;
 	KamataEngine::Sprite* readySprite_ = nullptr;
 	KamataEngine::Sprite* startSprite_ = nullptr;
 	//----------スプライト関係-----------------//

@@ -87,9 +87,10 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	// ----------------------------フェード初期化---------------------------- //
 	uint32_t blackTex = TextureManager::Load("./Resources/Title/fadeTexture.png");
-	fadeSprite_ = Sprite::Create(blackTex, {640, 360});
-	fadeSprite_->SetAnchorPoint({0.5f, 0.5f});
-	fadeSprite_->SetSize({1280.0f, 720.0f});
+	blackSprite_ = Sprite::Create(blackTex, {640, 360});
+	blackSprite_->SetAnchorPoint({0.5f, 0.5f});
+	blackSprite_->SetSize({1280.0f, 720.0f});
+	blackSprite_->SetColor({0, 0, 0, 1}); // 真っ黒固定
 
 	isFadingIn_ = true;
 	fadeScele_ = 4.0f;
@@ -104,26 +105,17 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	startSprite_ = Sprite::Create(startTex, {640, 360});
 	startSprite_->SetAnchorPoint({0.5f, 0.5f});
 	startSprite_->SetSize({400, 200});
+
+	isFadingIn_ = false;
+	isStarting_ = true; // スタート演出開始
+	startTimer_ = 0;
+	readyScale_ = 0.0f;
+	readyAlpha_ = 0.0f;
+	startScale_ = 0.0f;
+	startAlpha_ = 0.0f;
 }
 
 void GameScene::Update() {
-
-	// ----------------------------フェード処理---------------------------- //
-	if (isFadingIn_) {
-		fadeScele_ -= 0.05f;
-		fadeSprite_->SetSize({1280.0f * fadeScele_, 720.0f * fadeScele_});
-
-		if (fadeScele_ <= 0.1f) {
-			isFadingIn_ = false;
-			isStarting_ = true; // スタート演出開始
-			startTimer_ = 0;
-			readyScale_ = 0.0f;
-			readyAlpha_ = 0.0f;
-			startScale_ = 0.0f;
-			startAlpha_ = 0.0f;
-		}
-		return;
-	}
 
 	// ----------------------------スタート演出---------------------------- //
 	if (isStarting_) {
@@ -209,7 +201,7 @@ void GameScene::Draw() {
 	// ----------------------------フェード描画---------------------------- //
 	if (isFadingIn_) {
 		Sprite::PreDraw(commandList);
-		fadeSprite_->Draw();
+		blackSprite_->Draw();
 		Sprite::PostDraw();
 	}
 
@@ -217,9 +209,13 @@ void GameScene::Draw() {
 	if (isStarting_) {
 		Sprite::PreDraw(commandList);
 
+		// 黒背景を最初に描画（固定）
+		blackSprite_->Draw();
+
+		// Ready / Start の文字だけをアルファでフェード
 		if (startTimer_ < 120) {
 			readySprite_->SetSize({400 * readyScale_, 200 * readyScale_});
-			readySprite_->SetColor({1, 1, 1, readyAlpha_});
+			readySprite_->SetColor({1, 1, 1, readyAlpha_}); // アルファ値でフェード
 			readySprite_->Draw();
 		} else if (startTimer_ < 200) {
 			startSprite_->SetSize({400 * startScale_, 200 * startScale_});
