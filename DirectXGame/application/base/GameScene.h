@@ -130,9 +130,16 @@ private: // メンバ変数（関数）
 	bool isBackgroundStarted_ = false;
 
 	// フェード用
-	bool isFadingIn_ =false;
+	bool isFadingIn_ = false;
 	float fadeScele_ = 0.1f;
 	KamataEngine::Sprite* fadeSprite_ = nullptr;
+
+	bool isStarting_ = false;   // スタート演出中かどうか
+	bool isGameActive_ = false; // プレイヤー・敵が動ける状態か
+	int startTimer_ = 0;        // スタート演出用タイマー
+
+	KamataEngine::Sprite* readySprite_ = nullptr;
+	KamataEngine::Sprite* startSprite_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

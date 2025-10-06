@@ -91,41 +91,68 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	isFadingIn_ = true;
 	fadeScele_ = 4.0f;
+
+	uint32_t readyTex = TextureManager::Load("./Resources/UI/Ready.png");
+	readySprite_ = Sprite::Create(readyTex, {640, 360});
+	readySprite_->SetAnchorPoint({0.5f, 0.5f});
+
+	uint32_t startTex = TextureManager::Load("./Resources/UI/Start.png");
+	startSprite_ = Sprite::Create(startTex, {640, 360});
+	startSprite_->SetAnchorPoint({0.5f, 0.5f});
 }
 
 void GameScene::Update() {
 
 	// ----------------------------フェード処理---------------------------- //
 	if (isFadingIn_) {
-		fadeScele_ -= 0.05f; // 縮小していく（値は速度調整）
+		fadeScele_ -= 0.05f;
 		fadeSprite_->SetSize({1280.0f * fadeScele_, 720.0f * fadeScele_});
 
-		// 一定まで小さくなったらフェード完了
 		if (fadeScele_ <= 0.1f) {
 			isFadingIn_ = false;
+			isStarting_ = true; // ← スタート演出を開始
+			startTimer_ = 0;
 		}
+		return; // フェード中は他の更新を止める
 	}
 
-	// フェーズマネージャー更新
-	phaseManager_->Update();
+	// ----------------------------スタート演出処理---------------------------- //
+	if (isStarting_) {
+		startTimer_++;
 
-	cameraManager_->Update();
-	cameraManager_->TransferMatrix();
-
-	// クリア判定
-	if (enemyManager_->IsAllEnemyDefeated()) {
-		nextScene_ = SceneID::Clear; // フラグを立てるだけ
+		// 60フレーム = 約1秒で「Ready」
+		// 120フレーム = 約2秒で「Start」
+		// 180フレーム以降にゲーム開始
+		if (startTimer_ == 60) {
+			// Ready表示を出すならここ
+		} else if (startTimer_ == 120) {
+			// Start表示を出すならここ
+		} else if (startTimer_ >= 180) {
+			isStarting_ = false;
+			isGameActive_ = true; // ← ここからプレイヤー・敵が動く
+		}
+		return; // 演出中はゲームロジックを止める
 	}
 
-	// ゲームオーバー判定
-	if (player_->IsDead()) {
-		nextScene_ = SceneID::GameOver; // フラグを立てるだけ
-	}
+	// ----------------------------ゲーム本編処理---------------------------- //
+	if (isGameActive_) {
 
-	// Update の最後で切り替え
-	if (nextScene_ != SceneID::None) {
-		sceneManager_->ChangeScene(nextScene_);
-		nextScene_ = SceneID::None; // フラグをリセット
+		phaseManager_->Update(); // 敵・プレイヤー等を動かす
+		cameraManager_->Update();
+		cameraManager_->TransferMatrix();
+
+		// --- クリア・ゲームオーバー判定 ---
+		if (enemyManager_->IsAllEnemyDefeated()) {
+			nextScene_ = SceneID::Clear;
+		}
+		if (player_->IsDead()) {
+			nextScene_ = SceneID::GameOver;
+		}
+
+		if (nextScene_ != SceneID::None) {
+			sceneManager_->ChangeScene(nextScene_);
+			nextScene_ = SceneID::None;
+		}
 	}
 }
 
@@ -161,6 +188,19 @@ void GameScene::Draw() {
 	if (isFadingIn_) {
 		Sprite::PreDraw(commandList);
 		fadeSprite_->Draw();
+		Sprite::PostDraw();
+	}
+
+	// スタート演出中
+	if (isStarting_) {
+		Sprite::PreDraw(commandList);
+
+		if (startTimer_ < 120) {
+			readySprite_->Draw();
+		} else if (startTimer_ < 180) {
+			startSprite_->Draw();
+		}
+
 		Sprite::PostDraw();
 	}
 }
