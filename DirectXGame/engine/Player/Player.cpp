@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include "Player.h"
-#include "../../Map/MapManager.h"
 #include "../../DirectXGame/etc/MathUtilityFortext.h"
+#include "../../Map/MapManager.h"
 #include <2d/DebugText.h>
 #include <algorithm>
 #include <cassert>
@@ -36,38 +36,26 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 /// 更新処理
 /// </summary>
 void Player::Update() {
-
-	// 移動入力
 	InputMove();
 
-	// ②マップ衝突チェック
-	//  衝突情報を初期化
+	// 衝突チェック情報を作成
 	CollisionMapInfo collisionMapInfo;
-
-	// 移動量に速度の値をコピー
 	collisionMapInfo.move = velocity_;
 
-	// マップ衝突チェック
+	// マップとの衝突判定
 	CheckMapCollision(collisionMapInfo);
 
-	// 判定結果を反映して移動させる
+	// 衝突結果を反映（位置を動かす）
 	CheckMapCollisionHit(collisionMapInfo);
 
-	// 天井に接触している場合の処理
+	// 天井ヒットなど
 	CellingContactHit(collisionMapInfo);
-
 	cellingSwitch(collisionMapInfo);
 
-	// 旋回制御
+	// 回転制御
 	AnimateTurn();
 
-	// 行列を更新して定数バッファに転送
-	// worldTransform_.UpdateMatrix();
-
-	// 移動
-	// worldTransform_.translation_ += collisionMapInfo.move;
-
-	// 行列計算
+	// 行列更新
 	worldTransform_.UpdateMatrix();
 }
 
@@ -77,108 +65,38 @@ void Player::Update() {
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
 
 void Player::InputMove() {
+	auto* input = Input::GetInstance();
 
-	// 移動入力
+	const float moveSpeed = 0.2f;    // 横移動速度
+	const float gravity = 0.03f;     // 重力加速度
+	const float jumpPower = 0.5f;    // ジャンプ力
+	const float maxFallSpeed = 1.0f; // 落下速度上限
 
-	// 接地状態
-	if (onGround_) {
-		// 左右移動
-		if (Input::GetInstance()->PushKey(DIK_D) || Input::GetInstance()->PushKey(DIK_A)) {
-			// 左右加速
-			Vector3 acceleration = {};
-			if (Input::GetInstance()->PushKey(DIK_D)) {
-				// 左移動中の右入力
-				if (velocity_.x < 0.0f) {
-					// 速度と逆方向に入力中は急ブレーキ
-					velocity_.x *= (1.0f - kAcceleration);
-				}
-				acceleration.x += kAcceleration;
-				// 左右状態切り替え
-				if (lrDirection_ != LRDirection::kRight) {
-					lrDirection_ = LRDirection::kRight;
+	// 横移動（地上・空中問わず）
+	velocity_.x = 0.0f; // 押してないときは止まる
 
-					// 旋回開始時の角度を記録する
-					turnFirstRotationY_ = worldTransform_.rotation_.y;
-					// 旋回タイマーに時間を設定する
-					turnTimer_ = kTimeTurn;
-				}
-
-			} else if (Input::GetInstance()->PushKey(DIK_A)) {
-
-				// 右移動中の左入力
-				if (velocity_.x > 0.0f) {
-					// 速度と逆方向に入力中は急ブレーキ
-					velocity_.x *= (1.0f - kAcceleration);
-				}
-				if (lrDirection_ != LRDirection::kLeft) {
-					lrDirection_ = LRDirection::kLeft;
-
-					// 旋回開始時の角度を記録する
-					turnFirstRotationY_ = worldTransform_.rotation_.y;
-					// 旋回タイマーに時間を設定する
-					turnTimer_ = kTimeTurn;
-				}
-
-				acceleration.x -= kAcceleration;
-			}
-
-			// 加速/減速
-			velocity_ += acceleration;
-
-			// ダッシュ入力チェック
-			float currentMaxSpeed = kLimitRunSpeed;
-			if (Input::GetInstance()->PushKey(DIK_LSHIFT)) {
-				currentMaxSpeed = kLimitDashSpeed;
-			}
-
-			// x方向の速度を制限
-			velocity_.x = std::clamp(velocity_.x, -currentMaxSpeed, currentMaxSpeed);
-
-		} else {
-			// 非入力時は移動減衰をかける（kAccelerationは速度減衰率）
-			velocity_.x *= (1.0f - kAttenuation);
-		}
-		// ジャンプ入力
-		if (Input::GetInstance()->PushKey(DIK_W) or Input::GetInstance()->PushKey(DIK_SPACE)) {
-			// ジャンプ初速
-			velocity_ += Vector3(0, kJumpAcceleration, 0);
-		}
-
-		// ジャンプ開始
-		if (velocity_.y > 0.0f) {
-			// 空中状態に移行
-			onGround_ = false;
-		}
-
-	} // 空中
-	else {
-		// 落下速度
-		velocity_ += Vector3(0, -kGravityAcceleration, 0);
-		// 落下速度制限
-		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+	if (input->PushKey(DIK_D)) {
+		velocity_.x = moveSpeed;
+		lrDirection_ = LRDirection::kRight;
+		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+	} else if (input->PushKey(DIK_A)) {
+		velocity_.x = -moveSpeed;
+		lrDirection_ = LRDirection::kLeft;
+		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
 	}
 
-	bool landing = false;
+	// ジャンプ（地上でのみ反応）
+	if (onGround_ && (input->TriggerKey(DIK_W) || input->TriggerKey(DIK_SPACE))) {
+		velocity_.y = jumpPower;
+		onGround_ = false;
+	}
 
-	// 地面との当たり判定
-	// 降下中？
-	// if (velocity_.y < 0) {
-	//	// Y座標が地面以下になったら着地
-	//	if (worldTransform_.translation_.y <= 1.0f) {
-	//		landing = true;
-	//	}
-	//}
-	//
-	// 着地
-	if (landing) {
-		// めり込み排斥
-		worldTransform_.translation_.y = 1.0f;
-		// 摩擦で横方向速度が減衰する
-		velocity_.x *= (1.0f - kAttenuation);
-		// 下方向速度をリセット
-		velocity_.y = 0.0f;
-		// 接地状態
-		onGround_ = true;
+	// 重力（空中時のみ適用）
+	if (!onGround_) {
+		velocity_.y -= gravity;
+		if (velocity_.y < -maxFallSpeed) {
+			velocity_.y = -maxFallSpeed;
+		}
 	}
 }
 
@@ -438,10 +356,6 @@ void Player::cellingSwitch(const CollisionMapInfo& info) {
 		}
 	}
 }
-//
-// void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {}
-//
-// void Player::CheckMapCollisionRight(CollisionMapInfo& info) {}
 
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
 

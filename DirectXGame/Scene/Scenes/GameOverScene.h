@@ -1,6 +1,6 @@
 #pragma once
-#include "KamataEngine.h"
 #include "../../Scene/SceneManager/Scene.h"
+#include "KamataEngine.h"
 
 class DirectXCommon; // 前方宣言
 class Input;         // 前方宣言
@@ -34,4 +34,7 @@ private:
 	float blinkAlpha_;
 
 	int frameCount_ = 0;
+
+	int waitTimer_ = 0;
+	int waitAfterFade_ = 0;
 };

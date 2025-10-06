@@ -21,8 +21,20 @@ private:
 	KamataEngine::Input* input_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 
-	uint32_t clearTextureHandle_ = 0;
-	KamataEngine::Sprite* clearSprite_ = nullptr;
+	uint32_t ClearTextureHandle_ = 0;
+	uint32_t ClearTextureHandle2_ = 0;
+	KamataEngine::Sprite* ClearSprite_ = nullptr;
+	KamataEngine::Sprite* pressSpaceSprite_ = nullptr;
+
+	// フェードアウト用
+	KamataEngine::Sprite* fadeSprite_ = nullptr;
+	float fadeAlpha_;
+	bool isFadingOut_;
+	bool isFadingIn_;
+	float blinkAlpha_;
 
 	int frameCount_ = 0;
+
+	int waitTimer_ = 0;
+	int waitAfterFade_ = 0;
 };
