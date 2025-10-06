@@ -1,3 +1,5 @@
+#define NOMINMAX
+#define NOMINMIN
 #include "GameScene.h"
 #include "../../DirectXGame/etc/MathUtilityForText.h"
 #include <base/TextureManager.h>
@@ -92,13 +94,16 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	isFadingIn_ = true;
 	fadeScele_ = 4.0f;
 
+	// Ready / Start テクスチャ
 	uint32_t readyTex = TextureManager::Load("./Resources/UI/Ready.png");
 	readySprite_ = Sprite::Create(readyTex, {640, 360});
 	readySprite_->SetAnchorPoint({0.5f, 0.5f});
+	readySprite_->SetSize({400, 200}); // 適当な初期サイズ
 
 	uint32_t startTex = TextureManager::Load("./Resources/UI/Start.png");
 	startSprite_ = Sprite::Create(startTex, {640, 360});
 	startSprite_->SetAnchorPoint({0.5f, 0.5f});
+	startSprite_->SetSize({400, 200});
 }
 
 void GameScene::Update() {
@@ -110,38 +115,56 @@ void GameScene::Update() {
 
 		if (fadeScele_ <= 0.1f) {
 			isFadingIn_ = false;
-			isStarting_ = true; // ← スタート演出を開始
+			isStarting_ = true; // スタート演出開始
 			startTimer_ = 0;
+			readyScale_ = 0.0f;
+			readyAlpha_ = 0.0f;
+			startScale_ = 0.0f;
+			startAlpha_ = 0.0f;
 		}
-		return; // フェード中は他の更新を止める
+		return;
 	}
 
-	// ----------------------------スタート演出処理---------------------------- //
+	// ----------------------------スタート演出---------------------------- //
 	if (isStarting_) {
 		startTimer_++;
 
-		// 60フレーム = 約1秒で「Ready」
-		// 120フレーム = 約2秒で「Start」
-		// 180フレーム以降にゲーム開始
-		if (startTimer_ == 60) {
-			// Ready表示を出すならここ
-		} else if (startTimer_ == 120) {
-			// Start表示を出すならここ
-		} else if (startTimer_ >= 180) {
-			isStarting_ = false;
-			isGameActive_ = true; // ← ここからプレイヤー・敵が動く
+		// Ready表示（0〜120フレーム）
+		if (startTimer_ < 120) {
+			float t = startTimer_ / 120.0f;
+			readyScale_ = std::min(1.2f, t * 1.5f); // だんだん拡大
+			readyAlpha_ = std::min(1.0f, t * 2.0f); // フェードイン
+
+			// 徐々にフェードアウト（後半）
+			if (startTimer_ > 90) {
+				readyAlpha_ = std::max(0.0f, 1.0f - (startTimer_ - 90) / 30.0f);
+			}
 		}
-		return; // 演出中はゲームロジックを止める
+		// Start表示（120〜200フレーム）
+		else if (startTimer_ >= 120 && startTimer_ < 200) {
+			float t = (startTimer_ - 120) / 80.0f;
+			startScale_ = std::min(1.3f, t * 1.6f);
+			startAlpha_ = std::min(1.0f, t * 2.0f);
+
+			if (startTimer_ > 170) {
+				startAlpha_ = std::max(0.0f, 1.0f - (startTimer_ - 170) / 30.0f);
+			}
+		}
+		// 終了
+		else if (startTimer_ >= 200) {
+			isStarting_ = false;
+			isGameActive_ = true; // ← ゲーム開始
+		}
+
+		return; // スタート演出中はゲームロジック停止
 	}
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
-
-		phaseManager_->Update(); // 敵・プレイヤー等を動かす
+		phaseManager_->Update();
 		cameraManager_->Update();
 		cameraManager_->TransferMatrix();
 
-		// --- クリア・ゲームオーバー判定 ---
 		if (enemyManager_->IsAllEnemyDefeated()) {
 			nextScene_ = SceneID::Clear;
 		}
@@ -166,7 +189,6 @@ void GameScene::Draw() {
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 
-	// 常に描画
 	if (!player_->IsDead()) {
 		player_->Draw();
 	}
@@ -191,13 +213,17 @@ void GameScene::Draw() {
 		Sprite::PostDraw();
 	}
 
-	// スタート演出中
+	// ----------------------------スタート演出描画---------------------------- //
 	if (isStarting_) {
 		Sprite::PreDraw(commandList);
 
 		if (startTimer_ < 120) {
+			readySprite_->SetSize({400 * readyScale_, 200 * readyScale_});
+			readySprite_->SetColor({1, 1, 1, readyAlpha_});
 			readySprite_->Draw();
-		} else if (startTimer_ < 180) {
+		} else if (startTimer_ < 200) {
+			startSprite_->SetSize({400 * startScale_, 200 * startScale_});
+			startSprite_->SetColor({1, 1, 1, startAlpha_});
 			startSprite_->Draw();
 		}
 
