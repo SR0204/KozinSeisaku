@@ -1,10 +1,10 @@
 #pragma once
-#include "../../DirectXGame/Map/MapChipField.h"
-#include "../../DirectXGame/Map/SkyDome/SkyDome.h"
-#include "../DirectXGame/engine/Camera/CameraManager.h"
-#include "../DirectXGame/engine/Enemy/EnemyManager.h"
-#include "../DirectXGame/engine/Player/Player.h"
-#include "DeathParticles.h"
+#include "engine/Particle/DeathParticles.h"
+#include "engine/Map/MapChipField.h"
+#include "engine/Map/SkyDome/SkyDome.h"
+#include "../../DirectXGame/engine/Camera/CameraManager.h"
+#include "../../DirectXGame/engine/Enemy/EnemyManager.h"
+#include "../../DirectXGame/engine/Player/Player.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>

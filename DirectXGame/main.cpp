@@ -1,8 +1,8 @@
 #define NOMINMAX
-#include "../../DirectXGame/Scene/Scenes/TitleScene.h"
 #include "KamataEngine.h"
-#include "Scene/SceneManager/SceneManager.h"
 #include "application/base/GameScene.h"
+#include "engine/Scene/SceneManager/SceneManager.h"
+#include "engine/Scene/Scenes/TitleScene.h"
 #include <Windows.h>
 #include <iostream>
 

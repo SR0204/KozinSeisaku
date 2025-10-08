@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../../DeathParticles.h"
-#include "../../DirectXGame/Map/MapManager.h"
-#include "../../DirectXGame/Map/SkyDome/SkyDome.h"
-#include "../../PhaseManager.h"
-#include "../../Scene/SceneManager/SceneManager.h"
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Enemy/EnemyManager.h"
 #include "../../engine/Player/Player.h"
+#include "engine/Map/MapManager.h"
+#include "engine/Map/SkyDome/SkyDome.h"
+#include "engine/Particle/DeathParticles.h"
+#include "engine/Scene/SceneManager/PhaseManager.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
@@ -15,6 +14,7 @@
 #include <3d/WorldTransform.h>
 #include <audio/Audio.h>
 #include <base/DirectXCommon.h>
+#include <engine/Scene/SceneManager/SceneManager.h>
 #include <input/Input.h>
 #include <vector>
 

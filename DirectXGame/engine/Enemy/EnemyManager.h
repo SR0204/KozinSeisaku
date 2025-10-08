@@ -1,7 +1,7 @@
 #pragma once
-#include "../../DirectXGame/Map/MapChipField.h"
 #include "../../engine/Player/Player.h"
 #include "Enemy.h"
+#include "engine/Map/MapChipField.h"
 #include <vector>
 
 class EnemyManager {

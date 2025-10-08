@@ -16,55 +16,121 @@
     <Filter Include="シェーダー ファイル">
       <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Game">
+      <UniqueIdentifier>{b82a57c9-482b-4475-b84b-49145415cdf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scene">
+      <UniqueIdentifier>{8743f1f4-ac9c-40d6-9e20-56b41321f711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\etc">
+      <UniqueIdentifier>{14d6a73d-585e-4828-ba33-e886a8fd368b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\etc">
+      <UniqueIdentifier>{d8bf763a-02e4-46ba-9b2b-cd585fec6f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game">
+      <UniqueIdentifier>{c2143546-3b05-4bd3-9b11-acf9d225f33b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scene">
+      <UniqueIdentifier>{c39a04b2-98fd-47fe-bde1-8df23c17f737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\Camera">
+      <UniqueIdentifier>{6279a8ab-719b-4833-bbef-31705f263b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\Enemys">
+      <UniqueIdentifier>{5b5e2dc3-3b3d-4357-9c72-0c9fa220e979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\Stage">
+      <UniqueIdentifier>{3a37e556-1fdc-4789-acb1-465a4ef8bb83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\Player">
+      <UniqueIdentifier>{1889e58f-2d2a-48fa-8522-12d3974330be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scene\Manager">
+      <UniqueIdentifier>{68a919b7-0b22-4f46-9afd-a27409762e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scene\Scenes">
+      <UniqueIdentifier>{f307c6b3-541b-440d-9900-9b9e1afcf224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\Particle">
+      <UniqueIdentifier>{d50aae50-9163-4d2f-8d3b-1493fd6398ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game\Camera">
+      <UniqueIdentifier>{f0a2cc6e-a8ae-4236-9b10-8e8f7cb28d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game\Enemy">
+      <UniqueIdentifier>{41cd3a76-1f8f-49e3-99aa-4e2d83eaf4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game\Stage">
+      <UniqueIdentifier>{c4fc4f80-5591-4765-be4d-d48293bd7053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game\Player">
+      <UniqueIdentifier>{919f7203-144b-491a-9224-cb2f05a02c95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scene\Manager">
+      <UniqueIdentifier>{d27d34f3-b2af-4f2f-a6ae-6b881c64d5f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scene\Scenes">
+      <UniqueIdentifier>{32241716-bc28-4274-adfd-22b001649ea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game\Particle">
+      <UniqueIdentifier>{d57be713-7e20-406a-9cdc-2364d9e6bb7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Enemy\Enemy.cpp">
+      <Filter>ソース ファイル\Game\Enemys</Filter>
     </ClCompile>
-    <ClCompile Include="MapChipField.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Enemy\EnemyManager.cpp">
+      <Filter>ソース ファイル\Game\Enemys</Filter>
     </ClCompile>
-    <ClCompile Include="MathUtilityForText.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Player\Player.cpp">
+      <Filter>ソース ファイル\Game\Player</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="etc\MathUtilityForText.cpp">
+      <Filter>ソース ファイル\etc</Filter>
     </ClCompile>
-    <ClCompile Include="SkyDome.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="etc\worldTransformEx.cpp">
+      <Filter>ソース ファイル\etc</Filter>
     </ClCompile>
-    <ClCompile Include="CameraController.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Map\SkyDome\SkyDome.cpp">
+      <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
-    <ClCompile Include="worldTransformEx.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Map\MapChipField.cpp">
+      <Filter>ソース ファイル\Game\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Map\MapManager.cpp">
+      <Filter>ソース ファイル\Game\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="MapManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Camera\CameraController.cpp">
+      <Filter>ソース ファイル\Game\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Camera\CameraManager.cpp">
+      <Filter>ソース ファイル\Game\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="PhaseManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Scene\SceneManager\SceneManager.cpp">
+      <Filter>ソース ファイル\Scene\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CameraManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Scene\SceneManager\PhaseManager.cpp">
+      <Filter>ソース ファイル\Scene\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="DeathParticles.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Scene\Scenes\GameOverScene.cpp">
+      <Filter>ソース ファイル\Scene\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\Scene\Scenes\ClearScene.cpp">
+      <Filter>ソース ファイル\Scene\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="ChangeScene.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="application\base\GameScene.cpp">
+      <Filter>ソース ファイル\Scene\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Scene\Scenes\TitleScene.cpp">
+      <Filter>ソース ファイル\Scene\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Particle\DeathParticles.cpp">
+      <Filter>ソース ファイル\Game\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,50 +183,65 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Player.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="etc\AABB.h">
+      <Filter>ヘッダー ファイル\etc</Filter>
     </ClInclude>
-    <ClInclude Include="MapChipField.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="etc\MathUtilityForText.h">
+      <Filter>ヘッダー ファイル\etc</Filter>
     </ClInclude>
-    <ClInclude Include="MathUtilityForText.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\Game\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Enemy\EnemyManager.h">
+      <Filter>ヘッダー ファイル\Game\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="SkyDome.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Player\Player.h">
+      <Filter>ヘッダー ファイル\Game\Player</Filter>
     </ClInclude>
-    <ClInclude Include="CameraController.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Map\MapChipField.h">
+      <Filter>ヘッダー ファイル\Game\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Map\MapManager.h">
+      <Filter>ヘッダー ファイル\Game\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Map\SkyDome\SkyDome.h">
+      <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
-    <ClInclude Include="MapManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Map\StageID.h">
+      <Filter>ヘッダー ファイル\Game\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Camera\CameraController.h">
+      <Filter>ヘッダー ファイル\Game\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="PhaseManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Camera\CameraManager.h">
+      <Filter>ヘッダー ファイル\Game\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="CameraManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Scene\SceneManager\PhaseManager.h">
+      <Filter>ヘッダー ファイル\Scene\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="DeathParticles.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Scene\SceneManager\SceneManager.h">
+      <Filter>ヘッダー ファイル\Scene\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Scene\Scenes\ClearScene.h">
+      <Filter>ヘッダー ファイル\Scene\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="ChangeScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\Scene\Scenes\GameOverScene.h">
+      <Filter>ヘッダー ファイル\Scene\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="application\base\GameScene.h">
+      <Filter>ヘッダー ファイル\Scene\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Scene\Scenes\TitleScene.h">
+      <Filter>ヘッダー ファイル\Scene\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Scene\SceneManager\SceneID.h">
+      <Filter>ヘッダー ファイル\Scene\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Scene\SceneManager\Scene.h">
+      <Filter>ヘッダー ファイル\Scene\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Particle\DeathParticles.h">
+      <Filter>ヘッダー ファイル\Game\Particle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
