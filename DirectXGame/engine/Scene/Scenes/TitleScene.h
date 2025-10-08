@@ -1,6 +1,6 @@
 #pragma once
-#include "KamataEngine.h"
 #include "../../Scene/SceneManager/Scene.h"
+#include "KamataEngine.h"
 
 class DirectXCommon; // 前方宣言
 class Input;         // 前方宣言
@@ -45,6 +45,11 @@ private:
 	int frameCount_ = 0;     // アニメーション用フレームカウント
 	float fadeAlpha_ = 0.0f; // 画面暗転のアルファ値
 	int bounceTimer_ = 0;    // ロゴバウンド用タイマー
+
+	// バウンド用
+	float bounceAmplitude_;
+	const float bounceDecay_ = 0.9f;
+	bool isBounceFinished_ = false;
 
 	// フェード用スプライト
 	KamataEngine::Sprite* fadeSprite_ = nullptr;

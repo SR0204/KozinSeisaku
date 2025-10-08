@@ -49,6 +49,10 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
 	isFadingOut_ = false;
 	fadeAlpha_ = 0.0f;
+
+	// バウンド初期化
+	bounceAmplitude_ = 15.0f;
+	isBounceFinished_ = false;
 }
 
 void TitleScene::Update() {
@@ -69,18 +73,36 @@ void TitleScene::Update() {
 	// ロゴの落下＆バウンド
 	Vector2 position = sprite2_->GetPosition();
 	const float targetY = 100.0f;
-	const float speed = 1.0f;
+	const float fallSpeed = 5.0f;
 
-	if (position.y < targetY) {
-		position.y += speed;
-		if (position.y > targetY) {
-			position.y = targetY;
-			bounceTimer_ = 30;
+	// 落下処理（まだ一度もバウンドしていない場合のみ）
+	if (!isBounceFinished_) {
+		if (position.y < targetY && bounceTimer_ == 0) {
+			position.y += fallSpeed;
+			if (position.y >= targetY) {
+				position.y = targetY;
+				bounceTimer_ = 60;        // バウンド開始
+				bounceAmplitude_ = 15.0f; // バウンド高さ初期化
+			}
 		}
-	} else if (bounceTimer_ > 0) {
-		position.y += sin(bounceTimer_ * 0.3f) * 2.0f;
-		bounceTimer_--;
+		// バウンド処理
+		else if (bounceTimer_ > 0) {
+			float t = (60 - bounceTimer_) / 10.0f;
+			position.y = targetY - std::abs(std::sin(t)) * bounceAmplitude_;
+			bounceAmplitude_ *= bounceDecay_; // 徐々に減衰
+			bounceTimer_--;
+			// バウンド終了条件（揺れが十分小さくなったら）
+			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.1f) {
+				isBounceFinished_ = true;
+				position.y = targetY;
+			}
+		}
+	} else {
+		// 完全に止まったあとに軽くゆらゆら（ポップ演出）
+		position.y = targetY + std::sin(frameCount_ * 0.1f) * 5.0f;
+		position.x = std::sin(frameCount_ * 0.1f) * 10.0f; // 横揺れ
 	}
+
 	sprite2_->SetPosition(position);
 
 	// フェードアウト処理
