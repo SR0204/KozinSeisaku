@@ -12,7 +12,7 @@ TitleScene::TitleScene() : bgmHandle_(-1), bgmVoiceHandle_(-1), bgmVolume_(1.0f)
 TitleScene::~TitleScene() {
 	delete sprite_;
 	delete sprite2_;
-	delete BackGround_;
+	delete BackGround_[1];
 
 	if (bgmVoiceHandle_ != -1) {
 		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
@@ -30,7 +30,10 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
 	sprite_ = KamataEngine::Sprite::Create(TitleTextureHandle_, {0, 0});
-	BackGround_ = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {0, 0});
+
+	// === 背景スプライトを2枚作る ===
+	BackGround_[0] = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {0, 0});
+	BackGround_[1] = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {1280, 0}); // 右にもう1枚配置
 
 	fadeSprite_ = KamataEngine::Sprite::Create(fadeTextureHandle_, {0, 0});
 	fadeSprite_->SetSize({1280, 720});
@@ -40,7 +43,7 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	titleModel_ = KamataEngine::Model::CreateFromOBJ("Title", true);
 	titleTransform_.Initialize();
 
-	// 🎯 正面向きに調整
+	// 正面向きに調整
 	titleTransform_.rotation_.y = -1.5f;
 
 	titleTransform_.scale_ = {3.0f, 3.0f, 3.0f};
@@ -63,11 +66,11 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	bounceTimer_ = 0;
 	isBounceFinished_ = false;
 
-	// === 💡 ライト設定 ===
+	// ===  ライト設定 ===
 	lightGroup_.reset(KamataEngine::LightGroup::Create());
 	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.2f, 1.1f, 1.0f});
-	lightGroup_->SetAmbientColor({0.7f, 0.7f, 0.8f});
+	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
+	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
 
 	titleModel_->SetLightGroup(lightGroup_.get());
 }
@@ -83,8 +86,10 @@ void TitleScene::Update() {
 	// === 点滅 ===
 	if (isTitle_) {
 		blinkTimer_++;
-		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.5f + 0.5f);
-		sprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
+		// 0.5〜1.0の範囲でふんわり明るさ変化（消えない）
+		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.25f + 0.75f);
+		// 色も少し明るく（RGB1.2倍）してポップさUP
+		sprite_->SetColor({1.2f, 1.2f, 1.2f, alpha});
 	}
 
 	// === バウンド演出 ===
@@ -111,9 +116,9 @@ void TitleScene::Update() {
 		}
 	} else {
 		// ✨ ゆらゆらアニメ
-		titleTransform_.rotation_.x = std::sin(frameCount_ * 0.02f) * 0.1f; // 上下にちょっと傾く
-		titleTransform_.rotation_.y = -1.5f;                                // 初期向きを維持
-		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.05f) * 0.2f;
+		titleTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
+		titleTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
+		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
 	}
 
 	titleTransform_.UpdateMatrix();
@@ -138,11 +143,22 @@ void TitleScene::Update() {
 
 	// === ライト回転（ポップに動かす） ===
 	Vector3 lightDir;
-	lightDir.x = std::cos(frameCount_ * 0.02f) * 0.5f;
+	lightDir.x = std::cos(frameCount_ * 0.01f) * 0.6f;
 	lightDir.y = -1.0f;
-	lightDir.z = std::sin(frameCount_ * 0.02f) * 0.5f;
+	lightDir.z = std::sin(frameCount_ * 0.01f) * 0.6f;
 	lightGroup_->SetDirLightDir(0, lightDir);
 	lightGroup_->Update();
+
+	// === 背景をループスクロール ===
+	for (int i = 0; i < 2; i++) {
+		Vector2 pos = BackGround_[i]->GetPosition();
+		pos.x -= bgScrollSpeed_; // 左方向にスクロール
+		// 左に完全に出たら右側に回す
+		if (pos.x <= -1280) {
+			pos.x += 1280 * 2;
+		}
+		BackGround_[i]->SetPosition(pos);
+	}
 }
 
 void TitleScene::Draw() {
@@ -157,8 +173,12 @@ void TitleScene::Draw() {
 
 	// === 2D ===
 	KamataEngine::Sprite::PreDraw(commandList);
-	if (BackGround_)
-		BackGround_->Draw();
+
+	// 背景を2枚描画
+	for (int i = 0; i < 2; i++) {
+		if (BackGround_[i])
+			BackGround_[i]->Draw();
+	}
 
 	if (isTitle_ && frameCount_ % 150 >= 30) {
 		sprite_->Draw();

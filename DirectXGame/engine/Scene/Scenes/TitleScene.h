@@ -28,12 +28,14 @@ private:
 	// スプライト
 	KamataEngine::Sprite* sprite_ = nullptr;     // PRESS SPACE
 	KamataEngine::Sprite* sprite2_ = nullptr;    // Title ロゴ
-	KamataEngine::Sprite* BackGround_ = nullptr; // 背景
 
 	// テクスチャハンドル
 	uint32_t TitleTextureHandle_ = 0;
 	KamataEngine::Model* TitleTextureHandle2_ = nullptr;
+
 	uint32_t TitleBackGroundTextureHandle_ = 0;
+	KamataEngine::Sprite* BackGround_[2];
+	float bgScrollSpeed_ = 1.0f; // スクロール速度
 
 	KamataEngine::Model* titleModel_ = nullptr;
 	KamataEngine::WorldTransform titleTransform_;
@@ -61,7 +63,7 @@ private:
 	KamataEngine::Sprite* fadeSprite_ = nullptr;
 	uint32_t fadeTextureHandle_ = 0;
 
-	//ライト設定用
+	// ライト設定用
 	KamataEngine::DirectionalLight light{};
 	std::unique_ptr<KamataEngine::LightGroup> lightGroup_;
 };
