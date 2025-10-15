@@ -3,6 +3,7 @@
 #include "../../Scene/SceneManager/SceneManager.h"
 #include <Audio/Audio.h>
 #include <cmath>
+#include <numbers>
 
 using namespace KamataEngine;
 
@@ -13,7 +14,6 @@ TitleScene::~TitleScene() {
 	delete sprite2_;
 	delete BackGround_;
 
-	// シーン終了時にBGM停止
 	if (bgmVoiceHandle_ != -1) {
 		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 	}
@@ -21,135 +21,151 @@ TitleScene::~TitleScene() {
 
 void TitleScene::Initialize(SceneManager* sceneManager) {
 	sceneManager_ = sceneManager;
-
 	dxCommon_ = KamataEngine::DirectXCommon::GetInstance();
 	input_ = KamataEngine::Input::GetInstance();
 
-	// テクスチャ読み込み
+	// === 2Dリソース ===
 	TitleTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
-	TitleTextureHandle2_ = TextureManager::Load("./Resources/Title/Title.png");
 	TitleBackGroundTextureHandle_ = TextureManager::Load("./Resources/Title/TitleBack.png");
-
-	// フェード用の黒画像をロード（1x1ピクセルでもOK）
 	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
 	sprite_ = KamataEngine::Sprite::Create(TitleTextureHandle_, {0, 0});
-	sprite2_ = KamataEngine::Sprite::Create(TitleTextureHandle2_, {0, -100}); // 上から落下
 	BackGround_ = KamataEngine::Sprite::Create(TitleBackGroundTextureHandle_, {0, 0});
 
-	// フェードスプライトは画面全体を覆う
 	fadeSprite_ = KamataEngine::Sprite::Create(fadeTextureHandle_, {0, 0});
-	fadeSprite_->SetSize({1280, 720});               // 画面サイズに拡大
-	fadeSprite_->SetColor({0.0f, 0.0f, 0.0f, 0.0f}); // 最初は透明
+	fadeSprite_->SetSize({1280, 720});
+	fadeSprite_->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
 
-	// BGMロード＆再生
+	// === 3Dモデル ===
+	titleModel_ = KamataEngine::Model::CreateFromOBJ("Title", true);
+	titleTransform_.Initialize();
+
+	// 🎯 正面向きに調整
+	titleTransform_.rotation_.y = -1.5f;
+
+	titleTransform_.scale_ = {3.0f, 3.0f, 3.0f};
+	titleTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	titleTransform_.UpdateMatrix();
+
+	Camera_.Initialize();
+
+	// === 音 ===
 	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
 	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
 	bgmVolume_ = 0.5f;
 	Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
+
 	isFadingOut_ = false;
 	fadeAlpha_ = 0.0f;
 
-	// バウンド初期化
+	// === バウンド設定 ===
 	bounceAmplitude_ = 15.0f;
+	bounceTimer_ = 0;
 	isBounceFinished_ = false;
+
+	// === 💡 ライト設定 ===
+	lightGroup_.reset(KamataEngine::LightGroup::Create());
+	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
+	lightGroup_->SetDirLightColor(0, {1.2f, 1.1f, 1.0f});
+	lightGroup_->SetAmbientColor({0.7f, 0.7f, 0.8f});
+
+	titleModel_->SetLightGroup(lightGroup_.get());
 }
 
 void TitleScene::Update() {
 	frameCount_++;
 
-	// スペースキーでフェードアウト開始
 	if (isTitle_ && input_->TriggerKey(DIK_SPACE)) {
 		isTitle_ = false;
 		isFadingOut_ = true;
 	}
 
-	// PRESS SPACE の点滅演出
+	// === 点滅 ===
 	if (isTitle_) {
-		float alpha = (sin(frameCount_ * 0.05f) * 0.5f + 0.5f);
+		blinkTimer_++;
+		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.5f + 0.5f);
 		sprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
 	}
 
-	// ロゴの落下＆バウンド
-	Vector2 position = sprite2_->GetPosition();
-	const float targetY = 100.0f;
-	const float fallSpeed = 5.0f;
+	// === バウンド演出 ===
+	const float targetY = 0.0f;
+	const float fallSpeed = 0.5f;
 
-	// 落下処理（まだ一度もバウンドしていない場合のみ）
 	if (!isBounceFinished_) {
-		if (position.y < targetY && bounceTimer_ == 0) {
-			position.y += fallSpeed;
-			if (position.y >= targetY) {
-				position.y = targetY;
-				bounceTimer_ = 60;        // バウンド開始
-				bounceAmplitude_ = 15.0f; // バウンド高さ初期化
+		if (titleTransform_.translation_.y > targetY && bounceTimer_ == 0) {
+			titleTransform_.translation_.y -= fallSpeed;
+			if (titleTransform_.translation_.y <= targetY) {
+				titleTransform_.translation_.y = targetY;
+				bounceTimer_ = 60;
+				bounceAmplitude_ = 1.0f;
 			}
-		}
-		// バウンド処理
-		else if (bounceTimer_ > 0) {
+		} else if (bounceTimer_ > 0) {
 			float t = (60 - bounceTimer_) / 10.0f;
-			position.y = targetY - std::abs(std::sin(t)) * bounceAmplitude_;
-			bounceAmplitude_ *= bounceDecay_; // 徐々に減衰
+			titleTransform_.translation_.y = targetY + std::abs(std::sin(t)) * bounceAmplitude_;
+			bounceAmplitude_ *= bounceDecay_;
 			bounceTimer_--;
-			// バウンド終了条件（揺れが十分小さくなったら）
-			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.1f) {
+			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.01f) {
 				isBounceFinished_ = true;
-				position.y = targetY;
+				titleTransform_.translation_.y = targetY;
 			}
 		}
 	} else {
-		// 完全に止まったあとに軽くゆらゆら（ポップ演出）
-		position.y = targetY + std::sin(frameCount_ * 0.1f) * 5.0f;
-		position.x = std::sin(frameCount_ * 0.1f) * 10.0f; // 横揺れ
+		// ✨ ゆらゆらアニメ
+		titleTransform_.rotation_.x = std::sin(frameCount_ * 0.02f) * 0.1f; // 上下にちょっと傾く
+		titleTransform_.rotation_.y = -1.5f;                                // 初期向きを維持
+		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.05f) * 0.2f;
 	}
 
-	sprite2_->SetPosition(position);
+	titleTransform_.UpdateMatrix();
 
-	// フェードアウト処理
+	// === フェード処理 ===
 	if (isFadingOut_) {
-		// 音量下げる
 		bgmVolume_ -= 0.1f;
 		if (bgmVolume_ < 0.0f)
 			bgmVolume_ = 0.0f;
 		Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
 
-		// 画面暗転のアルファ値更新
 		fadeAlpha_ += 0.02f;
 		if (fadeAlpha_ > 1.0f)
 			fadeAlpha_ = 1.0f;
-
 		fadeSprite_->SetColor({0.0f, 0.0f, 0.0f, fadeAlpha_});
 
-		// フェード完了後にシーン遷移
 		if (fadeAlpha_ >= 1.0f) {
 			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 			sceneManager_->ChangeScene(SceneID::Game);
 		}
 	}
+
+	// === ライト回転（ポップに動かす） ===
+	Vector3 lightDir;
+	lightDir.x = std::cos(frameCount_ * 0.02f) * 0.5f;
+	lightDir.y = -1.0f;
+	lightDir.z = std::sin(frameCount_ * 0.02f) * 0.5f;
+	lightGroup_->SetDirLightDir(0, lightDir);
+	lightGroup_->Update();
 }
 
 void TitleScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+	// === 3D ===
+	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+	if (titleModel_) {
+		titleModel_->Draw(titleTransform_, Camera_);
+	}
+	Model::PostDraw();
+
+	// === 2D ===
 	KamataEngine::Sprite::PreDraw(commandList);
-
-	// 背景
-	if (BackGround_) {
+	if (BackGround_)
 		BackGround_->Draw();
+
+	if (isTitle_ && frameCount_ % 150 >= 30) {
+		sprite_->Draw();
 	}
 
-	// タイトルキーとロゴ
-	if (isTitle_) {
-		if (frameCount_ % 150 >= 30) {
-			sprite_->Draw();
-		}
-		sprite2_->Draw();
-	}
-
-	// フェードアウト時の黒い幕
-	if (fadeSprite_) {
+	if (fadeSprite_)
 		fadeSprite_->Draw();
-	}
 
 	KamataEngine::Sprite::PostDraw();
 }
