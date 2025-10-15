@@ -23,8 +23,16 @@ private:
 
 	uint32_t gameOverTextureHandle_ = 0;
 	uint32_t gameOverTextureHandle2_ = 0;
-	KamataEngine::Sprite* gameOverSprite_ = nullptr;
 	KamataEngine::Sprite* pressSpaceSprite_ = nullptr;
+
+	//ゲームオーバー用
+	KamataEngine::Sprite* gameOverShadow_ = nullptr;
+	KamataEngine::Sprite* gameOverEdge_ = nullptr;
+	KamataEngine::Sprite* gameOverMain_ = nullptr;
+
+	// 背景
+	uint32_t gameOverBG_ = 0;
+	KamataEngine::Sprite* GameOverBgSprite_ = nullptr;
 
 	// フェードアウト用
 	KamataEngine::Sprite* fadeSprite_ = nullptr;
