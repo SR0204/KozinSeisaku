@@ -30,6 +30,7 @@ GameScene::~GameScene() {
 	delete mapManager_;
 }
 
+
 void GameScene::Initialize(SceneManager* sceneManager) {
 	sceneManager_ = sceneManager;
 
