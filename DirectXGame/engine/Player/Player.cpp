@@ -67,13 +67,19 @@ void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
 void Player::InputMove() {
 	auto* input = Input::GetInstance();
 
-	const float moveSpeed = 0.2f;    // 横移動速度
+	// 通常移動・ダッシュ移動
+	const float walkSpeed = 0.2f;    // 通常速度
+	const float dashSpeed = 0.4f;    // ダッシュ速度（Shift押下時）
 	const float gravity = 0.03f;     // 重力加速度
 	const float jumpPower = 0.5f;    // ジャンプ力
 	const float maxFallSpeed = 1.0f; // 落下速度上限
 
-	// 横移動（地上・空中問わず）
-	velocity_.x = 0.0f; // 押してないときは止まる
+	// Shiftキー押下でダッシュ
+	bool isDash = input->PushKey(DIK_LSHIFT) || input->PushKey(DIK_RSHIFT);
+	float moveSpeed = isDash ? dashSpeed : walkSpeed;
+
+	// 横移動
+	velocity_.x = 0.0f;
 
 	if (input->PushKey(DIK_D)) {
 		velocity_.x = moveSpeed;
@@ -85,15 +91,30 @@ void Player::InputMove() {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
 	}
 
-	// ジャンプ（地上でのみ反応）
+	// ジャンプ（地上でのみ）
 	if (onGround_ && (input->TriggerKey(DIK_W) || input->TriggerKey(DIK_SPACE))) {
 		velocity_.y = jumpPower;
 		onGround_ = false;
 	}
 
-	// 重力（空中時のみ適用）
+	// ヒップドロップ発動
+	if (!onGround_ && !isHipDrop_) {
+		if (input->TriggerKey(DIK_S) || input->TriggerKey(DIK_DOWN)) {
+			isHipDrop_ = true;
+			velocity_.y = std::min(velocity_.y, -0.2f); // 落下方向に少し勢いをつける程度
+		}
+	}
+
+	// 重力
 	if (!onGround_) {
-		velocity_.y -= gravity;
+		float currentGravity = gravity;
+
+		// ヒップドロップ中は重力を強くする
+		if (isHipDrop_) {
+			currentGravity = 0.1f; // 普段の約3倍の重力で加速していく
+		}
+
+		velocity_.y -= currentGravity;
 		if (velocity_.y < -maxFallSpeed) {
 			velocity_.y = -maxFallSpeed;
 		}
@@ -353,6 +374,13 @@ void Player::cellingSwitch(const CollisionMapInfo& info) {
 			velocity_.x *= (1.0f - kAttennuationLanding);
 			// Y速度をゼロにする
 			velocity_.y = 0.0f;
+
+			// ヒップドロップ中なら解除
+			if (isHipDrop_) {
+				isHipDrop_ = false;
+				// （任意）着地時にパーティクルを出すなど
+				// CreateHipDropEffect(); ← あればここで呼ぶ
+			}
 		}
 	}
 }
