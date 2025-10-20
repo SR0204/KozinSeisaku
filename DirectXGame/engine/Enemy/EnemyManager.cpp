@@ -24,17 +24,34 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
 	}
+
+	// デスパーティクル用モデル
+	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
 	for (Enemy* enemy : enemies_) {
 		enemy->Update(mapField); // MapChipField を渡して壁判定や重力処理を行う
 	}
+
+	for (auto it = deathParticles_.begin(); it != deathParticles_.end();) {
+		(*it)->Update();
+		if ((*it)->IsFinished()) {
+			delete *it;
+			it = deathParticles_.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 void EnemyManager::Draw() {
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
+	}
+
+	for (auto* p : deathParticles_) {
+		p->Draw();
 	}
 }
 
@@ -53,6 +70,11 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				// 踏んだ！即消し
 				enemy->SetAlive(false);
 				player->SetVelocityY(0.25f); // 軽くバウンド
+
+				// ここでデスパーティクルを生成
+				EnemyDeathParticles* p = new EnemyDeathParticles();
+				p->Initialize(enemyDeathParticleModel_, camera_, enemy->GetWorldPosition());
+				deathParticles_.push_back(p);
 			} else {
 				// 横や下から当たった場合
 				player->OnCollision(enemy);

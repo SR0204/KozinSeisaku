@@ -78,7 +78,6 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	//----------------------------マネージャー系統初期化----------------------------//
 
 	model_ = Model::Create();
-	// textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	skydome_ = new Skydome();
