@@ -24,8 +24,6 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 
-	KamataEngine::Camera* camera_;
-
 	// -----------------------------
 	// フェード用スプライト
 	// -----------------------------
@@ -47,12 +45,14 @@ private:
 	KamataEngine::Model* gameOverModel_ = nullptr;
 	KamataEngine::WorldTransform gameOverWT_;
 	KamataEngine::ObjectColor objectColor_;
+	KamataEngine::Camera* camera_;
+
+	float blinkAlpha_ = 1.0f;
 
 	// -----------------------------
-	// PRESS SPACE 3Dモデル
+	// GameOver背景 2Dモデル
 	// -----------------------------
-	KamataEngine::Model* pressSpaceModel_ = nullptr;
-	KamataEngine::WorldTransform pressSpaceWT_;
-	KamataEngine::ObjectColor pressSpaceColor_;
-	float blinkAlpha_ = 1.0f;
+	uint32_t GameOverBgSprite_ = 0;
+	KamataEngine::Sprite* BackGround_[2];
+	float bgScrollSpeed_ = 1.0f; // スクロール速度
 };

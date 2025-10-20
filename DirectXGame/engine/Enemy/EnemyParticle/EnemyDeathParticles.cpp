@@ -25,7 +25,6 @@ void EnemyDeathParticles::Initialize(Model* model, Camera* camera, const Vector3
 		wt = new WorldTransform();
 		wt->Initialize();
 		wt->translation_ = position;
-		wt->scale_ = {0.2f, 0.2f, 0.2f};
 	}
 
 	objectColor_.Initialize();
@@ -48,7 +47,7 @@ void EnemyDeathParticles::Update() {
 
 		// 徐々に縮小
 		float lifeRatio = counter_ / kDuration;
-		wt->scale_ = {0.2f * (1.0f - lifeRatio), 0.2f * (1.0f - lifeRatio), 0.2f * (1.0f - lifeRatio)};
+		wt->scale_ = {initialScale_ * (1.0f - lifeRatio), initialScale_ * (1.0f - lifeRatio), initialScale_ * (1.0f - lifeRatio)};
 	}
 
 	counter_ += 1.0f / 60.0f;

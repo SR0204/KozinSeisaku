@@ -30,4 +30,7 @@ private:
 	Vector4 color_{1, 1, 1, 1};
 	float counter_ = 0.0f;
 	bool isFinished_ = false;
+
+	//----------パーティクルの大きさ-------------//
+	float initialScale_ = 0.5f;
 };
