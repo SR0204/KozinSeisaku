@@ -24,7 +24,7 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 
-	KamataEngine::Camera camera_;
+	KamataEngine::Camera* camera_;
 
 	// -----------------------------
 	// フェード用スプライト

@@ -19,6 +19,9 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 
+	camera_ = new Camera();
+	camera_->Initialize();
+
 	// -----------------------------
 	// GameOver 3Dモデル読み込み
 	// -----------------------------
@@ -28,12 +31,12 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 	gameOverWT_.scale_ = {1.0f, 1.0f, 1.0f};
 
 	objectColor_.Initialize();
-	objectColor_.SetColor({1.0f, 0.2f, 0.2f, 1.0f});
+	objectColor_.SetColor({1.0f, 0.5f, 0.5f, 1.0f});
 
 	// -----------------------------
 	// PRESS SPACE 3Dモデル
 	// -----------------------------
-	pressSpaceModel_ = Model::CreateFromOBJ("GameOverPushKey", true);
+	//pressSpaceModel_ = Model::CreateFromOBJ("GameOverPushKey", true);
 	pressSpaceWT_.Initialize();
 	pressSpaceWT_.translation_ = {0.0f, -30.0f, 0.0f};
 	pressSpaceWT_.scale_ = {0.5f, 0.5f, 0.5f};
@@ -53,6 +56,9 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 
 void GameOverScene::Update() {
 	frameCount_++;
+
+	camera_->translation_ = {0.0f, 50.0f, -200.0f};
+	camera_->UpdateMatrix();
 
 	// ---------------- フェードイン ----------------
 	if (isFadingIn_) {
@@ -122,8 +128,8 @@ void GameOverScene::Draw() {
 	// -----------------------------
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
 	if (gameOverModel_)
-		gameOverModel_->Draw(gameOverWT_, camera_, &objectColor_);
-	if (pressSpaceModel_)
-		pressSpaceModel_->Draw(pressSpaceWT_, camera_, &pressSpaceColor_);
+		gameOverModel_->Draw(gameOverWT_, *camera_, &objectColor_);
+	/*if (pressSpaceModel_)
+		pressSpaceModel_->Draw(pressSpaceWT_, *camera_, &pressSpaceColor_);*/
 	Model::PostDraw();
 }
