@@ -18,7 +18,7 @@ public:
 	    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField,
 	    SceneManager* sceneManager);
 
-	void Update();
+	std::optional<SceneID> Update();
 
 	void Draw();
 
@@ -27,6 +27,8 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	Model* GetDeathParticleModel() const { return deathParticleModel_; }
+
+	bool IsDeathEffectFinished() const { return isDeathEffectFinished_; }
 
 private:
 	Phase phase_ = Phase::kTitle;
@@ -42,4 +44,9 @@ private:
 	DeathParticles* deathParticles_ = nullptr;
 	MapChipField* mapChipField_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
+
+	bool isChangingScene_ = false;
+	Vector3 deathPosition_;
+
+	bool isDeathEffectFinished_ = false;
 };

@@ -32,10 +32,10 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	// 存続時間(消滅までの時間)<秒>
-	static inline const float kDuration = 5.0f;
+	static inline const float kDuration = 0.8f;
 
 	// 移動の速さ
-	static inline const float kSpeed = 0.05f;
+	static inline const float kSpeed = 0.2f;
 
 	// 分割した1個分の角度
 	static inline const float kAngleUnit = 2 * std::numbers::pi_v<float> / kNumParticles;

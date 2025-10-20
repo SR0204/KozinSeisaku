@@ -159,15 +159,21 @@ void GameScene::Update() {
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
-		phaseManager_->Update();
+		// --- フェーズ更新 ---
+		auto nextScene = phaseManager_->Update();
+
 		cameraManager_->Update();
 		cameraManager_->TransferMatrix();
 
+		// --- 全敵撃破処理 ---
 		if (enemyManager_->IsAllEnemyDefeated()) {
 			nextScene_ = SceneID::Clear;
 		}
-		if (player_->IsDead()) {
-			nextScene_ = SceneID::GameOver;
+
+		// --- 死亡演出終了で返ってきたら遷移 ---
+		if (nextScene.has_value()) {
+			sceneManager_->ChangeScene(nextScene.value());
+			return;
 		}
 
 		if (nextScene_ != SceneID::None) {

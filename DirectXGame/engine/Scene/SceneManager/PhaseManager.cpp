@@ -18,7 +18,8 @@ void PhaseManager::Initialize(
 	phase_ = Phase::kPlay;
 }
 
-void PhaseManager::Update() {
+// PhaseManager.cpp
+std::optional<SceneID> PhaseManager::Update() {
 	switch (phase_) {
 	case Phase::kTitle:
 		break;
@@ -42,7 +43,10 @@ void PhaseManager::Update() {
 		isDead_ = player_->IsDead();
 		if (isDead_) {
 			phase_ = Phase::kDeath;
-			deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+			if (!deathParticleModel_) {
+				deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+			}
+			deathPosition_ = player_->GetWorldPosition();
 		}
 		break;
 
@@ -53,7 +57,7 @@ void PhaseManager::Update() {
 
 		if (!deathParticles_) {
 			deathParticles_ = new DeathParticles();
-			deathParticles_->Initialize(deathParticleModel_, cameraManager_->GetViewProjection(), player_->GetWorldPosition());
+			deathParticles_->Initialize(deathParticleModel_, cameraManager_->GetViewProjection(), deathPosition_);
 		}
 
 		deathParticles_->Update();
@@ -65,13 +69,16 @@ void PhaseManager::Update() {
 			}
 		}
 
-		// ★ パーティクル再生が終了したらシーン遷移
+		// パーティクル終了したら「GameOver」シーンを返す
 		if (deathParticles_->IsFinished()) {
-			sceneManager_->ChangeScene(SceneID::GameOver);
+			return SceneID::GameOver;
 		}
 		break;
 	}
+
+	return std::nullopt; // シーン切り替えなし
 }
+
 
 void PhaseManager::Draw() {
 	if (phase_ == Phase::kDeath && deathParticles_) {
