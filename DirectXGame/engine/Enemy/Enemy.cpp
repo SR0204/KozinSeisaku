@@ -12,7 +12,7 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	camera_ = camera;
 
 	// 初期回転（左向き）
-	worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	velocity_ = {kWalkSpeed, 0, 0};
 	direction_ = 1;
 
@@ -22,60 +22,66 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 }
 
 void Enemy::Update(MapChipField* mapField) {
-
 	if (collisionCooldown_ > 0)
 		collisionCooldown_--;
 
 	// ===== X方向の壁判定 =====
 	Vector3 nextPos = worldTransform_.translation_ + Vector3(velocity_.x, 0, 0);
-
-	// 進行方向の先端
 	Vector3 checkPos = nextPos;
 	checkPos.x += (velocity_.x > 0) ? kWidth / 2.0f : -kWidth / 2.0f;
-
 	MapChipField::IndexSet idx = mapField->GetMapChipIndexSetByPosition(checkPos);
 	if (mapField->GetMapchipTypeByIndex(idx.xIndex, idx.yIndex) == MapChipType::kBlock) {
-		// 壁 → ReverseDirection() を使う
 		ReverseDirection();
 	} else {
-		// 移動
 		worldTransform_.translation_.x = nextPos.x;
 	}
 
-	// ===== 左右の向き判定 =====
-	// 初期が左向きなので、右移動時は -90°, 左移動時は +90°
+	// ===== 向き =====
 	if (velocity_.x > 0) {
 		worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
 	} else if (velocity_.x < 0) {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	}
 
-	// ===== 重力適用 =====
+	// ===== 重力 =====
 	velocity_.y += kEnemyGravityAcceleration;
 	if (velocity_.y < kEnemyLimitFallSpeed) {
 		velocity_.y = kEnemyLimitFallSpeed;
 	}
 
-	// 足元座標
+	// ===== 地面チェック =====
 	Vector3 footPos = worldTransform_.translation_;
 	footPos.y -= kHeight / 2.0f;
 	MapChipField::IndexSet footIdx = mapField->GetMapChipIndexSetByPosition(footPos);
 
+	isOnGround_ = false;
 	if (mapField->GetMapchipTypeByIndex(footIdx.xIndex, footIdx.yIndex) == MapChipType::kBlock) {
-		// 地面あり → 高さをそろえて落下停止
 		MapChipField::Rect blockRect = mapField->GetRectByIndex(footIdx.xIndex, footIdx.yIndex);
 		worldTransform_.translation_.y = blockRect.top + kHeight / 2.0f;
 		velocity_.y = 0;
+		isOnGround_ = true;
 	} else {
-		// 落下
 		worldTransform_.translation_.y += velocity_.y;
 	}
 
-	// ===== アニメーション（歩行モーション） =====
+	// ===== 不規則ジャンプ処理 =====
+	jumpTimer_ += 1.0f / 60.0f;
+
+	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
+		// ランダムジャンプ力（0.3〜0.8）
+		float jumpPower = RandRange(0.3f, 0.8f);
+		velocity_.y = jumpPower;
+
+		// 次のジャンプまでの時間をランダムに設定（1〜3秒）
+		jumpInterval_ = RandRange(1.0f, 3.0f);
+
+		jumpTimer_ = 0.0f;
+	}
+
+	// ===== 歩行モーション =====
 	walkTimer_ += 1.0f / 60.0f;
 	worldTransform_.rotation_.x = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
 
-	// ===== 行列更新 =====
 	worldTransform_.UpdateMatrix();
 }
 

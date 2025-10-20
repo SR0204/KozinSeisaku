@@ -82,4 +82,13 @@ private:
 	bool isAlive_ = true;
 
 	int direction_ = 1; // 右向き = 1, 左向き = -1
+
+	float jumpTimer_ = 0.0f;    // ジャンプ間隔を計るタイマー
+	float jumpInterval_ = 2.0f; // 2秒ごとにジャンプ
+	bool isOnGround_ = false;   // 地面にいるかどうかのフラグ
+
+	// ==============================================
+	// min～max の範囲でランダムな float を返す関数
+	// ==============================================
+	float RandRange(float min, float max) { return min + (max - min) * (rand() / static_cast<float>(RAND_MAX)); }
 };
