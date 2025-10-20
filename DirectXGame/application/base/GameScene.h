@@ -135,18 +135,22 @@ private: // メンバ変数（関数）
 
 	//----------スプライト関係-----------------//
 	KamataEngine::Sprite* blackSprite_ = nullptr;
-	KamataEngine::Sprite* readySprite_ = nullptr;
 	KamataEngine::Sprite* startSprite_ = nullptr;
+
+	//----------スタートカウントダウンスプライト関係-------------//
+	KamataEngine::Sprite* Count1Sprite_ = nullptr;
+	KamataEngine::Sprite* Count2Sprite_ = nullptr;
+	KamataEngine::Sprite* Count3Sprite_ = nullptr;
+
 	//----------スプライト関係-----------------//
 
 	bool isStarting_ = false;   // スタート演出中かどうか
 	bool isGameActive_ = false; // プレイヤー・敵が動ける状態か
 	int startTimer_ = 0;        // スタート演出用タイマー
 
-	float readyScale_ = 0.0f;
-	float startScale_ = 0.0f;
-	float readyAlpha_ = 0.0f;
-	float startAlpha_ = 0.0f;
+	int currentCount_ = 3;
+	float currentScale_ = 1.0f;
+	float currentAlpha_ = 1.0f;
 
 	/// <summary>
 	/// ゲームシーン用
