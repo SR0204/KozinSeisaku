@@ -67,6 +67,7 @@ void Enemy::Update(MapChipField* mapField) {
 	// ===== 不規則ジャンプ処理 =====
 	jumpTimer_ += 1.0f / 60.0f;
 
+
 	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
 		// ランダムジャンプ力（0.3〜0.8）
 		float jumpPower = RandRange(0.3f, 0.8f);
