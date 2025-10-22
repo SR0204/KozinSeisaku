@@ -36,7 +36,7 @@ void Enemy::Update(MapChipField* mapField) {
 		worldTransform_.translation_.x = nextPos.x;
 	}
 
-	// ===== 向き（左右反転） =====
+	// ===== 向き =====
 	if (velocity_.x > 0) {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	} else if (velocity_.x < 0) {
