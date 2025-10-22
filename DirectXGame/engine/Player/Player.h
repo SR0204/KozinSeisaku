@@ -140,9 +140,6 @@ private: // 関数（メンバ変数）
 	// 最大速度制限
 	static inline const float kLimitRunSpeed = 0.1f;
 
-	// ダッシュスピード
-	const float kLimitDashSpeed = 0.35f;
-
 	LRDirection lrDirection_ = LRDirection::kRight;
 
 	// 旋回時間＜秒＞
@@ -168,4 +165,7 @@ private: // 関数（メンバ変数）
 	bool isDead_ = false;
 
 	KamataEngine::Camera* camera_ = nullptr;
+
+	bool isHipDrop_ = false;    // ヒップドロップ中かどうか
+	bool hipDropReady_ = false; // 空中で発動可能か
 };

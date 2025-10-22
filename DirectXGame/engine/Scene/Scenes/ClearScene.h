@@ -23,8 +23,16 @@ private:
 
 	uint32_t ClearTextureHandle_ = 0;
 	uint32_t ClearTextureHandle2_ = 0;
-	KamataEngine::Sprite* ClearSprite_ = nullptr;
 	KamataEngine::Sprite* pressSpaceSprite_ = nullptr;
+
+	// ゲームオーバー用
+	KamataEngine::Sprite*ClearShadow_ = nullptr;
+	KamataEngine::Sprite*ClearEdge_ = nullptr;
+	KamataEngine::Sprite*ClearMain_ = nullptr;
+
+	// 背景
+	uint32_t ClearBG_ = 0;
+	KamataEngine::Sprite* ClearBgSprite_ = nullptr;
 
 	// フェードアウト用
 	KamataEngine::Sprite* fadeSprite_ = nullptr;

@@ -1,10 +1,11 @@
 #pragma once
-#include "engine/Particle/DeathParticles.h"
-#include "engine/Map/MapChipField.h"
-#include "engine/Map/SkyDome/SkyDome.h"
 #include "../../DirectXGame/engine/Camera/CameraManager.h"
 #include "../../DirectXGame/engine/Enemy/EnemyManager.h"
 #include "../../DirectXGame/engine/Player/Player.h"
+#include "engine/Map/MapChipField.h"
+#include "engine/Map/SkyDome/SkyDome.h"
+#include "engine/Particle/DeathParticles.h"
+#include "engine/Scene/SceneManager/SceneManager.h"
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
@@ -13,9 +14,11 @@ class PhaseManager {
 public:
 	enum class Phase { kTitle, kPlay, kDeath };
 
-	void Initialize(Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField);
+	void Initialize(
+	    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField,
+	    SceneManager* sceneManager);
 
-	void Update();
+	std::optional<SceneID> Update();
 
 	void Draw();
 
@@ -24,6 +27,8 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	Model* GetDeathParticleModel() const { return deathParticleModel_; }
+
+	bool IsDeathEffectFinished() const { return isDeathEffectFinished_; }
 
 private:
 	Phase phase_ = Phase::kTitle;
@@ -38,4 +43,10 @@ private:
 	Model* deathParticleModel_ = nullptr;
 	DeathParticles* deathParticles_ = nullptr;
 	MapChipField* mapChipField_ = nullptr;
+	SceneManager* sceneManager_ = nullptr;
+
+	bool isChangingScene_ = false;
+	Vector3 deathPosition_;
+
+	bool isDeathEffectFinished_ = false;
 };

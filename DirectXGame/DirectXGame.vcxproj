@@ -154,6 +154,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.cpp" />
     <ClCompile Include="engine\Camera\CameraController.cpp" />
     <ClCompile Include="engine\Camera\CameraManager.cpp" />
     <ClCompile Include="engine\Scene\Scenes\ClearScene.cpp" />
@@ -271,6 +272,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.h" />
     <ClInclude Include="etc\AABB.h" />
     <ClInclude Include="engine\Camera\CameraController.h" />
     <ClInclude Include="engine\Camera\CameraManager.h" />

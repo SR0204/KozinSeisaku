@@ -132,6 +132,9 @@
     <ClCompile Include="engine\Particle\DeathParticles.cpp">
       <Filter>ソース ファイル\Game\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -242,6 +245,9 @@
     </ClInclude>
     <ClInclude Include="engine\Particle\DeathParticles.h">
       <Filter>ヘッダー ファイル\Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

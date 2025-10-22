@@ -1,54 +1,54 @@
 #include "GameOverScene.h"
 #include "../../Scene/SceneManager/SceneID.h"
 #include "../../Scene/SceneManager/SceneManager.h"
+#include "3d/ObjectColor.h"
 #include <cmath>
 
 using namespace KamataEngine;
 
-GameOverScene::GameOverScene()
-    :pressSpaceSprite_(nullptr), fadeSprite_(nullptr), fadeAlpha_(1.0f), isFadingOut_(false), isFadingIn_(true), frameCount_(0), blinkAlpha_(1.0f), waitAfterFade_(false),
-      waitTimer_(0) {}
+GameOverScene::GameOverScene() : fadeAlpha_(1.0f), isFadingOut_(false), isFadingIn_(true), frameCount_(0), blinkAlpha_(1.0f), waitAfterFade_(false), waitTimer_(0) {}
 
 GameOverScene::~GameOverScene() {
-	delete gameOverShadow_;
-	delete gameOverEdge_;
-	delete gameOverMain_;
-	delete pressSpaceSprite_;
 	delete fadeSprite_;
+	delete gameOverModel_;
+	delete camera_;
+	delete BackGround_[0];
+	delete BackGround_[1];
 }
 
 void GameOverScene::Initialize(SceneManager* sceneManager) {
 	sceneManager_ = sceneManager;
-	dxCommon_ = KamataEngine::DirectXCommon::GetInstance();
-	input_ = KamataEngine::Input::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance();
+	input_ = Input::GetInstance();
 
-	// GameOver画像
-	gameOverTextureHandle_ = TextureManager::Load("./Resources/GameOver/GameOverSprite.png");
+	// ---------------- カメラ ----------------
+	camera_ = new Camera();
+	camera_->Initialize();
+	camera_->translation_ = {0.0f, 50.0f, -200.0f};
+	camera_->UpdateMatrix();
 
-	// GameOver(縁取り、影 等)
-	gameOverShadow_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, {640, 360});
-	gameOverEdge_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, {640, 360});
-	gameOverMain_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, {640, 360});
+	// ---------------- ゲームオーバー背景 ----------------
+	GameOverBgSprite_ = TextureManager::Load("./Resources/GameOver/GameOverBG.png");
+	BackGround_[0] = KamataEngine::Sprite::Create(GameOverBgSprite_, {0, 0});
+	BackGround_[1] = KamataEngine::Sprite::Create(GameOverBgSprite_, {1280, 0}); // 右にもう1枚配置
 
-	gameOverShadow_->SetAnchorPoint({0.5f, 0.5f});
-	gameOverEdge_->SetAnchorPoint({0.5f, 0.5f});
-	gameOverMain_->SetAnchorPoint({0.5f, 0.5f});
+	// ---------------- GameOverモデル ----------------
+	gameOverModel_ = Model::CreateFromOBJ("GameOver", true);
+	gameOverWT_.Initialize();
+	gameOverWT_.translation_ = {0.0f, 50.0f, 0.0f};
+	gameOverWT_.scale_ = {10.0f, 10.0f, 10.0f};
+	gameOverWT_.rotation_.y = -1.5f;
+	gameOverWT_.UpdateMatrix();
 
-	// PRESS SPACE（点滅する）
-	gameOverTextureHandle2_ = TextureManager::Load("./Resources/GameOver/GameOver.png");
-	pressSpaceSprite_ = KamataEngine::Sprite::Create(gameOverTextureHandle2_, {640, 520});
-	pressSpaceSprite_->SetAnchorPoint({0.5f, 0.5f});
+	objectColor_.Initialize();
+	objectColor_.SetColor({1.0f, 0.5f, 0.5f, 1.0f});
 
-	// GameOverBackGround画像
-	gameOverBG_ = TextureManager::Load("./Resources/GameOver/GameOverBG.png");
-	GameOverBgSprite_ = KamataEngine::Sprite::Create(gameOverBG_, {0, 0});
-
-	// 黒フェードスプライト
+	// ---------------- 黒フェードスプライト ----------------
 	uint32_t blackTex = TextureManager::Load("./Resources/Title/fadeTexture.png");
-	fadeSprite_ = KamataEngine::Sprite::Create(blackTex, {640, 360});
+	fadeSprite_ = Sprite::Create(blackTex, {640, 360});
 	fadeSprite_->SetAnchorPoint({0.5f, 0.5f});
 	fadeSprite_->SetSize({1280, 720});
-	fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_}); // 最初は黒く覆う
+	fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_});
 }
 
 void GameOverScene::Update() {
@@ -65,84 +65,74 @@ void GameOverScene::Update() {
 		return;
 	}
 
-	// ---------------- PRESS SPACE の点滅 ----------------
-	blinkAlpha_ = 0.5f + 0.5f * sin(frameCount_ * 0.1f);
-	if (pressSpaceSprite_) {
-		pressSpaceSprite_->SetColor({1.0f, 1.0f, 1.0f, blinkAlpha_});
-	}
+	// ---------------- 縦揺れ ----------------
+	float bounce = std::sin(frameCount_ * 0.08f) * 6.0f;
+	gameOverWT_.translation_.y = 50.0f + bounce;
+	gameOverWT_.UpdateMatrix();
 
-	// ---------------- スペース押下でフェードアウト開始 ----------------
+	// ---------------- 点滅 ----------------
+	blinkAlpha_ = 0.5f + 0.5f * sin(frameCount_ * 0.1f);
+	objectColor_.SetColor({1.0f, 0.2f + 0.2f * blinkAlpha_, 0.2f, 1.0f});
+
+	// ---------------- フェードアウトトリガー ----------------
 	if (!isFadingOut_ && !waitAfterFade_ && input_->TriggerKey(DIK_SPACE)) {
 		isFadingOut_ = true;
 	}
 
-	// ---------------- フェードアウト（黒くなる） ----------------
+	// ---------------- フェードアウト ----------------
 	if (isFadingOut_) {
 		fadeAlpha_ += 0.02f;
 		if (fadeAlpha_ >= 1.0f) {
 			fadeAlpha_ = 1.0f;
 			isFadingOut_ = false;
-			waitAfterFade_ = true; // ←★ フェード完了後に待機開始
+			waitAfterFade_ = true;
 			waitTimer_ = 0;
 		}
 		fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_});
 	}
 
-	// ---------------- 黒画面のまま待機 ----------------
+	// ---------------- 黒画面待機 ----------------
 	if (waitAfterFade_) {
 		waitTimer_++;
-
-		// 約2秒（60fps換算で120フレーム）待機
 		if (waitTimer_ > 120) {
 			sceneManager_->RequestScene(SceneID::TitleScene);
 		}
+	}
+
+	// === 背景をループスクロール ===
+	for (int i = 0; i < 2; i++) {
+		Vector2 pos = BackGround_[i]->GetPosition();
+		pos.x -= bgScrollSpeed_; // 左方向にスクロール
+		// 左に完全に出たら右側に回す
+		if (pos.x <= -1250) {
+			pos.x += 1280 * 2;
+		}
+		BackGround_[i]->SetPosition(pos);
 	}
 }
 
 void GameOverScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+	// ----------------② 3Dモデル（中央のGameOver文字）----------------
+	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+	if (gameOverModel_) {
+		gameOverModel_->Draw(gameOverWT_, *camera_, &objectColor_);
+	}
+	Model::PostDraw();
+
 	KamataEngine::Sprite::PreDraw(commandList);
 
-	// GameOver背景
-	if (GameOverBgSprite_) {
-		GameOverBgSprite_->Draw();
+	//--------------------① 背景（最背面）-----------------
+	for (int i = 0; i < 2; i++) {
+		if (BackGround_[i]) {
+			BackGround_[i]->Draw();
+		}
 	}
 
-	// =====================
-	// === GAME OVERロゴ ===
-	// =====================
-	float bounce = std::sin(frameCount_ * 0.08f) * 6.0f; // 揺れ
-	Vector2 basePos = {640.0f, 320.0f + bounce};         // 画面中央より少し上
-
-	// --- ①影（少し下＆右にずらす）---
-	gameOverShadow_->SetPosition({basePos.x + 6.0f, basePos.y + 6.0f});
-	gameOverShadow_->SetSize({640.0f, 360.0f});
-	gameOverShadow_->SetColor({0.0f, 0.0f, 0.0f, 0.7f});
-	gameOverShadow_->Draw();
-
-	// --- ②縁取り（少し大きく）---
-	gameOverEdge_->SetPosition(basePos);
-	gameOverEdge_->SetSize({650.0f, 365.0f});           // 本体よりやや大きめ
-	gameOverEdge_->SetColor({1.0f, 0.85f, 0.2f, 1.0f}); // ゴールド
-	gameOverEdge_->Draw();
-
-	// --- ③本体（発光赤）---
-	float glow = 0.5f + 0.5f * std::sin(frameCount_ * 0.05f);
-	gameOverMain_->SetPosition(basePos);
-	gameOverMain_->SetSize({640.0f, 360.0f});
-	gameOverMain_->SetColor({1.0f, 0.2f + glow * 0.2f, 0.2f, 1.0f});
-	gameOverMain_->Draw();
-
-	// PRESS SPACE
-	if (pressSpaceSprite_) {
-		pressSpaceSprite_->Draw();
-	}
-
-	// 黒フェード（最後に描画）
+	// ----------------③ フェード（最前面）----------------
 	if (fadeSprite_) {
 		fadeSprite_->Draw();
 	}
-
 	KamataEngine::Sprite::PostDraw();
 }

@@ -2,6 +2,7 @@
 #define NOMINMIN
 #include "GameScene.h"
 #include "../../DirectXGame/etc/MathUtilityForText.h"
+#include <algorithm>
 #include <base/TextureManager.h>
 #include <cassert>
 
@@ -73,12 +74,11 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	//----------------------------カメラコントローラー関係初期化----------------------------//
 
 	phaseManager_ = new PhaseManager();
-	phaseManager_->Initialize(player_, enemyManager_, skydome_, cameraManager_, &worldTransformBlocks_, mapManager_->GetMapChipField());
+	phaseManager_->Initialize(player_, enemyManager_, skydome_, cameraManager_, &worldTransformBlocks_, mapManager_->GetMapChipField(), sceneManager_);
 
 	//----------------------------マネージャー系統初期化----------------------------//
 
 	model_ = Model::Create();
-	// textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	skydome_ = new Skydome();
@@ -96,73 +96,84 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	isFadingIn_ = true;
 	fadeScele_ = 4.0f;
 
-	// Ready / Start テクスチャ
-	uint32_t readyTex = TextureManager::Load("./Resources/UI/Ready.png");
-	readySprite_ = Sprite::Create(readyTex, {640, 360});
-	readySprite_->SetAnchorPoint({0.5f, 0.5f});
-	readySprite_->SetSize({400, 200}); // 適当な初期サイズ
+	// ----------------------------カウントダウンUI---------------------------- //
+	uint32_t Count1Tex = TextureManager::Load("./Resources/UI/Count1.png");
+	Count1Sprite_ = Sprite::Create(Count1Tex, {640, 360});
+	Count1Sprite_->SetAnchorPoint({0.5f, 0.5f});
+	Count1Sprite_->SetSize({400, 200});
 
-	uint32_t startTex = TextureManager::Load("./Resources/UI/Start.png");
-	startSprite_ = Sprite::Create(startTex, {640, 360});
+	uint32_t Count2Tex = TextureManager::Load("./Resources/UI/Count2.png");
+	Count2Sprite_ = Sprite::Create(Count2Tex, {640, 360});
+	Count2Sprite_->SetAnchorPoint({0.5f, 0.5f});
+	Count2Sprite_->SetSize({400, 200});
+
+	uint32_t Count3Tex = TextureManager::Load("./Resources/UI/Count3.png");
+	Count3Sprite_ = Sprite::Create(Count3Tex, {640, 360});
+	Count3Sprite_->SetAnchorPoint({0.5f, 0.5f});
+	Count3Sprite_->SetSize({400, 200});
+
+	uint32_t StartTex = TextureManager::Load("./Resources/UI/Start.png");
+	startSprite_ = Sprite::Create(StartTex, {640, 360});
 	startSprite_->SetAnchorPoint({0.5f, 0.5f});
 	startSprite_->SetSize({400, 200});
 
-	isFadingIn_ = false;
-	isStarting_ = true; // スタート演出開始
+	isStarting_ = true;
 	startTimer_ = 0;
-	readyScale_ = 0.0f;
-	readyAlpha_ = 0.0f;
-	startScale_ = 0.0f;
-	startAlpha_ = 0.0f;
 }
 
 void GameScene::Update() {
 
-	// ----------------------------スタート演出---------------------------- //
+	// ----------------------------スリーカウント演出---------------------------- //
 	if (isStarting_) {
 		startTimer_++;
 
-		// Ready表示（0〜120フレーム）
-		if (startTimer_ < 120) {
-			float t = startTimer_ / 120.0f;
-			readyScale_ = std::min(1.2f, t * 1.5f); // だんだん拡大
-			readyAlpha_ = std::min(1.0f, t * 2.0f); // フェードイン
+		const int kFramePerCount = 60;              // 1つの数字の表示時間（60フレーム = 1秒）
+		const int totalFrames = kFramePerCount * 4; // 3,2,1,START の合計
 
-			// 徐々にフェードアウト（後半）
-			if (startTimer_ > 90) {
-				readyAlpha_ = std::max(0.0f, 1.0f - (startTimer_ - 90) / 30.0f);
-			}
-		}
-		// Start表示（120〜200フレーム）
-		else if (startTimer_ >= 120 && startTimer_ < 200) {
-			float t = (startTimer_ - 120) / 80.0f;
-			startScale_ = std::min(1.3f, t * 1.6f);
-			startAlpha_ = std::min(1.0f, t * 2.0f);
+		// 1秒ごとに数字を切り替える
+		if (startTimer_ < totalFrames) {
+			// スケールとアルファのフェード
+			float localTime = (float)(startTimer_ % kFramePerCount) / kFramePerCount;
+			float scale = 1.0f + 0.5f * (1.0f - localTime); // 出始め拡大、消えるとき縮小
+			float alpha = 1.0f;
+			if (localTime > 0.8f)
+				alpha = 1.0f - (localTime - 0.8f) * 5.0f; // フェードアウト
 
-			if (startTimer_ > 170) {
-				startAlpha_ = std::max(0.0f, 1.0f - (startTimer_ - 170) / 30.0f);
-			}
-		}
-		// 終了
-		else if (startTimer_ >= 200) {
+			currentScale_ = scale;
+			currentAlpha_ = std::clamp(alpha, 0.0f, 1.0f);
+
+			// カウント番号を決定
+			currentCount_ = 3 - (startTimer_ / kFramePerCount);
+			if (currentCount_ < 0)
+				currentCount_ = 0; // 最後は "START!"
+		} else {
+			// 終了してゲームスタート
 			isStarting_ = false;
-			isGameActive_ = true; // ← ゲーム開始
+			isGameActive_ = true;
 		}
 
-		return; // スタート演出中はゲームロジック停止
+		// ここで return する！ → カウント中は本編を止める
+
+		return;
 	}
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
-		phaseManager_->Update();
+		// --- フェーズ更新 ---
+		auto nextScene = phaseManager_->Update();
+
 		cameraManager_->Update();
 		cameraManager_->TransferMatrix();
 
+		// --- 全敵撃破処理 ---
 		if (enemyManager_->IsAllEnemyDefeated()) {
 			nextScene_ = SceneID::Clear;
 		}
-		if (player_->IsDead()) {
-			nextScene_ = SceneID::GameOver;
+
+		// --- 死亡演出終了で返ってきたら遷移 ---
+		if (nextScene.has_value()) {
+			sceneManager_->ChangeScene(nextScene.value());
+			return;
 		}
 
 		if (nextScene_ != SceneID::None) {
@@ -175,16 +186,15 @@ void GameScene::Update() {
 void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+	// モデル描画
 	Sprite::PreDraw(commandList);
 	Sprite::PostDraw();
 
 	dxCommon_->ClearDepthBuffer();
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
-
-	if (!player_->IsDead()) {
+	if (!player_->IsDead())
 		player_->Draw();
-	}
 	skydome_->Draw();
 	enemyManager_->Draw();
 
@@ -194,35 +204,27 @@ void GameScene::Draw() {
 				modelBlock_->Draw(*block, camera_);
 		}
 	}
-
 	phaseManager_->Draw();
-
 	Model::PostDraw();
 
-	// ----------------------------フェード描画---------------------------- //
-	if (isFadingIn_) {
-		Sprite::PreDraw(commandList);
-		blackSprite_->Draw();
-		Sprite::PostDraw();
-	}
+	// ----------------------------スリーカウント描画---------------------------- //
 
-	// ----------------------------スタート演出描画---------------------------- //
 	if (isStarting_) {
 		Sprite::PreDraw(commandList);
-
-		// 黒背景を最初に描画（固定）
 		blackSprite_->Draw();
+		Sprite* drawSprite = nullptr;
+		if (currentCount_ == 3)
+			drawSprite = Count3Sprite_;
+		else if (currentCount_ == 2)
+			drawSprite = Count2Sprite_;
+		else if (currentCount_ == 1)
+			drawSprite = Count1Sprite_;
+		else
+			drawSprite = startSprite_;
 
-		// Ready / Start の文字だけをアルファでフェード
-		if (startTimer_ < 120) {
-			readySprite_->SetSize({400 * readyScale_, 200 * readyScale_});
-			readySprite_->SetColor({1, 1, 1, readyAlpha_}); // アルファ値でフェード
-			readySprite_->Draw();
-		} else if (startTimer_ < 200) {
-			startSprite_->SetSize({400 * startScale_, 200 * startScale_});
-			startSprite_->SetColor({1, 1, 1, startAlpha_});
-			startSprite_->Draw();
-		}
+		drawSprite->SetSize({800 * currentScale_, 400 * currentScale_});
+		drawSprite->SetColor({1, 1, 1, currentAlpha_});
+		drawSprite->Draw();
 
 		Sprite::PostDraw();
 	}

@@ -1,19 +1,28 @@
 #include "PhaseManager.h"
+#include "../../Scene/SceneManager/SceneID.h"
+#include "../../Scene/SceneManager/SceneManager.h"
+
 using namespace KamataEngine;
 
 void PhaseManager::Initialize(
-    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField) {
+    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField,
+    SceneManager* sceneManager) {
+
 	player_ = player;
 	enemyManager_ = enemyManager;
 	skydome_ = skydome;
 	cameraManager_ = cameraManager;
 	blocks_ = blocks;
 	mapChipField_ = mapChipField;
+	sceneManager_ = sceneManager; // ★ シーンマネージャを保持
+	phase_ = Phase::kPlay;
 }
 
-void PhaseManager::Update() {
+// PhaseManager.cpp
+std::optional<SceneID> PhaseManager::Update() {
 	switch (phase_) {
 	case Phase::kTitle:
+		break;
 
 	case Phase::kPlay:
 		skydome_->Update();
@@ -28,14 +37,17 @@ void PhaseManager::Update() {
 			}
 		}
 
+		enemyManager_->CheckAllCollisions(player_);
+		enemyManager_->HandleEnemyCollisions();
+
 		isDead_ = player_->IsDead();
 		if (isDead_) {
 			phase_ = Phase::kDeath;
-			deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+			if (!deathParticleModel_) {
+				deathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+			}
+			deathPosition_ = player_->GetWorldPosition();
 		}
-
-		enemyManager_->CheckAllCollisions(player_);
-		enemyManager_->HandleEnemyCollisions();
 		break;
 
 	case Phase::kDeath:
@@ -45,8 +57,9 @@ void PhaseManager::Update() {
 
 		if (!deathParticles_) {
 			deathParticles_ = new DeathParticles();
-			deathParticles_->Initialize(deathParticleModel_, cameraManager_->GetViewProjection(), player_->GetWorldPosition());
+			deathParticles_->Initialize(deathParticleModel_, cameraManager_->GetViewProjection(), deathPosition_);
 		}
+
 		deathParticles_->Update();
 
 		for (auto& line : *blocks_) {
@@ -55,9 +68,17 @@ void PhaseManager::Update() {
 					block->UpdateMatrix();
 			}
 		}
+
+		// パーティクル終了したら「GameOver」シーンを返す
+		if (deathParticles_->IsFinished()) {
+			return SceneID::GameOver;
+		}
 		break;
 	}
+
+	return std::nullopt; // シーン切り替えなし
 }
+
 
 void PhaseManager::Draw() {
 	if (phase_ == Phase::kDeath && deathParticles_) {
