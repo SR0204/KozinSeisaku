@@ -18,6 +18,8 @@ public:
 
 	bool IsAllEnemyDefeated() const;
 
+	std::vector<KamataEngine::Vector3> LoadEnemyPositionsFromCSV(const std::string& filename);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;

@@ -3,6 +3,11 @@
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+using namespace KamataEngine;
 
 EnemyManager::EnemyManager() : enemyModel_(nullptr), camera_(nullptr) {}
 
@@ -17,10 +22,11 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 
-	// 敵の初期配置
-	for (int i = 0; i < 4; ++i) {
+	// CSV から敵の出現位置を取得
+	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/enemy.csv");
+
+	for (const auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
 	}
@@ -137,3 +143,27 @@ void EnemyManager::HandleEnemyCollisions() {
 }
 
 bool EnemyManager::IsAllEnemyDefeated() const { return enemies_.empty(); }
+
+std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const std::string& filename) {
+	std::vector<Vector3> positions;
+	std::ifstream file(filename);
+	if (!file.is_open())
+		return positions;
+
+	std::string line;
+	int row = 0;
+	while (std::getline(file, line)) {
+		std::stringstream ss(line);
+		std::string cell;
+		int col = 0;
+		while (std::getline(ss, cell, ',')) {
+			if (std::stoi(cell) == 2) { // 2 の位置が敵
+				positions.push_back({col * 5.0f, 5.0f, row * 5.0f});
+				// X,Y,Z は適宜調整
+			}
+			++col;
+		}
+		++row;
+	}
+	return positions;
+}

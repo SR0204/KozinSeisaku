@@ -1,13 +1,15 @@
 #pragma once
+#include <KamataEngine.h>
 #include <base/DirectXCommon.h>
 #include <math/Vector3.h>
-#include <KamataEngine.h>
 
 using namespace KamataEngine;
 
 enum class MapChipType {
-	kBlank, // 空白
-	kBlock, // ブロック
+	kBlank,  // 空白
+	kBlock,  // ブロック
+	kPlayer, // プレイヤー
+	kEnemy   // 敵
 };
 
 struct MapChipData {
