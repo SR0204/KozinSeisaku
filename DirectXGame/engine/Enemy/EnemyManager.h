@@ -4,6 +4,7 @@
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
 #include "engine/Map/MapChipField.h"
 #include <vector>
+#include <audio/Audio.h>
 
 class EnemyManager {
 public:
@@ -24,7 +25,11 @@ private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
 	Camera* camera_;
+	KamataEngine::Audio* audio_ = nullptr;
+
 
 	std::vector<EnemyDeathParticles*> deathParticles_;
 	Model* enemyDeathParticleModel_ = nullptr;
+
+	uint32_t enemyDeathSE_ = 0;
 };

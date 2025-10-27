@@ -22,7 +22,8 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 
-	
+	audio_ = Audio::GetInstance();
+
 	// 敵の初期配置
 	for (int i = 0; i < 4; ++i) {
 		Enemy* newEnemy = new Enemy();
@@ -33,6 +34,9 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 
 	// デスパーティクル用モデル
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+
+	// --- 効果音をロード ---
+	//enemyDeathSE_ = Audio::GetInstance()->LoadWave("Resources/Sound/EnemySoundEffects/enemy_death.wav");
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
@@ -76,6 +80,9 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				// 踏んだ！即消し
 				enemy->SetAlive(false);
 				player->SetVelocityY(0.25f); // 軽くバウンド
+
+				// --- 効果音を再生 ---
+				//Audio::GetInstance()->PlayWave(enemyDeathSE_);
 
 				// ここでデスパーティクルを生成
 				EnemyDeathParticles* p = new EnemyDeathParticles();

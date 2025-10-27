@@ -55,6 +55,15 @@ void Player::Update() {
 	// 回転制御
 	AnimateTurn();
 
+	// --- 無敵タイマー処理 ---
+	if (isInvincible_) {
+		invincibleTimer_--;
+		if (invincibleTimer_ <= 0) {
+			isInvincible_ = false;
+			invincibleTimer_ = 0;
+		}
+	}
+
 	// 行列更新
 	worldTransform_.UpdateMatrix();
 }
@@ -62,7 +71,15 @@ void Player::Update() {
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
+void Player::Draw() {
+
+	// 無敵中は点滅（4フレームに1回非表示）
+	if (isInvincible_ && ((invincibleTimer_ / 4) % 2 == 0)) {
+		return; // 描画スキップ（チカチカする）
+	}
+
+	model_->Draw(worldTransform_, *camera_);
+}
 
 void Player::InputMove() {
 	auto* input = Input::GetInstance();
@@ -436,10 +453,22 @@ void Player::CheckMapCollisionHit(const CollisionMapInfo& info) {
 }
 
 void Player::OnCollision(const Enemy* enemy) {
-
-	velocity_.y = 1;
-
 	(void)enemy;
 
-	isDead_ = true;
+	if (isDead_ || isInvincible_)
+		return; // 既に死亡 or 無敵中なら何もしない
+
+	Hp_--;
+
+	// ダメージリアクション
+	velocity_.y = 0.3f;
+	worldTransform_.translation_.x += 0.3f;
+
+	// 無敵状態に入る
+	isInvincible_ = true;
+	invincibleTimer_ = invincibleDuration_;
+
+	if (Hp_ <= 0) {
+		isDead_ = true;
+	}
 }

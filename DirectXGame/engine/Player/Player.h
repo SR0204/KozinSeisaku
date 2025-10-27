@@ -168,4 +168,11 @@ private: // 関数（メンバ変数）
 
 	bool isHipDrop_ = false;    // ヒップドロップ中かどうか
 	bool hipDropReady_ = false; // 空中で発動可能か
+
+	int Hp_ = 2; // 最大HP
+
+	// --- 無敵関連 ---
+	bool isInvincible_ = false;    // 無敵状態か
+	int invincibleTimer_ = 0;      // 無敵残り時間（フレーム）
+	int invincibleDuration_ = 180; // 無敵時間（例：2秒 = 60fps * 2）
 };
