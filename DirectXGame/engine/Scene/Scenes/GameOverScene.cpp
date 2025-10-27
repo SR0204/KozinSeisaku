@@ -13,9 +13,7 @@ GameOverScene::~GameOverScene() {
 	delete gameOverModel_;
 	delete camera_;
 
-	for (int i = 0; i < 2; i++) {
-		delete backgroundModel_[i];
-	}
+	delete backgroundModel_[1];
 }
 
 void GameOverScene::Initialize(SceneManager* sceneManager) {
@@ -33,9 +31,16 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 	for (int i = 0; i < 2; i++) {
 		backgroundModel_[i] = Model::CreateFromOBJ("GameOverBG", true);
 		backgroundWT_[i].Initialize();
-		backgroundWT_[i].translation_ = {1280.0f * (i - 0.5f), 0.0f, 500.0f}; // カメラより奥側
-		backgroundWT_[i].scale_ = {100.0f, 100.0f, 1.0f};
-		backgroundWT_[i].rotation_ = {0.0f, 0.0f, 0.0f};
+
+		// 背景を横に2枚並べる
+		backgroundWT_[i].translation_ = {1280.0f * (i - 0.5f), 50.0f, 700.0f};
+
+		// スケール（Zに少し厚みをつける）
+		backgroundWT_[i].scale_ = {100.0f, 100.0f, 100.0f};
+
+		// カメラの方向を向かせる（Blenderの+Zが表の場合）
+		backgroundWT_[i].rotation_ = {0.0f, -1.5f, 0.0f};
+
 		backgroundWT_[i].UpdateMatrix();
 	}
 
