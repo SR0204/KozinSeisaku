@@ -52,7 +52,7 @@ private:
 	// -----------------------------
 	// GameOver背景 2Dモデル
 	// -----------------------------
-	uint32_t GameOverBgSprite_ = 0;
-	KamataEngine::Sprite* BackGround_[2];
-	float bgScrollSpeed_ = 1.0f; // スクロール速度
+	KamataEngine::Model* backgroundModel_[2];
+	KamataEngine::WorldTransform backgroundWT_[2];
+	float bgScrollSpeed_ = 1.0f; // 背景の流れる速さ
 };

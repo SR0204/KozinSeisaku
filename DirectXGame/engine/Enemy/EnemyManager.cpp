@@ -22,11 +22,11 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 
-	// CSV から敵の出現位置を取得
-	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/enemy.csv");
-
-	for (const auto& pos : enemyPositions) {
+	
+	// 敵の初期配置
+	for (int i = 0; i < 4; ++i) {
 		Enemy* newEnemy = new Enemy();
+		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
 	}
