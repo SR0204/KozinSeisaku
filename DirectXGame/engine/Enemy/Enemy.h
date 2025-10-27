@@ -33,8 +33,8 @@ public:
 	Vector3 GetWorldPosition();
 
 	// キャラクターの当たり判定サイズ
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 0.7f;
+	static inline const float kHeight = 0.7f;
 
 	AABB GetAABB();
 
