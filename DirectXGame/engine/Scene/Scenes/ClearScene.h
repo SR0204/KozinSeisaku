@@ -1,48 +1,58 @@
 #pragma once
-#include "../../Scene/SceneManager/Scene.h"
+#include "2d/Sprite.h"
+#include "3d/Camera.h"
+#include "3d/Model.h"
+#include "3d/ObjectColor.h"
 #include "KamataEngine.h"
-
-class DirectXCommon; // 前方宣言
-class Input;         // 前方宣言
-class Sprite;        // 前方宣言
-class SceneManager;
+#include "engine/Scene/SceneManager/SceneManager.h"
+#include "input/Input.h"
 
 class ClearScene : public Scene {
 public:
 	ClearScene();
 	~ClearScene();
 
-	void Initialize(SceneManager* sceneManager) override;
-	void Update() override;
-	void Draw() override;
+	void Initialize(SceneManager* sceneManager);
+	void Update();
+	void Draw();
 
 private:
+	// -----------------------------
+	// 共通
+	// -----------------------------
+	SceneManager* sceneManager_ = nullptr;
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
-	SceneManager* sceneManager_ = nullptr;
 
-	uint32_t ClearTextureHandle_ = 0;
-	uint32_t ClearTextureHandle2_ = 0;
-	KamataEngine::Sprite* pressSpaceSprite_ = nullptr;
-
-	// ゲームオーバー用
-	KamataEngine::Sprite*ClearShadow_ = nullptr;
-	KamataEngine::Sprite*ClearEdge_ = nullptr;
-	KamataEngine::Sprite*ClearMain_ = nullptr;
-
-	// 背景
-	uint32_t ClearBG_ = 0;
-	KamataEngine::Sprite* ClearBgSprite_ = nullptr;
-
-	// フェードアウト用
+	// -----------------------------
+	// フェード用スプライト
+	// -----------------------------
 	KamataEngine::Sprite* fadeSprite_ = nullptr;
-	float fadeAlpha_;
-	bool isFadingOut_;
-	bool isFadingIn_;
-	float blinkAlpha_;
+	float fadeAlpha_ = 1.0f;
+	bool isFadingOut_ = false;
+	bool isFadingIn_ = true;
+	bool waitAfterFade_ = false;
+	int waitTimer_ = 0;
 
+	// -----------------------------
+	// フレーム管理
+	// -----------------------------
 	int frameCount_ = 0;
 
-	int waitTimer_ = 0;
-	int waitAfterFade_ = 0;
+	// -----------------------------
+	// ClearScene 3Dモデル
+	// -----------------------------
+	KamataEngine::Model* gameOverModel_ = nullptr;
+	KamataEngine::WorldTransform gameOverWT_;
+	KamataEngine::ObjectColor objectColor_;
+	KamataEngine::Camera* camera_;
+
+	float blinkAlpha_ = 1.0f;
+
+	// -----------------------------
+	// ClearScene背景 2Dモデル
+	// -----------------------------
+	KamataEngine::Model* backgroundModel_[2];
+	KamataEngine::WorldTransform backgroundWT_[2];
+	float bgScrollSpeed_ = 1.0f; // 背景の流れる速さ
 };
