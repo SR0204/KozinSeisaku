@@ -43,38 +43,45 @@ void Enemy::Update(MapChipField* mapField) {
 		worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
 	}
 
-	// ===== 重力 =====
+	// ===== 重力反映 =====
 	velocity_.y += kEnemyGravityAcceleration;
-	if (velocity_.y < kEnemyLimitFallSpeed) {
+	if (velocity_.y < kEnemyLimitFallSpeed)
 		velocity_.y = kEnemyLimitFallSpeed;
+
+
+	// ===== 天井判定 =====
+	Vector3 topLeft = nextPos + Vector3(-kWidth / 2, kHeight / 2, 0);
+	Vector3 topRight = nextPos + Vector3(kWidth / 2, kHeight / 2, 0);
+	MapChipField::IndexSet topL = mapField->GetMapChipIndexSetByPosition(topLeft);
+	MapChipField::IndexSet topR = mapField->GetMapChipIndexSetByPosition(topRight);
+	if (mapField->GetMapchipTypeByIndex(topL.xIndex, topL.yIndex) != MapChipType::kBlank || mapField->GetMapchipTypeByIndex(topR.xIndex, topR.yIndex) != MapChipType::kBlank) {
+		velocity_.y = 0; // 天井に当たったら止める
 	}
 
-	// ===== 地面チェック =====
-	Vector3 footPos = worldTransform_.translation_;
-	footPos.y -= kHeight / 2.0f;
-	MapChipField::IndexSet footIdx = mapField->GetMapChipIndexSetByPosition(footPos);
+	// ===== 床判定 =====
+	Vector3 bottomLeft = nextPos + Vector3(-kWidth / 2, -kHeight / 2, 0);
+	Vector3 bottomRight = nextPos + Vector3(kWidth / 2, -kHeight / 2, 0);
+	MapChipField::IndexSet botL = mapField->GetMapChipIndexSetByPosition(bottomLeft);
+	MapChipField::IndexSet botR = mapField->GetMapChipIndexSetByPosition(bottomRight);
 
-	isOnGround_ = false;
-	if (mapField->GetMapchipTypeByIndex(footIdx.xIndex, footIdx.yIndex) == MapChipType::kBlock) {
-		MapChipField::Rect blockRect = mapField->GetRectByIndex(footIdx.xIndex, footIdx.yIndex);
-		worldTransform_.translation_.y = blockRect.top + kHeight / 2.0f;
+	bool hitFloor = (mapField->GetMapchipTypeByIndex(botL.xIndex, botL.yIndex) != MapChipType::kBlank || mapField->GetMapchipTypeByIndex(botR.xIndex, botR.yIndex) != MapChipType::kBlank);
+
+	if (hitFloor) {
+		MapChipField::Rect rect = mapField->GetRectByIndex(botL.xIndex, botL.yIndex);
+		worldTransform_.translation_.y = rect.top + kHeight / 2.0f;
 		velocity_.y = 0;
 		isOnGround_ = true;
 	} else {
 		worldTransform_.translation_.y += velocity_.y;
+		isOnGround_ = false;
 	}
 
 	// ===== 不規則ジャンプ処理 =====
 	jumpTimer_ += 1.0f / 60.0f;
-
 	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
-		// ランダムジャンプ力（0.3〜0.8）
 		float jumpPower = RandRange(0.3f, 0.8f);
 		velocity_.y = jumpPower;
-
-		// 次のジャンプまでの時間をランダムに設定（1〜3秒）
 		jumpInterval_ = RandRange(1.0f, 3.0f);
-
 		jumpTimer_ = 0.0f;
 	}
 

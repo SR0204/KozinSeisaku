@@ -168,46 +168,48 @@ void Player::CheckMapCollision(CollisionMapInfo& info) {
 
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 
-	// 上昇あり？
+	// 上昇がない場合は処理しない
 	if (info.move.y <= 0) {
 		return;
 	}
 
 	std::array<Vector3, kNumCorner> positionsNew;
 
+	// 各コーナーの位置を取得（移動後の位置）
 	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
 		positionsNew[i] = CornerPosition(worldTransform_.translation_ + info.move, static_cast<Corner>(i));
 	}
 
-	MapChipType mapChipType;
-	// 真上の当たり判定を行う
 	bool hit = false;
-	// 左上点の判定
 	MapChipField::IndexSet indexSet;
+	MapChipType mapChipType;
+
+	// 左上
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock) {
-		hit = true;
-	}
-	// 右上点の判定
-	// MapChipField::IndexSet indexSet;
-	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
-	mapChipType = mapChipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlock || mapChipType == MapChipType::BreakableBlock || mapChipType == MapChipType::ItemBlock3) {
 		hit = true;
 	}
 
-	// ブロックにヒット？
+	// 右上
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock || mapChipType == MapChipType::BreakableBlock || mapChipType == MapChipType::ItemBlock3) {
+		hit = true;
+	}
+
+	// ブロックに当たった場合
 	if (hit) {
-		// めり込みを排除する方向に移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, +kHeight / 2.0f, 0));
-		// めり込み先ブロックの範囲短形
+		// めり込み補正
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, kHeight / 2.0f, 0));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
-		// 天井に当たったことを記録する
+
+		// 天井ヒットフラグ
 		info.ceiling = true;
 	}
 }
+
 
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 
@@ -419,6 +421,13 @@ void Player::CellingContactHit(const CollisionMapInfo& info) {
 	if (info.ceiling) {
 		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n");
 		velocity_.y = 0;
+
+		// 天井に当たったブロックのインデックスを取得
+		Vector3 headPos = worldTransform_.translation_ + Vector3(0, kHeight / 2.0f, 0);
+		MapChipField::IndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(headPos);
+
+		// MapChipFieldに通知
+		mapChipField_->OnHitFromBelow(indexSet.xIndex, indexSet.yIndex);
 	}
 }
 
