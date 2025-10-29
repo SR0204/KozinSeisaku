@@ -187,14 +187,14 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// 左上
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock || mapChipType == MapChipType::BreakableBlock || mapChipType == MapChipType::ItemBlock3) {
+	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
 
 	// 右上
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
 	mapChipType = mapChipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock || mapChipType == MapChipType::BreakableBlock || mapChipType == MapChipType::ItemBlock3) {
+	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
 
@@ -209,7 +209,6 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 		info.ceiling = true;
 	}
 }
-
 
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 
@@ -426,8 +425,6 @@ void Player::CellingContactHit(const CollisionMapInfo& info) {
 		Vector3 headPos = worldTransform_.translation_ + Vector3(0, kHeight / 2.0f, 0);
 		MapChipField::IndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(headPos);
 
-		// MapChipFieldに通知
-		mapChipField_->OnHitFromBelow(indexSet.xIndex, indexSet.yIndex);
 	}
 }
 

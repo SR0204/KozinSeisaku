@@ -12,10 +12,10 @@ namespace {
 
 // CSV文字列 → MapChipType の変換テーブル
 std::map<std::string, MapChipType> mapChipTable = {
-    {"0", MapChipType::kBlank        },
-    {"1", MapChipType::kBlock        },
-    {"2", MapChipType::BreakableBlock},
-    {"3", MapChipType::ItemBlock3    },
+    {"0", MapChipType::kBlank },
+    {"1", MapChipType::kBlock },
+    {"2", MapChipType::kPlayer},
+    {"3", MapChipType::kEnemy },
 };
 
 } // namespace
@@ -81,34 +81,4 @@ MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex
 	rect.bottom = center.y - kBlockHeight / 2.0f;
 	rect.top = center.y + kBlockHeight / 2.0f;
 	return rect;
-}
-
-// プレイヤーが下から叩いたときの処理
-void MapChipField::OnHitFromBelow(uint32_t xIndex, uint32_t yIndex) {
-	MapChipType type = GetMapchipTypeByIndex(xIndex, yIndex);
-
-	switch (type) {
-	case MapChipType::BreakableBlock:
-		// 壊す
-		mapChipData_.data[yIndex][xIndex] = MapChipType::kBlank;
-		DebugText::GetInstance()->ConsolePrintf("BreakableBlock destroyed at (%u,%u)\n", xIndex, yIndex);
-		break;
-
-	case MapChipType::ItemBlock3:
-		// アイテムを出す
-		SpawnItem(xIndex, yIndex);
-		// ブロックを叩かれた状態に変更（色変えなど）
-		mapChipData_.data[yIndex][xIndex] = MapChipType::kBlock;
-		break;
-
-	default:
-		break;
-	}
-}
-
-// アイテム生成処理
-void MapChipField::SpawnItem(uint32_t xIndex, uint32_t yIndex) {
-	Vector3 pos = GetMapChipPositionByIndex(xIndex, yIndex) + Vector3(0, kBlockHeight / 2.0f, 0);
-	DebugText::GetInstance()->ConsolePrintf("Spawn Item at (%.2f, %.2f)\n", pos.x, pos.y);
-	// TODO: ここでアイテムクラスを生成してゲームに追加する
 }

@@ -49,18 +49,34 @@ void Enemy::Update(MapChipField* mapField) {
 		velocity_.y = kEnemyLimitFallSpeed;
 
 
+	// Y軸の移動前に速度を加算
+	worldTransform_.translation_.y += velocity_.y;
+
 	// ===== 天井判定 =====
-	Vector3 topLeft = nextPos + Vector3(-kWidth / 2, kHeight / 2, 0);
-	Vector3 topRight = nextPos + Vector3(kWidth / 2, kHeight / 2, 0);
+	Vector3 topLeft = worldTransform_.translation_ + Vector3(-kWidth / 2, kHeight / 2, 0);
+	Vector3 topRight = worldTransform_.translation_ + Vector3(kWidth / 2, kHeight / 2, 0);
 	MapChipField::IndexSet topL = mapField->GetMapChipIndexSetByPosition(topLeft);
 	MapChipField::IndexSet topR = mapField->GetMapChipIndexSetByPosition(topRight);
-	if (mapField->GetMapchipTypeByIndex(topL.xIndex, topL.yIndex) != MapChipType::kBlank || mapField->GetMapchipTypeByIndex(topR.xIndex, topR.yIndex) != MapChipType::kBlank) {
-		velocity_.y = 0; // 天井に当たったら止める
+
+	bool hitCeiling = false;
+	MapChipField::Rect ceilingRect{};
+
+	if (mapField->GetMapchipTypeByIndex(topL.xIndex, topL.yIndex) != MapChipType::kBlank) {
+		hitCeiling = true;
+		ceilingRect = mapField->GetRectByIndex(topL.xIndex, topL.yIndex);
+	} else if (mapField->GetMapchipTypeByIndex(topR.xIndex, topR.yIndex) != MapChipType::kBlank) {
+		hitCeiling = true;
+		ceilingRect = mapField->GetRectByIndex(topR.xIndex, topR.yIndex);
 	}
 
-	// ===== 床判定 =====
-	Vector3 bottomLeft = nextPos + Vector3(-kWidth / 2, -kHeight / 2, 0);
-	Vector3 bottomRight = nextPos + Vector3(kWidth / 2, -kHeight / 2, 0);
+	if (hitCeiling) {
+		worldTransform_.translation_.y = ceilingRect.bottom - kHeight / 2.0f;
+		velocity_.y = 0;
+	}
+
+	// ===== 床判定（落下時） =====
+	Vector3 bottomLeft = worldTransform_.translation_ + Vector3(-kWidth / 2, -kHeight / 2, 0);
+	Vector3 bottomRight = worldTransform_.translation_ + Vector3(kWidth / 2, -kHeight / 2, 0);
 	MapChipField::IndexSet botL = mapField->GetMapChipIndexSetByPosition(bottomLeft);
 	MapChipField::IndexSet botR = mapField->GetMapChipIndexSetByPosition(bottomRight);
 
@@ -72,7 +88,6 @@ void Enemy::Update(MapChipField* mapField) {
 		velocity_.y = 0;
 		isOnGround_ = true;
 	} else {
-		worldTransform_.translation_.y += velocity_.y;
 		isOnGround_ = false;
 	}
 

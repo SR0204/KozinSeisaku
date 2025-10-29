@@ -6,10 +6,10 @@
 using namespace KamataEngine;
 
 enum class MapChipType {
-	kBlank, // 空白
-	kBlock, // ブロック
-	BreakableBlock,
-	ItemBlock3
+	kBlank,  // 空白
+	kBlock,  // ブロック
+	kPlayer, // プレイヤーのリス地
+	kEnemy   // 敵のリス地
 };
 
 struct MapChipData {
@@ -47,8 +47,6 @@ public: // 関数
 
 	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
-	void OnHitFromBelow(uint32_t xIndex, uint32_t yIndex);//ブロック破壊用
-
 private: // 変数
 	// ブロックのサイズ
 	static inline const float kBlockWidth = 1.0f;
@@ -59,6 +57,4 @@ private: // 変数
 	static inline const uint32_t kNumBlockHorizontal = 100;
 
 	MapChipData mapChipData_;
-
-	void SpawnItem(uint32_t xIndex, uint32_t yIndex); // アイテム生成用
 };
