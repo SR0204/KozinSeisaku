@@ -28,7 +28,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("Resources/blocks.csv");
 
 	// 敵の初期配置
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
