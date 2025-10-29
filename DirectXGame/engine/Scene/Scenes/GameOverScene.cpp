@@ -139,7 +139,7 @@ void GameOverScene::Update() {
 
 		if (fadeAlpha_ >= 1.0f) {
 			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
-			sceneManager_->ChangeScene(SceneID::GameOver);
+			sceneManager_->ChangeScene(SceneID::TitleScene);
 
 			return;
 		}

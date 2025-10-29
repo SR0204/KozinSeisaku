@@ -1,58 +1,72 @@
 #pragma once
-#include "2d/Sprite.h"
-#include "3d/Camera.h"
-#include "3d/Model.h"
-#include "3d/ObjectColor.h"
+#include "../../Scene/SceneManager/Scene.h"
 #include "KamataEngine.h"
-#include "engine/Scene/SceneManager/SceneManager.h"
-#include "input/Input.h"
+#include "math/Vector2.h"
+
+class DirectXCommon; // 前方宣言
+class Input;         // 前方宣言
+class Sprite;        // 前方宣言
+class SceneManager;
 
 class ClearScene : public Scene {
 public:
 	ClearScene();
-	~ClearScene();
+	~ClearScene() override;
 
-	void Initialize(SceneManager* sceneManager);
-	void Update();
-	void Draw();
+	void Initialize(SceneManager* sceneManager) override;
+	void Update() override;
+	void Draw() override;
 
 private:
-	// -----------------------------
-	// 共通
-	// -----------------------------
+	// シーン管理
 	SceneManager* sceneManager_ = nullptr;
+
+	// DirectX関連
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
-	// -----------------------------
-	// フェード用スプライト
-	// -----------------------------
-	KamataEngine::Sprite* fadeSprite_ = nullptr;
-	float fadeAlpha_ = 1.0f;
-	bool isFadingOut_ = false;
-	bool isFadingIn_ = true;
-	bool waitAfterFade_ = false;
-	int waitTimer_ = 0;
+	// スプライト
+	KamataEngine::Sprite* sprite_ = nullptr;  // PRESS SPACE
+	KamataEngine::Sprite* sprite2_ = nullptr; // GameOver ロゴ
 
-	// -----------------------------
-	// フレーム管理
-	// -----------------------------
-	int frameCount_ = 0;
+	// テクスチャハンドル
+	uint32_t ClearTextureHandle_ = 0;
+	KamataEngine::Model* ClearSceneHandle2_ = nullptr;
 
-	// -----------------------------
-	// ClearScene 3Dモデル
-	// -----------------------------
+	uint32_t ClearBackGroundTextureHandle_ = 0;
+
+	KamataEngine::Sprite* BackGround_[2];
+	float bgScrollSpeed_ = 1.0f;   // スクロール速度
+	KamataEngine::Vector2 bgSize_; // 背景のサイズ
+
 	KamataEngine::Model* ClearModel_ = nullptr;
-	KamataEngine::WorldTransform ClearWT_;
-	KamataEngine::ObjectColor objectColor_;
-	KamataEngine::Camera* camera_;
+	KamataEngine::WorldTransform ClearTransform_;
+	KamataEngine::Camera Camera_; // 3D描画に必要
 
-	float blinkAlpha_ = 1.0f;
+	// BGM
+	int bgmHandle_ = -1;
+	int bgmVoiceHandle_ = -1;
+	float bgmVolume_ = 1.0f;
+	bool isFadingOut_ = false;
 
-	// -----------------------------
-	// ClearScene背景 2Dモデル
-	// -----------------------------
-	KamataEngine::Model* backgroundModel_[2];
-	KamataEngine::WorldTransform backgroundWT_[2];
-	float bgScrollSpeed_ = 1.0f; // 背景の流れる速さ
+	// 演出用
+	bool isClear_ = true;    // GameOverシーン中フラグ
+	int frameCount_ = 0;     // アニメーション用フレームカウント
+	float fadeAlpha_ = 0.0f; // 画面暗転のアルファ値
+	int bounceTimer_ = 0;    // ロゴバウンド用タイマー
+	int blinkTimer_ = 0;     // 点滅用
+
+	// バウンド用
+	float bounceAmplitude_;
+	const float bounceDecay_ = 0.9f;
+	bool isBounceFinished_ = false;
+
+	// フェード用スプライト
+	KamataEngine::Sprite* fadeSprite_ = nullptr;
+	uint32_t fadeTextureHandle_ = 0;
+
+	// ライト設定用
+	KamataEngine::DirectionalLight light{};
+	std::unique_ptr<KamataEngine::LightGroup> lightGroup_;
 };
