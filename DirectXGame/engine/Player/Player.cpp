@@ -270,6 +270,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	MapChipType mapChipType;
 	// 真上の当たり判定を行う
 	bool hit = false;
+
 	// 右上点の判定
 	MapChipField::IndexSet indexSet;
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
@@ -277,6 +278,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
+
 	// 右下点の判定
 	// MapChipField::IndexSet indexSet;
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);

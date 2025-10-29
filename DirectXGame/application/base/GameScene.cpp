@@ -53,6 +53,16 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_);
 
+	// === CSVから敵の出現位置を読み込む ===
+	std::vector<Vector3> enemyPositions = enemyManager_->LoadEnemyPositionsFromCSV("./Resources/blocks.csv");
+
+	// === 読み込んだ座標で敵を生成 ===
+	for (const Vector3& pos : enemyPositions) {
+		Enemy* newEnemy = new Enemy();
+		newEnemy->Initialize(EnemyModel_, &camera_, pos);
+		enemyManager_->AddEnemy(newEnemy);
+	}
+
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	player_ = new Player();

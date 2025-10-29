@@ -21,6 +21,8 @@ public:
 
 	std::vector<KamataEngine::Vector3> LoadEnemyPositionsFromCSV(const std::string& filename);
 
+	void AddEnemy(Enemy* enemy);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;

@@ -24,8 +24,11 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 
 	audio_ = Audio::GetInstance();
 
+	// === CSV から敵の配置をロード ===
+	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("Resources/blocks.csv");
+
 	// 敵の初期配置
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
@@ -36,7 +39,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
 
 	// --- 効果音をロード ---
-	//enemyDeathSE_ = Audio::GetInstance()->LoadWave("Resources/Sound/EnemySoundEffects/enemy_death.wav");
+	// enemyDeathSE_ = Audio::GetInstance()->LoadWave("Resources/Sound/EnemySoundEffects/enemy_death.wav");
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
@@ -82,7 +85,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				player->SetVelocityY(0.25f); // 軽くバウンド
 
 				// --- 効果音を再生 ---
-				//Audio::GetInstance()->PlayWave(enemyDeathSE_);
+				// Audio::GetInstance()->PlayWave(enemyDeathSE_);
 
 				// ここでデスパーティクルを生成
 				EnemyDeathParticles* p = new EnemyDeathParticles();
@@ -164,7 +167,7 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 		std::string cell;
 		int col = 0;
 		while (std::getline(ss, cell, ',')) {
-			if (std::stoi(cell) == 2) { // 2 の位置が敵
+			if (std::stoi(cell) == 3) { // 3 の位置が敵
 				positions.push_back({col * 5.0f, 5.0f, row * 5.0f});
 				// X,Y,Z は適宜調整
 			}
@@ -174,3 +177,5 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 	}
 	return positions;
 }
+
+void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
