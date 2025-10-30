@@ -18,33 +18,28 @@ EnemyManager::~EnemyManager() {
 	enemies_.clear();
 }
 
-void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
+void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
-
 	audio_ = Audio::GetInstance();
 
-	// === CSV から敵の配置をロード ===
-	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("Resources/blocks.csv");
+	// === CSVから敵の位置を読み込む（マップの高さ考慮）===
+	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("Resources/blocks.csv", mapField);
 
-	// 敵の初期配置
-	for (int i = 0; i < 4; ++i) {
+	// === 敵を生成 ===
+	for (const auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
 	}
 
-	// デスパーティクル用モデル
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
-
-	// --- 効果音をロード ---
-	// enemyDeathSE_ = Audio::GetInstance()->LoadWave("Resources/Sound/EnemySoundEffects/enemy_death.wav");
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
 	for (Enemy* enemy : enemies_) {
-		enemy->Update(mapField); // MapChipField を渡して壁判定や重力処理を行う
+		enemy->Update(mapField);
+		Vector3 pos = enemy->GetWorldPosition();
 	}
 
 	for (auto it = deathParticles_.begin(); it != deathParticles_.end();) {
@@ -79,7 +74,8 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 
 		if (IsColision(playerAABB, enemy->GetAABB())) {
 			// 上から踏んだ判定
-			if (player->GetVelocity().y < 0.0f && playerAABB.min.y > enemy->GetAABB().max.y - 5.0f) {
+			if (player->GetVelocity().y < 0.0f && playerAABB.min.y > enemy->GetAABB().max.y - 1.0f) {
+
 				// 踏んだ！即消し
 				enemy->SetAlive(false);
 				player->SetVelocityY(0.25f); // 軽くバウンド
@@ -154,7 +150,7 @@ void EnemyManager::HandleEnemyCollisions() {
 
 bool EnemyManager::IsAllEnemyDefeated() const { return enemies_.empty(); }
 
-std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const std::string& filename) {
+std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const std::string& filename, MapChipField* mapField) {
 	std::vector<Vector3> positions;
 	std::ifstream file(filename);
 	if (!file.is_open())
@@ -162,14 +158,28 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 
 	std::string line;
 	int row = 0;
+	const float kTileSize = 5.0f;
+
 	while (std::getline(file, line)) {
 		std::stringstream ss(line);
 		std::string cell;
 		int col = 0;
+
 		while (std::getline(ss, cell, ',')) {
-			if (std::stoi(cell) == 3) { // 3 の位置が敵
-				positions.push_back({col * 5.0f, 5.0f, row * 5.0f});
-				// X,Y,Z は適宜調整
+			int value = std::stoi(cell);
+
+			if (value == 3) {
+				// 「3」なら敵をスポーン
+				float x = col * kTileSize;
+				float z = row * kTileSize;
+
+				// 下のブロックの上面を取得
+				float topY = mapField->GetBlockTopY(col, row);
+
+				// 少し浮かせて配置（ブロックにめり込まないように）
+				float y = topY + 2.0f;
+
+				positions.push_back({x, y, z});
 			}
 			++col;
 		}

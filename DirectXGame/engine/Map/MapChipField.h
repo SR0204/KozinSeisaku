@@ -23,9 +23,9 @@ public: // 関数
 
 	void LoadMapchipCsv(const std::string& filePath);
 
-	MapChipType GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
+	MapChipType GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex)const;
 
-	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
+	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex)const;
 
 	uint32_t GetNumBlockVirtical() { return kNumBlockVirtical; }
 	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal; }
@@ -45,7 +45,10 @@ public: // 関数
 		float top;    // 上端
 	};
 
-	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex)const;
+
+	// 指定インデックス位置の真下にあるブロックの上面Y座標を取得
+	float GetBlockTopY(int xIndex, int yIndex) const;
 
 private: // 変数
 	// ブロックのサイズ

@@ -55,14 +55,14 @@ void MapChipField::LoadMapchipCsv(const std::string& filePath) {
 }
 
 // インデックスからマップチップの種類を取得
-MapChipType MapChipField::GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex) {
+MapChipType MapChipField::GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex)const {
 	if (xIndex >= kNumBlockHorizontal || yIndex >= kNumBlockVirtical)
 		return MapChipType::kBlank;
 	return mapChipData_.data[yIndex][xIndex];
 }
 
 // インデックス → ワールド座標
-Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) { return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0); }
+Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) const{ return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0); }
 
 // ワールド座標 → インデックス
 MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
@@ -73,7 +73,7 @@ MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3&
 }
 
 // 指定ブロックの範囲矩形を取得
-MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
+MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex)const {
 	Vector3 center = GetMapChipPositionByIndex(xIndex, yIndex);
 	Rect rect;
 	rect.left = center.x - kBlockWidth / 2.0f;
@@ -81,4 +81,17 @@ MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex
 	rect.bottom = center.y - kBlockHeight / 2.0f;
 	rect.top = center.y + kBlockHeight / 2.0f;
 	return rect;
+}
+
+float MapChipField::GetBlockTopY(int xIndex, int yIndex) const {
+	// 下方向（yIndex+1, yIndex+2, ...）を探索して最初のブロックを探す
+	for (int y = yIndex + 1; y < static_cast<int>(kNumBlockVirtical); ++y) {
+		if (GetMapchipTypeByIndex(xIndex, y) == MapChipType::kBlock) {
+			// そのブロックの矩形を取得して上面の座標を返す
+			Rect rect = GetRectByIndex(xIndex, y);
+			return rect.top;
+		}
+	}
+	// ブロックが見つからなければ地面(0)を返す
+	return 0.0f;
 }

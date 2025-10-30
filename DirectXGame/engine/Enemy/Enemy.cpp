@@ -25,16 +25,29 @@ void Enemy::Update(MapChipField* mapField) {
 	if (collisionCooldown_ > 0)
 		collisionCooldown_--;
 
-	// ===== X方向の壁判定 =====
+	// ===== X方向の壁＋足場チェック =====
 	Vector3 nextPos = worldTransform_.translation_ + Vector3(velocity_.x, 0, 0);
 	Vector3 checkPos = nextPos;
 	checkPos.x += (velocity_.x > 0) ? kWidth / 2.0f : -kWidth / 2.0f;
-	MapChipField::IndexSet idx = mapField->GetMapChipIndexSetByPosition(checkPos);
-	if (mapField->GetMapchipTypeByIndex(idx.xIndex, idx.yIndex) == MapChipType::kBlock) {
+
+	// 進行方向の足元をチェック
+	Vector3 footCheckPos = checkPos;
+	footCheckPos.y -= (kHeight / 2.0f + 0.1f); // 少し下を見る
+
+	// マップインデックス取得
+	MapChipField::IndexSet wallIdx = mapField->GetMapChipIndexSetByPosition(checkPos);
+	MapChipField::IndexSet footIdx = mapField->GetMapChipIndexSetByPosition(footCheckPos);
+
+	bool hitWall = (mapField->GetMapchipTypeByIndex(wallIdx.xIndex, wallIdx.yIndex) == MapChipType::kBlock);
+	bool hasGround = (mapField->GetMapchipTypeByIndex(footIdx.xIndex, footIdx.yIndex) != MapChipType::kBlank);
+
+	// 壁に当たった or 足場がない → 反転
+	if (hitWall || !hasGround) {
 		ReverseDirection();
 	} else {
 		worldTransform_.translation_.x = nextPos.x;
 	}
+
 
 	// ===== 向き =====
 	if (velocity_.x > 0) {
@@ -47,7 +60,6 @@ void Enemy::Update(MapChipField* mapField) {
 	velocity_.y += kEnemyGravityAcceleration;
 	if (velocity_.y < kEnemyLimitFallSpeed)
 		velocity_.y = kEnemyLimitFallSpeed;
-
 
 	// Y軸の移動前に速度を加算
 	worldTransform_.translation_.y += velocity_.y;
@@ -126,3 +138,4 @@ AABB Enemy::GetAABB() {
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
 	return aabb;
 }
+

@@ -51,17 +51,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
-	enemyManager_->Initialize(EnemyModel_, &camera_);
-
-	// === CSVから敵の出現位置を読み込む ===
-	std::vector<Vector3> enemyPositions = enemyManager_->LoadEnemyPositionsFromCSV("./Resources/blocks.csv");
-
-	// === 読み込んだ座標で敵を生成 ===
-	for (const Vector3& pos : enemyPositions) {
-		Enemy* newEnemy = new Enemy();
-		newEnemy->Initialize(EnemyModel_, &camera_, pos);
-		enemyManager_->AddEnemy(newEnemy);
-	}
+	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField());
 
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -136,50 +126,43 @@ void GameScene::Update() {
 	if (isStarting_) {
 		startTimer_++;
 
-		const int kFramePerCount = 60;              // 1つの数字の表示時間（60フレーム = 1秒）
+		const int kFramePerCount = 60;              // 1つの数字の表示時間
 		const int totalFrames = kFramePerCount * 4; // 3,2,1,START の合計
 
-		// 1秒ごとに数字を切り替える
 		if (startTimer_ < totalFrames) {
-			// スケールとアルファのフェード
 			float localTime = (float)(startTimer_ % kFramePerCount) / kFramePerCount;
-			float scale = 1.0f + 0.5f * (1.0f - localTime); // 出始め拡大、消えるとき縮小
+			float scale = 1.0f + 0.5f * (1.0f - localTime);
 			float alpha = 1.0f;
 			if (localTime > 0.8f)
-				alpha = 1.0f - (localTime - 0.8f) * 5.0f; // フェードアウト
-
+				alpha = 1.0f - (localTime - 0.8f) * 5.0f;
 			currentScale_ = scale;
 			currentAlpha_ = std::clamp(alpha, 0.0f, 1.0f);
-
-			// カウント番号を決定
 			currentCount_ = 3 - (startTimer_ / kFramePerCount);
 			if (currentCount_ < 0)
-				currentCount_ = 0; // 最後は "START!"
+				currentCount_ = 0;
 		} else {
-			// 終了してゲームスタート
 			isStarting_ = false;
 			isGameActive_ = true;
 		}
 
-		// ここで return する！ → カウント中は本編を止める
-
-		return;
+		return; // カウント中はゲーム停止
 	}
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
-		// --- フェーズ更新 ---
+		// 敵更新を追加！
+		enemyManager_->Update(mapManager_->GetMapChipField());
+
+		// フェーズ更新
 		auto nextScene = phaseManager_->Update();
 
 		cameraManager_->Update();
 		cameraManager_->TransferMatrix();
 
-		// --- 全敵撃破処理 ---
 		if (enemyManager_->IsAllEnemyDefeated()) {
 			nextScene_ = SceneID::Clear;
 		}
 
-		// --- 死亡演出終了で返ってきたら遷移 ---
 		if (nextScene.has_value()) {
 			sceneManager_->ChangeScene(nextScene.value());
 			return;
@@ -202,10 +185,11 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+	enemyManager_->Draw();
+
 	if (!player_->IsDead())
 		player_->Draw();
 	skydome_->Draw();
-	enemyManager_->Draw();
 
 	for (auto& line : worldTransformBlocks_) {
 		for (WorldTransform* block : line) {
