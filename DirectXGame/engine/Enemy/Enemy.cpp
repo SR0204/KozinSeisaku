@@ -92,7 +92,7 @@ void Enemy::Update(MapChipField* mapField) {
 	jumpTimer_ += 1.0f / 120.0f;
 	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
 		// 4段階のジャンプ高さ（自然に見えるように小刻み）
-		float jumpHeights[4] = { 0.35f, 0.5f, 0.65f, 0.8f }; 
+		float jumpHeights[4] = {0.35f, 0.5f, 0.65f, 0.8f};
 		int idx = rand() % 4; // ランダムに選択
 		velocity_.y = jumpHeights[idx];
 
@@ -106,10 +106,6 @@ void Enemy::Update(MapChipField* mapField) {
 
 	worldTransform_.UpdateMatrix();
 }
-
-
-
-
 
 void Enemy::Draw() {
 	if (!model_)

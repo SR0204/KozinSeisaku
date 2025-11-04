@@ -37,6 +37,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera, M
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
+
 	for (Enemy* enemy : enemies_) {
 		enemy->Update(mapField);
 		Vector3 pos = enemy->GetWorldPosition();

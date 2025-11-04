@@ -8,6 +8,8 @@
 // 前方宣言
 class Player;
 
+enum class EnemyState { Patrol, Chase };
+
 // 敵
 class Enemy {
 public:
@@ -91,4 +93,7 @@ private:
 	// min～max の範囲でランダムな float を返す関数
 	// ==============================================
 	float RandRange(float min, float max) { return min + (max - min) * (rand() / static_cast<float>(RAND_MAX)); }
+
+	EnemyState state_ = EnemyState::Patrol;
+	float detectionRange_ = 5.0f; // プレイヤー検知距離
 };
