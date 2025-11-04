@@ -55,14 +55,15 @@ void Enemy::Update(MapChipField* mapField) {
 	// 右側
 	if (mapField->GetMapchipTypeByIndex(idxR.xIndex, idxR.yIndex) == MapChipType::kBlock) {
 		float rTop = mapField->GetRectByIndex(idxR.xIndex, idxR.yIndex).top;
-		floorY = (std::max)(floorY, rTop); // 高い方の床を優先
+		floorY = (std::max)(floorY, rTop); // 高い方の床
 		hitFloor = true;
 	}
 
-	// 床がある場合は吸着
+	// ===== 床がある場合の処理 =====
 	if (hitFloor && nextPos.y - kHeight / 2 <= floorY + 0.05f) {
 		worldTransform_.translation_.y = floorY + kHeight / 2;
-		velocity_.y = 0.0f;
+		if (velocity_.y < 0)
+			velocity_.y = 0; // 落下中のみリセット
 		isOnGround_ = true;
 	} else {
 		worldTransform_.translation_.y += velocity_.y;
@@ -81,16 +82,20 @@ void Enemy::Update(MapChipField* mapField) {
 	if (hitWall)
 		ReverseDirection();
 
-	// X方向は空中でも移動可能
+	// X方向は空中でも移動
 	worldTransform_.translation_.x += velocity_.x;
 
 	// ===== 向き =====
 	worldTransform_.rotation_.y = (velocity_.x > 0) ? std::numbers::pi_v<float> / 2 : -std::numbers::pi_v<float> / 2;
 
-	// ===== ジャンプ（地上のみ） =====
-	jumpTimer_ += 1.0f / 60.0f;
+	// ===== 4段階ジャンプ =====
+	jumpTimer_ += 1.0f / 120.0f;
 	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
-		velocity_.y = RandRange(0.3f, 0.8f);
+		// 4段階のジャンプ高さ（自然に見えるように小刻み）
+		float jumpHeights[4] = { 0.35f, 0.5f, 0.65f, 0.8f }; 
+		int idx = rand() % 4; // ランダムに選択
+		velocity_.y = jumpHeights[idx];
+
 		jumpInterval_ = RandRange(1.0f, 3.0f);
 		jumpTimer_ = 0.0f;
 	}
@@ -101,6 +106,8 @@ void Enemy::Update(MapChipField* mapField) {
 
 	worldTransform_.UpdateMatrix();
 }
+
+
 
 
 
