@@ -53,6 +53,12 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField());
 
+	if (!EnemyModel_) {
+		OutputDebugStringA("!!! EnemyModel_ load failed (Mushroom not found)\n");
+	} else {
+		OutputDebugStringA(">>> EnemyModel_ loaded successfully\n");
+	}
+
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	player_ = new Player();
@@ -185,12 +191,11 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
-	enemyManager_->Draw();
 
 	if (!player_->IsDead())
 		player_->Draw();
 	skydome_->Draw();
-
+	enemyManager_->Draw();
 	for (auto& line : worldTransformBlocks_) {
 		for (WorldTransform* block : line) {
 			if (block)

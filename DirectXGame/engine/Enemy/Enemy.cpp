@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "../../DirectXGame/etc/MathUtilityFortext.h"
+#include <algorithm>
 #include <cassert>
 #include <numbers>
 
@@ -25,89 +26,71 @@ void Enemy::Update(MapChipField* mapField) {
 	if (collisionCooldown_ > 0)
 		collisionCooldown_--;
 
-	// ===== X方向の壁＋足場チェック =====
-	Vector3 nextPos = worldTransform_.translation_ + Vector3(velocity_.x, 0, 0);
-	Vector3 checkPos = nextPos;
-	checkPos.x += (velocity_.x > 0) ? kWidth / 2.0f : -kWidth / 2.0f;
-
-	// 進行方向の足元をチェック
-	Vector3 footCheckPos = checkPos;
-	footCheckPos.y -= (kHeight / 2.0f + 0.1f); // 少し下を見る
-
-	// マップインデックス取得
-	MapChipField::IndexSet wallIdx = mapField->GetMapChipIndexSetByPosition(checkPos);
-	MapChipField::IndexSet footIdx = mapField->GetMapChipIndexSetByPosition(footCheckPos);
-
-	bool hitWall = (mapField->GetMapchipTypeByIndex(wallIdx.xIndex, wallIdx.yIndex) == MapChipType::kBlock);
-	bool hasGround = (mapField->GetMapchipTypeByIndex(footIdx.xIndex, footIdx.yIndex) != MapChipType::kBlank);
-
-	// 壁に当たった or 足場がない → 反転
-	if (hitWall || !hasGround) {
-		ReverseDirection();
-	} else {
-		worldTransform_.translation_.x = nextPos.x;
-	}
-
-
-	// ===== 向き =====
-	if (velocity_.x > 0) {
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
-	} else if (velocity_.x < 0) {
-		worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
-	}
-
-	// ===== 重力反映 =====
+	// ===== 重力 =====
 	velocity_.y += kEnemyGravityAcceleration;
 	if (velocity_.y < kEnemyLimitFallSpeed)
 		velocity_.y = kEnemyLimitFallSpeed;
 
-	// Y軸の移動前に速度を加算
-	worldTransform_.translation_.y += velocity_.y;
+	// ===== 次の位置 =====
+	Vector3 nextPos = worldTransform_.translation_;
+	nextPos.x += velocity_.x;
+	nextPos.y += velocity_.y;
 
-	// ===== 天井判定 =====
-	Vector3 topLeft = worldTransform_.translation_ + Vector3(-kWidth / 2, kHeight / 2, 0);
-	Vector3 topRight = worldTransform_.translation_ + Vector3(kWidth / 2, kHeight / 2, 0);
-	MapChipField::IndexSet topL = mapField->GetMapChipIndexSetByPosition(topLeft);
-	MapChipField::IndexSet topR = mapField->GetMapChipIndexSetByPosition(topRight);
+	// ===== 床判定（左右2点でチェック） =====
+	Vector3 bottomLeft = nextPos + Vector3(-kWidth / 2, -kHeight / 2 - 0.05f, 0);
+	Vector3 bottomRight = nextPos + Vector3(kWidth / 2, -kHeight / 2 - 0.05f, 0);
 
-	bool hitCeiling = false;
-	MapChipField::Rect ceilingRect{};
+	MapChipField::IndexSet idxL = mapField->GetMapChipIndexSetByPosition(bottomLeft);
+	MapChipField::IndexSet idxR = mapField->GetMapChipIndexSetByPosition(bottomRight);
 
-	if (mapField->GetMapchipTypeByIndex(topL.xIndex, topL.yIndex) != MapChipType::kBlank) {
-		hitCeiling = true;
-		ceilingRect = mapField->GetRectByIndex(topL.xIndex, topL.yIndex);
-	} else if (mapField->GetMapchipTypeByIndex(topR.xIndex, topR.yIndex) != MapChipType::kBlank) {
-		hitCeiling = true;
-		ceilingRect = mapField->GetRectByIndex(topR.xIndex, topR.yIndex);
+	float floorY = -999.0f;
+	bool hitFloor = false;
+
+	// 左側
+	if (mapField->GetMapchipTypeByIndex(idxL.xIndex, idxL.yIndex) == MapChipType::kBlock) {
+		floorY = mapField->GetRectByIndex(idxL.xIndex, idxL.yIndex).top;
+		hitFloor = true;
 	}
 
-	if (hitCeiling) {
-		worldTransform_.translation_.y = ceilingRect.bottom - kHeight / 2.0f;
-		velocity_.y = 0;
+	// 右側
+	if (mapField->GetMapchipTypeByIndex(idxR.xIndex, idxR.yIndex) == MapChipType::kBlock) {
+		float rTop = mapField->GetRectByIndex(idxR.xIndex, idxR.yIndex).top;
+		floorY = (std::max)(floorY, rTop); // 高い方の床を優先
+		hitFloor = true;
 	}
 
-	// ===== 床判定（落下時） =====
-	Vector3 bottomLeft = worldTransform_.translation_ + Vector3(-kWidth / 2, -kHeight / 2, 0);
-	Vector3 bottomRight = worldTransform_.translation_ + Vector3(kWidth / 2, -kHeight / 2, 0);
-	MapChipField::IndexSet botL = mapField->GetMapChipIndexSetByPosition(bottomLeft);
-	MapChipField::IndexSet botR = mapField->GetMapChipIndexSetByPosition(bottomRight);
-
-	bool hitFloor = (mapField->GetMapchipTypeByIndex(botL.xIndex, botL.yIndex) != MapChipType::kBlank || mapField->GetMapchipTypeByIndex(botR.xIndex, botR.yIndex) != MapChipType::kBlank);
-
-	if (hitFloor) {
-		MapChipField::Rect rect = mapField->GetRectByIndex(botL.xIndex, botL.yIndex);
-		worldTransform_.translation_.y = rect.top + kHeight / 2.0f;
-		velocity_.y = 0;
+	// 床がある場合は吸着
+	if (hitFloor && nextPos.y - kHeight / 2 <= floorY + 0.05f) {
+		worldTransform_.translation_.y = floorY + kHeight / 2;
+		velocity_.y = 0.0f;
 		isOnGround_ = true;
 	} else {
+		worldTransform_.translation_.y += velocity_.y;
 		isOnGround_ = false;
 	}
 
-	// ===== 不規則ジャンプ処理 =====
+	// ===== 壁判定（X方向、地上のみ） =====
+	bool hitWall = false;
+	if (isOnGround_) {
+		Vector3 checkSide = nextPos + Vector3((velocity_.x > 0 ? kWidth / 2 : -kWidth / 2), 0, 0);
+		MapChipField::IndexSet idxSide = mapField->GetMapChipIndexSetByPosition(checkSide);
+		if (mapField->GetMapchipTypeByIndex(idxSide.xIndex, idxSide.yIndex) == MapChipType::kBlock)
+			hitWall = true;
+	}
+
+	if (hitWall)
+		ReverseDirection();
+
+	// X方向は空中でも移動可能
+	worldTransform_.translation_.x += velocity_.x;
+
+	// ===== 向き =====
+	worldTransform_.rotation_.y = (velocity_.x > 0) ? std::numbers::pi_v<float> / 2 : -std::numbers::pi_v<float> / 2;
+
+	// ===== ジャンプ（地上のみ） =====
 	jumpTimer_ += 1.0f / 60.0f;
 	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
-		float jumpPower = RandRange(0.3f, 0.8f);
-		velocity_.y = jumpPower;
+		velocity_.y = RandRange(0.3f, 0.8f);
 		jumpInterval_ = RandRange(1.0f, 3.0f);
 		jumpTimer_ = 0.0f;
 	}
@@ -119,7 +102,17 @@ void Enemy::Update(MapChipField* mapField) {
 	worldTransform_.UpdateMatrix();
 }
 
-void Enemy::Draw() { model_->Draw(worldTransform_, *camera_); }
+
+
+void Enemy::Draw() {
+	if (!model_)
+		return;
+	Vector3 pos = GetWorldPosition();
+	char buf[128];
+	sprintf_s(buf, "Enemy::Draw called at (%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
+	OutputDebugStringA(buf);
+	model_->Draw(worldTransform_, *camera_);
+}
 
 void Enemy::OnCollision(const Player* player) { (void)player; }
 
@@ -138,4 +131,3 @@ AABB Enemy::GetAABB() {
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
 	return aabb;
 }
-

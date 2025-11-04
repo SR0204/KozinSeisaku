@@ -24,7 +24,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera, M
 	audio_ = Audio::GetInstance();
 
 	// === CSVから敵の位置を読み込む（マップの高さ考慮）===
-	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("Resources/blocks.csv", mapField);
+	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/blocks.csv", mapField);
 
 	// === 敵を生成 ===
 	for (const auto& pos : enemyPositions) {
@@ -158,7 +158,6 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 
 	std::string line;
 	int row = 0;
-	const float kTileSize = 5.0f;
 
 	while (std::getline(file, line)) {
 		std::stringstream ss(line);
@@ -168,16 +167,14 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 		while (std::getline(ss, cell, ',')) {
 			int value = std::stoi(cell);
 
-			if (value == 3) {
-				// 「3」なら敵をスポーン
-				float x = col * kTileSize;
-				float z = row * kTileSize;
+			if (value == 3) { // 「3」は敵
+				// X/Z座標をブロックに合わせる
+				float x = col * MapChipField::kBlockWidth + MapChipField::kBlockWidth / 2.0f;
+				float z = 0;
 
-				// 下のブロックの上面を取得
+				// Y座標：ブロック上面に合わせる
 				float topY = mapField->GetBlockTopY(col, row);
-
-				// 少し浮かせて配置（ブロックにめり込まないように）
-				float y = topY + 2.0f;
+				float y = topY + Enemy::kHeight / 2.0f + 0.1f; // 少し浮かせる
 
 				positions.push_back({x, y, z});
 			}
@@ -185,6 +182,15 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 		}
 		++row;
 	}
+
+	// デバッグ出力
+	std::ostringstream oss;
+	oss << "LoadEnemyPositionsFromCSV: loaded " << positions.size() << " enemies\n";
+	for (size_t i = 0; i < positions.size(); ++i) {
+		oss << "  [" << i << "] pos = (" << positions[i].x << ", " << positions[i].y << ", " << positions[i].z << ")\n";
+	}
+	OutputDebugStringA(oss.str().c_str());
+
 	return positions;
 }
 
