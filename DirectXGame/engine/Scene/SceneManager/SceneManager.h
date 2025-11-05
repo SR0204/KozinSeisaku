@@ -13,8 +13,12 @@ public:
 	void Update();
 	void Draw();
 
+	void SetSelectedStage(int stage) { selectedStage_ = stage; }
+	int GetSelectedStage() const { return selectedStage_; }
+
 private:
 	std::unique_ptr<Scene> currentScene_;
 	SceneID currentID_;
 	SceneID nextScene_ = SceneID::None; // 切り替えフラグ
+	int selectedStage_ = 0;
 };

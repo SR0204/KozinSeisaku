@@ -41,23 +41,35 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	camera_.Initialize();
 	camera_.farZ = 600;
 
+	// ここでステージ番号を取得！
+	int stageNo = sceneManager_->GetSelectedStage();
+
 	//----------------------------マネージャー系統初期化----------------------------//
 
 	// マップマネージャー初期化
 	mapManager_ = new MapManager();
-	mapManager_->Load("./Resources/blocks.csv");
+
+	switch (stageNo) {
+	case 0:
+		mapManager_->Load("./Resources/Map/Stage1.csv");
+		break;
+	case 1:
+		mapManager_->Load("./Resources/Map/Stage2.csv");
+		break;
+	case 2:
+		mapManager_->Load("./Resources/Map/Stage3.csv");
+		break;
+	default:
+		mapManager_->Load("./Resources/Map/Stage1.csv");
+		break;
+	}
+
 	worldTransformBlocks_ = mapManager_->GenerateBlockTransforms(MapChipType::kBlock);
 
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField());
-
-	if (!EnemyModel_) {
-		OutputDebugStringA("!!! EnemyModel_ load failed (Mushroom not found)\n");
-	} else {
-		OutputDebugStringA(">>> EnemyModel_ loaded successfully\n");
-	}
 
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
