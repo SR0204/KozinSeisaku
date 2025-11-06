@@ -51,16 +51,16 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	switch (stageNo) {
 	case 0:
-		mapManager_->Load("./Resources/Map/Stage1.csv");
+		mapManager_->Load("./Resources/map/Stage1.csv");
 		break;
 	case 1:
-		mapManager_->Load("./Resources/Map/Stage2.csv");
+		mapManager_->Load("./Resources/map/Stage2.csv");
 		break;
 	case 2:
-		mapManager_->Load("./Resources/Map/Stage3.csv");
+		mapManager_->Load("./Resources/map/Stage3.csv");
 		break;
 	default:
-		mapManager_->Load("./Resources/Map/Stage1.csv");
+		mapManager_->Load("./Resources/map/Stage1.csv");
 		break;
 	}
 

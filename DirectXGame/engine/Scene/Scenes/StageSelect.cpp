@@ -1,6 +1,8 @@
+#define NOMINMAX
 #include "StageSelect.h"
 #include "../SceneManager/SceneID.h"
 #include "engine/Scene/SceneManager/SceneManager.h"
+#include <algorithm>
 #include <cmath>
 
 using namespace KamataEngine;
@@ -29,22 +31,42 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	input_ = Input::GetInstance();
 
 	// === 背景 ===
-	bgTexHandle_ = TextureManager::Load("./Resources/StageSelect/stage_bg.png");
+	bgTexHandle_ = TextureManager::Load("./Resources/Title/TitleBack.png");
 	BackGround_[0].reset(Sprite::Create(bgTexHandle_, {0, 0}));
 	BackGround_[1].reset(Sprite::Create(bgTexHandle_, {1280, 0}));
 
 	// === ステージアイコン ===
 	stageTex_[0] = TextureManager::Load("./Resources/StageSelect/stage1.png");
-	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage2.png");
-	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage3.png");
+	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage1.png");
+	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage1.png");
+
+	float baseX = 400.0f;    // 左寄せ
+	float baseY = 250.0f;    // 上寄せ
+	float spacing = 300.0f;  // ステージ間隔
+	float stageScale = 0.5f; // ステージアイコンのサイズ倍率
+
+	Vector2 iconBaseSize = {512.0f * stageScale, 512.0f * stageScale};
 
 	for (int i = 0; i < kMaxStage; i++) {
-		stageSprite_[i].reset(Sprite::Create(stageTex_[i], {200.0f + i * 300.0f, 300.0f}));
+		stageSprite_[i].reset(Sprite::Create(stageTex_[i], {0, 0}));
+		stageSprite_[i]->SetSize(iconBaseSize);
+
+		float x = baseX + (i - (kMaxStage - 1) / 2.0f) * spacing;
+		float y = baseY;
+		stageSprite_[i]->SetPosition({x, y});
 	}
 
 	// === カーソル ===
 	cursorTexHandle_ = TextureManager::Load("./Resources/StageSelect/cursor.png");
-	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {200.0f, 500.0f}));
+	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {0, 0}));
+
+	float cursorScale = 0.7f; // ← カーソルの大きさ調整
+	cursorSprite_->SetSize({128.0f * cursorScale, 128.0f * cursorScale});
+
+	// 初期位置をステージ0に合わせる
+	Vector2 stagePos = stageSprite_[currentStage_]->GetPosition();
+	float cursorOffsetY = iconBaseSize.y / 2.0f + 40.0f; // 下に配置
+	cursorSprite_->SetPosition({stagePos.x, stagePos.y + cursorOffsetY});
 
 	// === フェード ===
 	fadeTexHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
@@ -53,9 +75,9 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	fadeSprite_->SetColor({0, 0, 0, 0});
 
 	// === モデル（中央に飾り3D） ===
-	model_.reset(Model::CreateFromOBJ("SelectModel", true));
+	model_.reset(KamataEngine::Model::CreateFromOBJ("SelectModel", true));
 	worldTransform_.Initialize();
-	worldTransform_.scale_ = {1.5f, 1.5f, 1.5f};
+	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransform_.translation_ = {0, 5, 0};
 	worldTransform_.rotation_.y = 0.0f;
 
@@ -68,10 +90,10 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	model_->SetLightGroup(lightGroup_.get());
 
 	// === BGM ===
-	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/StageSelectBGM.mp3");
-	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
-	bgmVolume_ = 0.5f;
-	Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
+	// bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/StageSelectBGM.mp3");
+	// bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
+	// bgmVolume_ = 0.5f;
+	// Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
 
 	currentStage_ = 0;
 	isFadingOut_ = false;
@@ -84,20 +106,18 @@ void StageSelect::Update() {
 
 	// === 入力 ===
 	if (!isDecide_) {
-		if (input_->TriggerKey(DIK_LEFT)) {
-			currentStage_--;
-			if (currentStage_ < 0)
-				currentStage_ = kMaxStage - 1;
+		// ←左右入力でステージ選択
+		if (input_->TriggerKey(DIK_RIGHT) || input_->TriggerKey(XINPUT_GAMEPAD_DPAD_RIGHT)) {
+			currentStage_ = std::min(currentStage_ + 1, kMaxStage - 1);
 		}
-		if (input_->TriggerKey(DIK_RIGHT)) {
-			currentStage_++;
-			if (currentStage_ >= kMaxStage)
-				currentStage_ = 0;
+		if (input_->TriggerKey(DIK_LEFT) || input_->TriggerKey(XINPUT_GAMEPAD_DPAD_LEFT)) {
+			currentStage_ = std::max(currentStage_ - 1, 0);
 		}
 
-		// カーソル移動
-		Vector2 pos = {200.0f + currentStage_ * 300.0f, 500.0f};
-		cursorSprite_->SetPosition(pos);
+		// === カーソルの位置を選択中ステージに追従 ===
+		Vector2 stagePos = stageSprite_[currentStage_]->GetPosition();
+		float cursorOffsetY = stageSprite_[currentStage_]->GetSize().y / 2.0f + 40.0f;
+		cursorSprite_->SetPosition({stagePos.x, stagePos.y + cursorOffsetY});
 
 		// 決定
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerKey(DIK_RETURN)) {

@@ -24,7 +24,7 @@ void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera, M
 	audio_ = Audio::GetInstance();
 
 	// === CSVから敵の位置を読み込む（マップの高さ考慮）===
-	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/blocks.csv", mapField);
+	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/Map/Stage1.csv", mapField);
 
 	// === 敵を生成 ===
 	for (const auto& pos : enemyPositions) {
