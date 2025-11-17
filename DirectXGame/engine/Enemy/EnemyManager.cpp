@@ -2,6 +2,7 @@
 #include "EnemyManager.h"
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
+#include "../../engine/Score/ScorePopUp.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -18,16 +19,14 @@ EnemyManager::~EnemyManager() {
 	enemies_.clear();
 }
 
-void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField) {
+void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 	audio_ = Audio::GetInstance();
 
-	// === CSVから敵の位置を読み込む（マップの高さ考慮）===
-	std::vector<Vector3> enemyPositions = LoadEnemyPositionsFromCSV("./Resources/Map/Stage1.csv", mapField);
+	auto enemyPositions = LoadEnemyPositionsFromCSV(csvPath, mapField);
 
-	// === 敵を生成 ===
-	for (const auto& pos : enemyPositions) {
+	for (auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
@@ -196,3 +195,21 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 }
 
 void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
+
+int EnemyManager::UpdateScore() {
+	int totalScore = 0;
+
+	for (Enemy* enemy : enemies_) {
+		if (enemy->IsDead() && !enemy->HasScored()) {
+			totalScore += enemy->GetScore();
+
+			// ★ポップアップ生成★
+			ScorePopUp* popup = new ScorePopUp();
+			popup->Initialize(enemy->GetWorldPosition(), enemy->GetScore());
+			gameScene->AddScorePopup(popup); // GameScene に渡す
+
+			enemy->MarkScored(); // 多重加算防止
+		}
+	}
+	return totalScore;
+}

@@ -88,7 +88,7 @@ void Player::InputMove() {
 	const float walkSpeed = 0.2f;    // 通常速度
 	const float dashSpeed = 0.4f;    // ダッシュ速度（Shift押下時）
 	const float gravity = 0.03f;     // 重力加速度
-	const float jumpPower = 0.5f;    // ジャンプ力
+	const float jumpPower = 0.6f;    // ジャンプ力
 	const float maxFallSpeed = 1.0f; // 落下速度上限
 
 	// Shiftキー押下でダッシュ

@@ -38,9 +38,6 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	camera_.Initialize();
-	camera_.farZ = 600;
-
 	// ここでステージ番号を取得！
 	int stageNo = sceneManager_->GetSelectedStage();
 
@@ -49,27 +46,15 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	// マップマネージャー初期化
 	mapManager_ = new MapManager();
 
-	switch (stageNo) {
-	case 0:
-		mapManager_->Load("./Resources/map/Stage1.csv");
-		break;
-	case 1:
-		mapManager_->Load("./Resources/map/Stage2.csv");
-		break;
-	case 2:
-		mapManager_->Load("./Resources/map/Stage3.csv");
-		break;
-	default:
-		mapManager_->Load("./Resources/map/Stage1.csv");
-		break;
-	}
+	std::string enemyCSV = "./Resources/map/Stage" + std::to_string(stageNo + 1) + ".csv";
+	mapManager_->Load(enemyCSV);
 
 	worldTransformBlocks_ = mapManager_->GenerateBlockTransforms(MapChipType::kBlock);
 
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
-	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField());
+	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
 
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -81,6 +66,9 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	//----------------------------プレイヤー関係初期化----------------------------//
 
 	//----------------------------カメラコントローラー関係初期化----------------------------//
+
+	camera_.Initialize();
+	camera_.farZ = 600;
 
 	cameraManager_ = new CameraManager();
 	cameraManager_->Initialize(&camera_, player_);
@@ -171,6 +159,9 @@ void GameScene::Update() {
 		// 敵更新を追加！
 		enemyManager_->Update(mapManager_->GetMapChipField());
 
+		// スコア加算
+		score_ += enemyManager_->UpdateScore();
+
 		// フェーズ更新
 		auto nextScene = phaseManager_->Update();
 
@@ -189,6 +180,17 @@ void GameScene::Update() {
 		if (nextScene_ != SceneID::None) {
 			sceneManager_->ChangeScene(nextScene_);
 			nextScene_ = SceneID::None;
+		}
+	}
+
+	//--------------スコア関係----------------------//
+	for (auto it = scorePopUps_.begin(); it != scorePopUps_.end();) {
+		(*it)->Update();
+		if ((*it)->IsFinished()) {
+			delete *it;
+			it = scorePopUps_.erase(it);
+		} else {
+			++it;
 		}
 	}
 }
@@ -215,6 +217,12 @@ void GameScene::Draw() {
 		}
 	}
 	phaseManager_->Draw();
+
+	//------------------------スコア関係-------------------------//
+	for (ScorePopUp* popup : scorePopUps_) {
+		popup->Draw(camera_);
+	}
+
 	Model::PostDraw();
 
 	// ----------------------------スリーカウント描画---------------------------- //
@@ -239,3 +247,5 @@ void GameScene::Draw() {
 		Sprite::PostDraw();
 	}
 }
+
+void GameScene::AddScorePopUp(ScorePopUp* popUp) { scorePopUps_.push_back(popUp); }

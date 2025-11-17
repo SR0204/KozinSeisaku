@@ -37,8 +37,8 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 
 	// === ステージアイコン ===
 	stageTex_[0] = TextureManager::Load("./Resources/StageSelect/stage1.png");
-	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage1.png");
-	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage1.png");
+	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage2.png");
+	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage3.png");
 
 	float baseX = 400.0f;    // 左寄せ
 	float baseY = 250.0f;    // 上寄せ

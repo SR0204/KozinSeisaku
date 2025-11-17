@@ -12,36 +12,31 @@ void CameraController::Initialize() {
 
 void CameraController::Update() {
 
-	Vector3 targetVelocity = target_->GetVelocity();
-
-	// プレイヤーの位置を取得
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
-
-	// --- 追従目標位置を計算 ---
-	// プレイヤーの位置 + オフセット（例：少し上から見下ろすなど）
 	Vector3 targetPos = targetWorldTransform.translation_ + targetOffset_;
 
-	// --- 滑らかに追従 ---
-	// Lerpを使ってカメラがゆっくり追いつく
-	camera_.translation_ = Lerp(camera_.translation_, targetPos, kInterpolationRate);
+	// --- 初回だけは一気に追従（画面外に出さない） ---
+	if (firstFrame_) {
+		camera_.translation_ = targetPos;
+		firstFrame_ = false;
+	} else {
+		// 通常時はLerpで追従
+		camera_.translation_.x = Lerp(camera_.translation_.x, targetPos.x, kInterpolationRate);
+		camera_.translation_.y = Lerp(camera_.translation_.y, targetPos.y, kInterpolationRate);
+	}
 
-	// --- 回転（プレイヤー方向を向く） ---
-	// 横スクロールなら特に回転しない（固定でOK）
 	camera_.rotation_ = {0.0f, 0.0f, 0.0f};
-
-	// --- 移動範囲制限 ---
-	camera_.translation_.x = std::clamp(camera_.translation_.x, movableArea_.left, movableArea_.right);
-	camera_.translation_.y = std::clamp(camera_.translation_.y, movableArea_.bottom, movableArea_.top);
-
-	// --- カメラ行列を更新 ---
 	camera_.UpdateMatrix();
 }
 
+
 void CameraController::Reset() {
 
-	// 追従対象のワールドトランスフォームを参照
+	// 追従対象のワールドトランスフォーム
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 
-	// 追従対象とオフセットからカメラの座標を計算
+	// 初期化時は即座にプレイヤー位置へ移動（Lerpは使わない）
 	camera_.translation_ = targetWorldTransform.translation_ + targetOffset_;
+
+	camera_.UpdateMatrix();
 }

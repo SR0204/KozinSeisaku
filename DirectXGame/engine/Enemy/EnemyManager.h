@@ -11,7 +11,7 @@ public:
 	EnemyManager();
 	~EnemyManager();
 
-	void Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField);
+	void Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath);
 	void Update(MapChipField* mapField);
 	void Draw();
 	void CheckAllCollisions(Player* player);
@@ -22,6 +22,8 @@ public:
 	std::vector<KamataEngine::Vector3> LoadEnemyPositionsFromCSV(const std::string& filename, MapChipField* mapField);
 
 	void AddEnemy(Enemy* enemy);
+
+	int UpdateScore();
 
 private:
 	std::vector<Enemy*> enemies_;

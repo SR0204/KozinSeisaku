@@ -57,6 +57,14 @@ public:
 
 	int collisionCooldown_ = 0; // フレーム単位
 
+	int GetScore() const { return score_; }
+
+	bool HasScored() const { return scored_; }
+	void MarkScored() { scored_ = true; }
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -96,4 +104,12 @@ private:
 
 	EnemyState state_ = EnemyState::Patrol;
 	float detectionRange_ = 5.0f; // プレイヤー検知距離
+
+	//-----------------------スコア関係--------------------------//
+	int score_ = 10;
+
+	bool scored_ = false;
+
+	// デスフラグ
+	bool isDead_ = false;
 };
