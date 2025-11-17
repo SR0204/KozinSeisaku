@@ -2,11 +2,14 @@
 
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Enemy/EnemyManager.h"
+#include "../../engine/Map/MapManager.h"
+#include "../../engine/Map/SkyDome/SkyDome.h"
+#include "../../engine/Particle/DeathParticles.h"
 #include "../../engine/Player/Player.h"
-#include "engine/Map/MapManager.h"
-#include "engine/Map/SkyDome/SkyDome.h"
-#include "engine/Particle/DeathParticles.h"
-#include "engine/Scene/SceneManager/PhaseManager.h"
+#include "../../engine/Scene/SceneManager/PhaseManager.h"
+#include "../../engine/Scene/SceneManager/SceneManager.h"
+#include "../../engine/Score/Score.h"
+#include "../../engine/Time/Timer.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
@@ -14,7 +17,6 @@
 #include <3d/WorldTransform.h>
 #include <audio/Audio.h>
 #include <base/DirectXCommon.h>
-#include <engine/Scene/SceneManager/SceneManager.h>
 #include <input/Input.h>
 #include <vector>
 
@@ -61,6 +63,9 @@ public: // メンバ関数(引数）
 
 	// デスフラグのgeeter
 	bool IsFinished() const { return finished_; }
+
+	// 時間表示用の関数
+	void DrawTimeUI();
 
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
@@ -153,7 +158,14 @@ private: // メンバ変数（関数）
 	float currentAlpha_ = 1.0f;
 
 	//-----------------------スコア関係--------------------------//
-	int score_ = 0;
+	Score score_;
+
+	int ScoresTexture[10];
+
+	//------------------------時間制限------------------------------//
+	// 制限時間
+	Timer* timer_ = nullptr;
+	int numberTextures_[10]; // 制限時間 0～9のテクスチャハンドル
 
 	/// <summary>
 	/// ゲームシーン用

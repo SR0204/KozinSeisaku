@@ -1,5 +1,6 @@
 #pragma once
 #include "../../engine/Player/Player.h"
+#include "../../engine/Score/Score.h"
 #include "Enemy.h"
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
 #include "engine/Map/MapChipField.h"
@@ -23,7 +24,7 @@ public:
 
 	void AddEnemy(Enemy* enemy);
 
-	int UpdateScore();
+	void SetScore(Score* score) { score_ = score; }
 
 private:
 	std::vector<Enemy*> enemies_;
@@ -35,4 +36,6 @@ private:
 	Model* enemyDeathParticleModel_ = nullptr;
 
 	uint32_t enemyDeathSE_ = 0;
+
+	Score* score_ = nullptr;
 };

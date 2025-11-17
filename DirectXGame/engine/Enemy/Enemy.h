@@ -1,5 +1,6 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Score/Score.h"
 #include "../Player/Player.h"
 #include "engine/Map/MapChipField.h" // 追加
 #include <3d/Model.h>
@@ -57,13 +58,11 @@ public:
 
 	int collisionCooldown_ = 0; // フレーム単位
 
-	int GetScore() const { return score_; }
-
-	bool HasScored() const { return scored_; }
-	void MarkScored() { scored_ = true; }
-
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
+	void OnDead();
+
+	void SetScore(Score* score) { score_ = score; }
 
 private:
 	// ワールド変換データ
@@ -105,11 +104,9 @@ private:
 	EnemyState state_ = EnemyState::Patrol;
 	float detectionRange_ = 5.0f; // プレイヤー検知距離
 
-	//-----------------------スコア関係--------------------------//
-	int score_ = 10;
-
-	bool scored_ = false;
-
 	// デスフラグ
 	bool isDead_ = false;
+
+	//---------------スコア関係-------------------//
+	Score* score_ = nullptr;
 };

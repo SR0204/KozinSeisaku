@@ -134,3 +134,14 @@ AABB Enemy::GetAABB() {
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
 	return aabb;
 }
+
+void Enemy::OnDead() {
+
+	// スコア加算
+	if (score_) {
+		score_->AddScore(10);
+	}
+
+	// 例：死亡エフェクトや削除処理
+	isDead_ = true;
+}

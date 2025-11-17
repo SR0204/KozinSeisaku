@@ -40,12 +40,12 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage2.png");
 	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage3.png");
 
-	float baseX = 400.0f;    // 左寄せ
+	float baseX = 520.0f;    // 左寄せ
 	float baseY = 250.0f;    // 上寄せ
 	float spacing = 300.0f;  // ステージ間隔
 	float stageScale = 0.5f; // ステージアイコンのサイズ倍率
 
-	Vector2 iconBaseSize = {512.0f * stageScale, 512.0f * stageScale};
+	Vector2 iconBaseSize = {500.0f * stageScale, 500.0f * stageScale};
 
 	for (int i = 0; i < kMaxStage; i++) {
 		stageSprite_[i].reset(Sprite::Create(stageTex_[i], {0, 0}));
@@ -60,11 +60,11 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	cursorTexHandle_ = TextureManager::Load("./Resources/StageSelect/cursor.png");
 	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {0, 0}));
 
-	float cursorScale = 0.7f; // ← カーソルの大きさ調整
+	float cursorScale = 0.5f; // ← カーソルの大きさ調整
 	cursorSprite_->SetSize({128.0f * cursorScale, 128.0f * cursorScale});
 
 	// 初期位置をステージ0に合わせる
-	Vector2 stagePos = stageSprite_[currentStage_]->GetPosition();
+	Vector2 stagePos =stageSprite_[currentStage_]->GetPosition();
 	float cursorOffsetY = iconBaseSize.y / 2.0f + 40.0f; // 下に配置
 	cursorSprite_->SetPosition({stagePos.x, stagePos.y + cursorOffsetY});
 
@@ -116,8 +116,17 @@ void StageSelect::Update() {
 
 		// === カーソルの位置を選択中ステージに追従 ===
 		Vector2 stagePos = stageSprite_[currentStage_]->GetPosition();
-		float cursorOffsetY = stageSprite_[currentStage_]->GetSize().y / 2.0f + 40.0f;
-		cursorSprite_->SetPosition({stagePos.x, stagePos.y + cursorOffsetY});
+		Vector2 stageSize = stageSprite_[currentStage_]->GetSize();
+
+		// アイコン右下の座標
+		float rightX = stagePos.x + stageSize.x * 0.5f;
+		float bottomY = stagePos.y + stageSize.y * 0.5f;
+
+		// 少し右下にずらすオフセット（好みで調整）
+		float offsetX = 40.0f;
+		float offsetY = 40.0f;
+
+		cursorSprite_->SetPosition({rightX + offsetX, bottomY + offsetY});
 
 		// 決定
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerKey(DIK_RETURN)) {

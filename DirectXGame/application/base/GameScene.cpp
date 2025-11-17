@@ -29,6 +29,9 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete mapManager_;
+
+	// 制限時間
+	delete timer_;
 }
 
 void GameScene::Initialize(SceneManager* sceneManager) {
@@ -51,10 +54,21 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	worldTransformBlocks_ = mapManager_->GenerateBlockTransforms(MapChipType::kBlock);
 
+	//--------------------スコアテクスチャ読み込み-------------------------//
+
+	score_.Initialize();
+
+	for (int i = 0; i < 10; ++i) {
+		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
+		ScoresTexture[i] = TextureManager::Load(path.c_str());
+	}
+
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
+
+	enemyManager_->SetScore(&score_);
 
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -124,6 +138,18 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	isStarting_ = true;
 	startTimer_ = 0;
+
+	//------------------制限時間初期化---------------------//
+	// 制限時間の初期化
+	// 数字テクスチャのロード
+	for (int i = 0; i <= 9; i++) {
+		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
+		numberTextures_[i] = TextureManager::Load(path);
+	}
+
+	constexpr float kTimeLimit = 60.0f;
+	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
+	timer_->Initialize();
 }
 
 void GameScene::Update() {
@@ -156,11 +182,12 @@ void GameScene::Update() {
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
+
+		// 制限時間更新
+		timer_->Update();
+
 		// 敵更新を追加！
 		enemyManager_->Update(mapManager_->GetMapChipField());
-
-		// スコア加算
-		score_ += enemyManager_->UpdateScore();
 
 		// フェーズ更新
 		auto nextScene = phaseManager_->Update();
@@ -183,7 +210,6 @@ void GameScene::Update() {
 		}
 	}
 
-	//--------------スコア関係----------------------//
 }
 
 void GameScene::Draw() {
@@ -209,8 +235,6 @@ void GameScene::Draw() {
 	}
 	phaseManager_->Draw();
 
-	//------------------------スコア関係-------------------------//
-
 	Model::PostDraw();
 
 	// ----------------------------スリーカウント描画---------------------------- //
@@ -233,5 +257,22 @@ void GameScene::Draw() {
 		drawSprite->Draw();
 
 		Sprite::PostDraw();
+	}
+
+	Sprite::PreDraw(commandList);
+	if (isGameActive_) {
+		//------------------------スコア関係-------------------------//
+		score_.Draw(ScoresTexture, 50, 50);
+
+		// タイマー描画（画面右上あたりに表示）
+		timer_->Draw(numberTextures_, 1000.0f, 10.0f);
+	}
+
+	Sprite::PostDraw();
+}
+
+void GameScene::DrawTimeUI() {
+	if (timer_) {
+		timer_->Draw(numberTextures_, 1000.0f, 10.0f); // TimeクラスのDrawを呼び出す
 	}
 }

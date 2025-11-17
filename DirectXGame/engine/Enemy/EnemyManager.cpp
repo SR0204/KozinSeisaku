@@ -79,6 +79,11 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				enemy->SetAlive(false);
 				player->SetVelocityY(0.25f); // 軽くバウンド
 
+				// ----- ここでスコア加算 -----
+				if (score_) {
+					score_->AddScore(10);
+				}
+
 				// --- 効果音を再生 ---
 				// Audio::GetInstance()->PlayWave(enemyDeathSE_);
 
@@ -194,16 +199,3 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 }
 
 void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
-
-int EnemyManager::UpdateScore() {
-	int totalScore = 0;
-
-	for (Enemy* enemy : enemies_) {
-		if (enemy->IsDead() && !enemy->HasScored()) {
-			totalScore += enemy->GetScore();
-
-			enemy->MarkScored(); // 多重加算防止
-		}
-	}
-	return totalScore;
-}
