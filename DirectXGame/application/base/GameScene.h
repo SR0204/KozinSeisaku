@@ -3,7 +3,6 @@
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Enemy/EnemyManager.h"
 #include "../../engine/Player/Player.h"
-#include "../../engine/Score/ScorePopUp.h"
 #include "engine/Map/MapManager.h"
 #include "engine/Map/SkyDome/SkyDome.h"
 #include "engine/Particle/DeathParticles.h"
@@ -62,9 +61,6 @@ public: // メンバ関数(引数）
 
 	// デスフラグのgeeter
 	bool IsFinished() const { return finished_; }
-
-	// スコア関係
-	void AddScorePopUp(ScorePopUp* popUp);
 
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
@@ -158,8 +154,6 @@ private: // メンバ変数（関数）
 
 	//-----------------------スコア関係--------------------------//
 	int score_ = 0;
-
-	std::vector<ScorePopUp*> scorePopUps_;
 
 	/// <summary>
 	/// ゲームシーン用

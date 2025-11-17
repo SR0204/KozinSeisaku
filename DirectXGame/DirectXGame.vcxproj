@@ -174,7 +174,6 @@
     <ClCompile Include="engine\Scene\Scenes\TitleScene.cpp" />
     <ClCompile Include="etc\worldTransformEx.cpp" />
     <ClCompile Include="engine\Scene\Scenes\StageSelect.cpp" />
-    <ClCompile Include="engine\Score\ScorePopUp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -296,7 +295,6 @@
     <ClInclude Include="engine\Map\StageID.h" />
     <ClInclude Include="engine\Scene\Scenes\TitleScene.h" />
     <ClInclude Include="engine\Scene\Scenes\StageSelect.h" />
-    <ClInclude Include="engine\Score\ScorePopUp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

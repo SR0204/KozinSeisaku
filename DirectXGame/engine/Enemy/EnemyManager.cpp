@@ -2,7 +2,6 @@
 #include "EnemyManager.h"
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
-#include "../../engine/Score/ScorePopUp.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -202,11 +201,6 @@ int EnemyManager::UpdateScore() {
 	for (Enemy* enemy : enemies_) {
 		if (enemy->IsDead() && !enemy->HasScored()) {
 			totalScore += enemy->GetScore();
-
-			// ★ポップアップ生成★
-			ScorePopUp* popup = new ScorePopUp();
-			popup->Initialize(enemy->GetWorldPosition(), enemy->GetScore());
-			gameScene->AddScorePopup(popup); // GameScene に渡す
 
 			enemy->MarkScored(); // 多重加算防止
 		}

@@ -184,15 +184,6 @@ void GameScene::Update() {
 	}
 
 	//--------------スコア関係----------------------//
-	for (auto it = scorePopUps_.begin(); it != scorePopUps_.end();) {
-		(*it)->Update();
-		if ((*it)->IsFinished()) {
-			delete *it;
-			it = scorePopUps_.erase(it);
-		} else {
-			++it;
-		}
-	}
 }
 
 void GameScene::Draw() {
@@ -219,9 +210,6 @@ void GameScene::Draw() {
 	phaseManager_->Draw();
 
 	//------------------------スコア関係-------------------------//
-	for (ScorePopUp* popup : scorePopUps_) {
-		popup->Draw(camera_);
-	}
 
 	Model::PostDraw();
 
@@ -247,5 +235,3 @@ void GameScene::Draw() {
 		Sprite::PostDraw();
 	}
 }
-
-void GameScene::AddScorePopUp(ScorePopUp* popUp) { scorePopUps_.push_back(popUp); }
