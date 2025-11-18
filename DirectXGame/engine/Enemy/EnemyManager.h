@@ -26,6 +26,8 @@ public:
 
 	void SetScore(Score* score) { score_ = score; }
 
+	void SpawnEnemy(const Vector3& pos);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;

@@ -150,6 +150,10 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	constexpr float kTimeLimit = 60.0f;
 	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
 	timer_->Initialize();
+
+	//--------------------敵のスポーン初期化------------------------//
+	spawnManager_ = new SpawnManager();
+	spawnManager_->Initialize(enemyManager_);
 }
 
 void GameScene::Update() {
@@ -192,6 +196,10 @@ void GameScene::Update() {
 			sceneManager_->ChangeScene(SceneID::GameOver);
 			return;
 		}
+
+		// 敵スポーン（無限湧き）
+		//float deltaTime = 1.0f / 60.0f; // 固定フレームでもOK（あなたのコードはfps60）
+		//spawnManager_->Update(deltaTime);
 
 		// 敵更新を追加！
 		enemyManager_->Update(mapManager_->GetMapChipField());

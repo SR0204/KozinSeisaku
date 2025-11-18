@@ -9,6 +9,7 @@
 #include "../../engine/Scene/SceneManager/PhaseManager.h"
 #include "../../engine/Scene/SceneManager/SceneManager.h"
 #include "../../engine/Score/Score.h"
+#include "../../engine/Spawn/SpawnManager.h"
 #include "../../engine/Time/Timer.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
@@ -166,6 +167,9 @@ private: // メンバ変数（関数）
 	// 制限時間
 	Timer* timer_ = nullptr;
 	int numberTextures_[10]; // 制限時間 0～9のテクスチャハンドル
+
+	//------------------------敵のスポーン関係------------------------//
+	SpawnManager* spawnManager_;
 
 	/// <summary>
 	/// ゲームシーン用

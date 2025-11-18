@@ -199,3 +199,10 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 }
 
 void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
+
+void EnemyManager::SpawnEnemy(const Vector3& pos) {
+	Enemy* newEnemy = new Enemy();
+	newEnemy->Initialize(enemyModel_, camera_, pos);
+	newEnemy->SetScore(score_); // ★倒されたらスコア加算
+	enemies_.push_back(newEnemy);
+}
