@@ -23,14 +23,16 @@ public:
 	// 時間切れ判定
 	bool IsTimeOver() const;
 
+	bool isActive;
+
 private:
 	float limitTime;         // 制限時間（秒）
 	LARGE_INTEGER startTime; // 開始時刻
 	LARGE_INTEGER lastTime;  // 終了時刻
 	LARGE_INTEGER frequency; // 高精度タイマーの周波数
+	LARGE_INTEGER prevTime;
 
 	GameScene* gameScene_;
 
 	float elapsedTime = 0.0f;
-	bool isActive = false;
 };

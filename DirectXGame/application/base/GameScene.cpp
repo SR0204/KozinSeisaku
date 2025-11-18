@@ -175,6 +175,7 @@ void GameScene::Update() {
 		} else {
 			isStarting_ = false;
 			isGameActive_ = true;
+			timer_->isActive = true;
 		}
 
 		return; // カウント中はゲーム停止
@@ -185,6 +186,12 @@ void GameScene::Update() {
 
 		// 制限時間更新
 		timer_->Update();
+
+		// ★制限時間切れチェック
+		if (timer_->IsTimeOver()) {
+			sceneManager_->ChangeScene(SceneID::GameOver);
+			return;
+		}
 
 		// 敵更新を追加！
 		enemyManager_->Update(mapManager_->GetMapChipField());
@@ -209,7 +216,6 @@ void GameScene::Update() {
 			nextScene_ = SceneID::None;
 		}
 	}
-
 }
 
 void GameScene::Draw() {

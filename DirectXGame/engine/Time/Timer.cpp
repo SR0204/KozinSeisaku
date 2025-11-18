@@ -12,6 +12,7 @@ void Timer::Initialize() {
 	QueryPerformanceFrequency(&frequency); // タイマーの周波数を取得
 	QueryPerformanceCounter(&startTime);   // 開始時刻を取得
 
+	prevTime = startTime;
 	elapsedTime = 0.0f;
 	isActive = false; // ゲーム開始までは進めない
 }
@@ -29,7 +30,6 @@ void Timer::Update() {
 
 	prevTime = currentTime;
 }
-
 
 void Timer::Draw(int numberTextures[], float x, float y) {
 
