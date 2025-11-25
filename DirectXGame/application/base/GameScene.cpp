@@ -71,7 +71,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	enemyManager_->SetScore(&score_);
 
 	//----------------------------プレイヤー関係初期化----------------------------//
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelPlayer_ = Model::CreateFromOBJ("Penguin", true);
 	player_ = new Player();
 	Vector3 playerPosition = mapManager_->GetPlayerSpawnPos();
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);

@@ -24,9 +24,7 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position; // 初期配置
-
-	/*worldTransform_.translation_.x = 5;
-	worldTransform_.translation_.y = 1;*/
+	worldTransform_.scale_ = {0.5, 0.5, 0.5};
 
 	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
@@ -426,7 +424,6 @@ void Player::CellingContactHit(const CollisionMapInfo& info) {
 		// 天井に当たったブロックのインデックスを取得
 		Vector3 headPos = worldTransform_.translation_ + Vector3(0, kHeight / 2.0f, 0);
 		MapChipField::IndexSet indexSet = mapChipField_->GetMapChipIndexSetByPosition(headPos);
-
 	}
 }
 

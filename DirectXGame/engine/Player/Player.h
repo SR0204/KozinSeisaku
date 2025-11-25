@@ -39,8 +39,8 @@ public: // 引数を書くところ
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 	// キャラクターの当たり判定サイズ(0.0fとかにするとキャラクターが埋まったりする)
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 0.5f;
+	static inline const float kHeight = 0.5f;
 
 	/// <summary>
 	/// 更新処理
@@ -120,6 +120,8 @@ private: // 関数（メンバ変数）
 	// 速度
 	Vector3 velocity_ = {};
 
+	bool isJump_ = false; // ★ジャンプ中フラグ
+
 	// 角度補間
 
 	// 旋回開始時の角度
@@ -154,7 +156,7 @@ private: // 関数（メンバ変数）
 	// ジャンプ初速（上方向）
 	static inline const float kJumpAcceleration = 0.5f;
 
-	static inline const float kBlank = 5;
+	static inline const float kBlank = 0.01f;
 
 	// 着地時の速度減衰率
 	static inline const float kAttennuationLanding = 0.5f;
