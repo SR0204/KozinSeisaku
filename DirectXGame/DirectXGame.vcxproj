@@ -177,6 +177,7 @@
     <ClCompile Include="engine\Score\Score.cpp" />
     <ClCompile Include="engine\Time\Timer.cpp" />
     <ClCompile Include="engine\Spawn\SpawnManager.cpp" />
+    <ClCompile Include="engine\Particle\ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -301,6 +302,7 @@
     <ClInclude Include="engine\Score\Score.h" />
     <ClInclude Include="engine\Time\Timer.h" />
     <ClInclude Include="engine\Spawn\SpawnManager.h" />
+    <ClInclude Include="engine\Particle\ParticleSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

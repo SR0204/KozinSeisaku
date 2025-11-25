@@ -1,5 +1,6 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Particle/ParticleSystem.h"
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
@@ -17,6 +18,8 @@ class Enemy;
 class Player {
 
 public: // 引数を書くところ
+	~Player();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -177,4 +180,10 @@ private: // 関数（メンバ変数）
 	bool isInvincible_ = false;    // 無敵状態か
 	int invincibleTimer_ = 0;      // 無敵残り時間（フレーム）
 	int invincibleDuration_ = 180; // 無敵時間（例：2秒 = 60fps * 2）
+
+	//---------------パーティクルエフェクト-----------------------
+	ParticleSystem* dashParticles_ = nullptr;
+	ParticleSystem* hipDropParticles_ = nullptr;
+	KamataEngine::Model* quadModel_ = nullptr; // 四角形モデル（パーティクル用）
+	KamataEngine::Model* CreateQuadModel();
 };

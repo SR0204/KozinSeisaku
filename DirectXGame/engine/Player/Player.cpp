@@ -10,6 +10,12 @@
 
 using namespace KamataEngine;
 
+Player::~Player() {
+	delete dashParticles_;
+	delete hipDropParticles_;
+	delete quadModel_;
+}
+
 /// <summary>
 /// 初期化
 /// </summary>
@@ -28,6 +34,12 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+
+	dashParticles_ = new ParticleSystem(camera_);
+	dashParticles_->Initialize(50);
+
+	hipDropParticles_ = new ParticleSystem(camera_);
+	hipDropParticles_->Initialize(50);
 }
 
 /// <summary>
@@ -49,6 +61,28 @@ void Player::Update() {
 	// 天井ヒットなど
 	CellingContactHit(collisionMapInfo);
 	cellingSwitch(collisionMapInfo);
+
+	// --- パーティクル発生 ---
+	dashParticles_->Update();
+	hipDropParticles_->Update();
+
+	// ダッシュ中の継続パーティクル
+	if ((Input::GetInstance()->PushKey(DIK_LSHIFT) || Input::GetInstance()->PushKey(DIK_RSHIFT)) && onGround_) {
+		Vector3 particlePos = worldTransform_.translation_ + Vector3(0, -kHeight / 2.0f, 0);
+		for (int i = 0; i < 2; ++i) { // フレームごとに少量
+			Vector3 vel = {(rand() % 100 - 50) / 200.0f, (rand() % 50) / 200.0f, 0};
+			dashParticles_->Emit(particlePos, vel, 0.5f);
+		}
+	}
+
+	// ヒップドロップ中の継続パーティクル
+	if (isHipDrop_) {
+		Vector3 particlePos = worldTransform_.translation_ + Vector3(0, -kHeight / 2.0f, 0);
+		for (int i = 0; i < 3; ++i) {
+			Vector3 vel = {(rand() % 100 - 50) / 100.0f, 0, (rand() % 100 - 50) / 100.0f};
+			hipDropParticles_->Emit(particlePos, vel, 0.5f);
+		}
+	}
 
 	// 回転制御
 	AnimateTurn();
@@ -75,6 +109,9 @@ void Player::Draw() {
 	if (isInvincible_ && ((invincibleTimer_ / 4) % 2 == 0)) {
 		return; // 描画スキップ（チカチカする）
 	}
+
+	dashParticles_->Draw();
+	hipDropParticles_->Draw();
 
 	model_->Draw(worldTransform_, *camera_);
 }
@@ -110,6 +147,14 @@ void Player::InputMove() {
 	if (onGround_ && (input->TriggerKey(DIK_W) || input->TriggerKey(DIK_SPACE))) {
 		velocity_.y = jumpPower;
 		onGround_ = false;
+		// ダッシュ中ならパーティクル発生
+		if (isDash) {
+			Vector3 particlePos = worldTransform_.translation_ + Vector3(0, -kHeight / 2.0f, 0);
+			for (int i = 0; i < 10; ++i) {
+				Vector3 vel = {(rand() % 100 - 50) / 100.0f, (rand() % 50) / 100.0f, 0};
+				dashParticles_->Emit(particlePos, vel, 0.5f);
+			}
+		}
 	}
 
 	// ヒップドロップ発動
@@ -117,6 +162,13 @@ void Player::InputMove() {
 		if (input->TriggerKey(DIK_S) || input->TriggerKey(DIK_DOWN)) {
 			isHipDrop_ = true;
 			velocity_.y = std::min(velocity_.y, -0.2f); // 落下方向に少し勢いをつける程度
+
+			// ヒップドロップパーティクル発生
+			Vector3 particlePos = worldTransform_.translation_ + Vector3(0, -kHeight / 2.0f, 0);
+			for (int i = 0; i < 15; ++i) {
+				Vector3 vel = {(rand() % 100 - 50) / 50.0f, 0, (rand() % 100 - 50) / 50.0f};
+				hipDropParticles_->Emit(particlePos, vel, 0.5f);
+			}
 		}
 	}
 
@@ -450,6 +502,18 @@ AABB Player::GetAABB() {
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
 
 	return aabb;
+}
+
+// Quadモデルを作成する
+KamataEngine::Model* Player::CreateQuadModel() {
+
+	// Particle.obj をロード
+	quadModel_->CreateFromOBJ("deathParticle", true);
+
+	// 必要ならスケールや初期化処理
+	quadModel_->StaticInitialize(); // もし Initialize が必要なら
+
+	return quadModel_;
 }
 
 void Player::CheckMapCollisionHit(const CollisionMapInfo& info) {
