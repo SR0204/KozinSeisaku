@@ -29,6 +29,9 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete mapManager_;
+
+	// 制限時間
+	delete timer_;
 }
 
 
@@ -39,23 +42,37 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	camera_.Initialize();
-	camera_.farZ = 600;
+	// ここでステージ番号を取得！
+	int stageNo = sceneManager_->GetSelectedStage();
 
 	//----------------------------マネージャー系統初期化----------------------------//
 
 	// マップマネージャー初期化
 	mapManager_ = new MapManager();
-	mapManager_->Load("./Resources/blocks.csv");
+
+	std::string enemyCSV = "./Resources/map/Stage" + std::to_string(stageNo + 1) + ".csv";
+	mapManager_->Load(enemyCSV);
+
 	worldTransformBlocks_ = mapManager_->GenerateBlockTransforms(MapChipType::kBlock);
+
+	//--------------------スコアテクスチャ読み込み-------------------------//
+
+	score_.Initialize();
+
+	for (int i = 0; i < 10; ++i) {
+		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
+		ScoresTexture[i] = TextureManager::Load(path.c_str());
+	}
 
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 	enemyManager_ = new EnemyManager();
-	enemyManager_->Initialize(EnemyModel_, &camera_);
+	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
+
+	enemyManager_->SetScore(&score_);
 
 	//----------------------------プレイヤー関係初期化----------------------------//
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelPlayer_ = Model::CreateFromOBJ("Penguin", true);
 	player_ = new Player();
 	Vector3 playerPosition = mapManager_->GetPlayerSpawnPos();
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
@@ -64,6 +81,9 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	//----------------------------プレイヤー関係初期化----------------------------//
 
 	//----------------------------カメラコントローラー関係初期化----------------------------//
+
+	camera_.Initialize();
+	camera_.farZ = 600;
 
 	cameraManager_ = new CameraManager();
 	cameraManager_->Initialize(&camera_, player_);
@@ -119,6 +139,22 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	isStarting_ = true;
 	startTimer_ = 0;
+
+	//------------------制限時間初期化---------------------//
+	// 制限時間の初期化
+	// 数字テクスチャのロード
+	for (int i = 0; i <= 9; i++) {
+		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
+		numberTextures_[i] = TextureManager::Load(path);
+	}
+
+	constexpr float kTimeLimit = 60.0f;
+	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
+	timer_->Initialize();
+
+	//--------------------敵のスポーン初期化------------------------//
+	spawnManager_ = new SpawnManager();
+	spawnManager_->Initialize(enemyManager_);
 }
 
 void GameScene::Update() {
@@ -127,50 +163,58 @@ void GameScene::Update() {
 	if (isStarting_) {
 		startTimer_++;
 
-		const int kFramePerCount = 60;              // 1つの数字の表示時間（60フレーム = 1秒）
+		const int kFramePerCount = 60;              // 1つの数字の表示時間
 		const int totalFrames = kFramePerCount * 4; // 3,2,1,START の合計
 
-		// 1秒ごとに数字を切り替える
 		if (startTimer_ < totalFrames) {
-			// スケールとアルファのフェード
 			float localTime = (float)(startTimer_ % kFramePerCount) / kFramePerCount;
-			float scale = 1.0f + 0.5f * (1.0f - localTime); // 出始め拡大、消えるとき縮小
+			float scale = 1.0f + 0.5f * (1.0f - localTime);
 			float alpha = 1.0f;
 			if (localTime > 0.8f)
-				alpha = 1.0f - (localTime - 0.8f) * 5.0f; // フェードアウト
-
+				alpha = 1.0f - (localTime - 0.8f) * 5.0f;
 			currentScale_ = scale;
 			currentAlpha_ = std::clamp(alpha, 0.0f, 1.0f);
-
-			// カウント番号を決定
 			currentCount_ = 3 - (startTimer_ / kFramePerCount);
 			if (currentCount_ < 0)
-				currentCount_ = 0; // 最後は "START!"
+				currentCount_ = 0;
 		} else {
-			// 終了してゲームスタート
 			isStarting_ = false;
 			isGameActive_ = true;
+			timer_->isActive = true;
 		}
 
-		// ここで return する！ → カウント中は本編を止める
-
-		return;
+		return; // カウント中はゲーム停止
 	}
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
-		// --- フェーズ更新 ---
+
+		// 制限時間更新
+		timer_->Update();
+
+		// ★制限時間切れチェック
+		if (timer_->IsTimeOver()) {
+			sceneManager_->ChangeScene(SceneID::GameOver);
+			return;
+		}
+
+		// 敵スポーン（無限湧き）
+		//float deltaTime = 1.0f / 60.0f; // 固定フレームでもOK（あなたのコードはfps60）
+		//spawnManager_->Update(deltaTime);
+
+		// 敵更新を追加！
+		enemyManager_->Update(mapManager_->GetMapChipField());
+
+		// フェーズ更新
 		auto nextScene = phaseManager_->Update();
 
 		cameraManager_->Update();
 		cameraManager_->TransferMatrix();
 
-		// --- 全敵撃破処理 ---
 		if (enemyManager_->IsAllEnemyDefeated()) {
 			nextScene_ = SceneID::Clear;
 		}
 
-		// --- 死亡演出終了で返ってきたら遷移 ---
 		if (nextScene.has_value()) {
 			sceneManager_->ChangeScene(nextScene.value());
 			return;
@@ -193,11 +237,11 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+
 	if (!player_->IsDead())
 		player_->Draw();
 	skydome_->Draw();
 	enemyManager_->Draw();
-
 	for (auto& line : worldTransformBlocks_) {
 		for (WorldTransform* block : line) {
 			if (block)
@@ -205,6 +249,7 @@ void GameScene::Draw() {
 		}
 	}
 	phaseManager_->Draw();
+
 	Model::PostDraw();
 
 	// ----------------------------スリーカウント描画---------------------------- //
@@ -227,5 +272,22 @@ void GameScene::Draw() {
 		drawSprite->Draw();
 
 		Sprite::PostDraw();
+	}
+
+	Sprite::PreDraw(commandList);
+	if (isGameActive_) {
+		//------------------------スコア関係-------------------------//
+		score_.Draw(ScoresTexture, 50, 50);
+
+		// タイマー描画（画面右上あたりに表示）
+		timer_->Draw(numberTextures_, 1000.0f, 10.0f);
+	}
+
+	Sprite::PostDraw();
+}
+
+void GameScene::DrawTimeUI() {
+	if (timer_) {
+		timer_->Draw(numberTextures_, 1000.0f, 10.0f); // TimeクラスのDrawを呼び出す
 	}
 }

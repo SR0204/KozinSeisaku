@@ -3,6 +3,11 @@
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+using namespace KamataEngine;
 
 EnemyManager::EnemyManager() : enemyModel_(nullptr), camera_(nullptr) {}
 
@@ -13,25 +18,27 @@ EnemyManager::~EnemyManager() {
 	enemies_.clear();
 }
 
-void EnemyManager::Initialize(KamataEngine::Model* enemyModel, Camera* camera) {
+void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
+	audio_ = Audio::GetInstance();
 
-	// 敵の初期配置
-	for (int i = 0; i < 4; ++i) {
+	auto enemyPositions = LoadEnemyPositionsFromCSV(csvPath, mapField);
+
+	for (auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 pos = {10 + i * 5.0f, 5, 0};
 		newEnemy->Initialize(enemyModel_, camera, pos);
 		enemies_.push_back(newEnemy);
 	}
 
-	// デスパーティクル用モデル
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
+
 	for (Enemy* enemy : enemies_) {
-		enemy->Update(mapField); // MapChipField を渡して壁判定や重力処理を行う
+		enemy->Update(mapField);
+		Vector3 pos = enemy->GetWorldPosition();
 	}
 
 	for (auto it = deathParticles_.begin(); it != deathParticles_.end();) {
@@ -66,10 +73,19 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 
 		if (IsColision(playerAABB, enemy->GetAABB())) {
 			// 上から踏んだ判定
-			if (player->GetVelocity().y < 0.0f && playerAABB.min.y > enemy->GetAABB().max.y - 5.0f) {
+			if (player->GetVelocity().y < 0.0f && playerAABB.min.y > enemy->GetAABB().max.y - 1.0f) {
+
 				// 踏んだ！即消し
 				enemy->SetAlive(false);
 				player->SetVelocityY(0.25f); // 軽くバウンド
+
+				// ----- ここでスコア加算 -----
+				if (score_) {
+					score_->AddScore(10);
+				}
+
+				// --- 効果音を再生 ---
+				// Audio::GetInstance()->PlayWave(enemyDeathSE_);
 
 				// ここでデスパーティクルを生成
 				EnemyDeathParticles* p = new EnemyDeathParticles();
@@ -137,3 +153,56 @@ void EnemyManager::HandleEnemyCollisions() {
 }
 
 bool EnemyManager::IsAllEnemyDefeated() const { return enemies_.empty(); }
+
+std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const std::string& filename, MapChipField* mapField) {
+	std::vector<Vector3> positions;
+	std::ifstream file(filename);
+	if (!file.is_open())
+		return positions;
+
+	std::string line;
+	int row = 0;
+
+	while (std::getline(file, line)) {
+		std::stringstream ss(line);
+		std::string cell;
+		int col = 0;
+
+		while (std::getline(ss, cell, ',')) {
+			int value = std::stoi(cell);
+
+			if (value == 3) { // 「3」は敵
+				// X/Z座標をブロックに合わせる
+				float x = col * MapChipField::kBlockWidth + MapChipField::kBlockWidth / 2.0f;
+				float z = 0;
+
+				// Y座標：ブロック上面に合わせる
+				float topY = mapField->GetBlockTopY(col, row);
+				float y = topY + Enemy::kHeight / 2.0f + 0.1f; // 少し浮かせる
+
+				positions.push_back({x, y, z});
+			}
+			++col;
+		}
+		++row;
+	}
+
+	// デバッグ出力
+	std::ostringstream oss;
+	oss << "LoadEnemyPositionsFromCSV: loaded " << positions.size() << " enemies\n";
+	for (size_t i = 0; i < positions.size(); ++i) {
+		oss << "  [" << i << "] pos = (" << positions[i].x << ", " << positions[i].y << ", " << positions[i].z << ")\n";
+	}
+	OutputDebugStringA(oss.str().c_str());
+
+	return positions;
+}
+
+void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
+
+void EnemyManager::SpawnEnemy(const Vector3& pos) {
+	Enemy* newEnemy = new Enemy();
+	newEnemy->Initialize(enemyModel_, camera_, pos);
+	newEnemy->SetScore(score_); // ★倒されたらスコア加算
+	enemies_.push_back(newEnemy);
+}

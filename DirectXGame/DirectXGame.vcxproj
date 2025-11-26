@@ -173,6 +173,11 @@
     <ClCompile Include="engine\Map\SkyDome\SkyDome.cpp" />
     <ClCompile Include="engine\Scene\Scenes\TitleScene.cpp" />
     <ClCompile Include="etc\worldTransformEx.cpp" />
+    <ClCompile Include="engine\Scene\Scenes\StageSelect.cpp" />
+    <ClCompile Include="engine\Score\Score.cpp" />
+    <ClCompile Include="engine\Time\Timer.cpp" />
+    <ClCompile Include="engine\Spawn\SpawnManager.cpp" />
+    <ClCompile Include="engine\Particle\ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -293,6 +298,11 @@
     <ClInclude Include="engine\Map\SkyDome\SkyDome.h" />
     <ClInclude Include="engine\Map\StageID.h" />
     <ClInclude Include="engine\Scene\Scenes\TitleScene.h" />
+    <ClInclude Include="engine\Scene\Scenes\StageSelect.h" />
+    <ClInclude Include="engine\Score\Score.h" />
+    <ClInclude Include="engine\Time\Timer.h" />
+    <ClInclude Include="engine\Spawn\SpawnManager.h" />
+    <ClInclude Include="engine\Particle\ParticleSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

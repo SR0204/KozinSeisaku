@@ -1,5 +1,6 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Particle/ParticleSystem.h"
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
@@ -17,6 +18,8 @@ class Enemy;
 class Player {
 
 public: // 引数を書くところ
+	~Player();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -39,8 +42,8 @@ public: // 引数を書くところ
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 	// キャラクターの当たり判定サイズ(0.0fとかにするとキャラクターが埋まったりする)
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 0.5f;
+	static inline const float kHeight = 0.5f;
 
 	/// <summary>
 	/// 更新処理
@@ -120,6 +123,8 @@ private: // 関数（メンバ変数）
 	// 速度
 	Vector3 velocity_ = {};
 
+	bool isJump_ = false; // ★ジャンプ中フラグ
+
 	// 角度補間
 
 	// 旋回開始時の角度
@@ -154,7 +159,7 @@ private: // 関数（メンバ変数）
 	// ジャンプ初速（上方向）
 	static inline const float kJumpAcceleration = 0.5f;
 
-	static inline const float kBlank = 5;
+	static inline const float kBlank = 0.01f;
 
 	// 着地時の速度減衰率
 	static inline const float kAttennuationLanding = 0.5f;
@@ -168,4 +173,17 @@ private: // 関数（メンバ変数）
 
 	bool isHipDrop_ = false;    // ヒップドロップ中かどうか
 	bool hipDropReady_ = false; // 空中で発動可能か
+
+	int Hp_ = 2; // 最大HP
+
+	// --- 無敵関連 ---
+	bool isInvincible_ = false;    // 無敵状態か
+	int invincibleTimer_ = 0;      // 無敵残り時間（フレーム）
+	int invincibleDuration_ = 180; // 無敵時間（例：2秒 = 60fps * 2）
+
+	//---------------パーティクルエフェクト-----------------------
+	ParticleSystem* dashParticles_ = nullptr;
+	ParticleSystem* hipDropParticles_ = nullptr;
+	KamataEngine::Model* quadModel_ = nullptr; // 四角形モデル（パーティクル用）
+	KamataEngine::Model* CreateQuadModel();
 };

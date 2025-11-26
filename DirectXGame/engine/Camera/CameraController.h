@@ -50,4 +50,6 @@ private:
 
 	// カメラの目標座標
 	Vector3 targetcoordinates_;
+
+	bool firstFrame_ = true;
 };

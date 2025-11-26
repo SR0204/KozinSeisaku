@@ -1,19 +1,22 @@
+#include "ClearScene.h"
 #include "../../Scene/SceneManager/SceneID.h"
 #include "../../Scene/SceneManager/SceneManager.h"
-#include "ClearScene.h"
+#include <Audio/Audio.h>
 #include <cmath>
+#include <numbers>
 
 using namespace KamataEngine;
 
-ClearScene::ClearScene()
-    : pressSpaceSprite_(nullptr), fadeSprite_(nullptr), fadeAlpha_(1.0f), isFadingOut_(false), isFadingIn_(true), frameCount_(0), blinkAlpha_(1.0f), waitAfterFade_(false), waitTimer_(0) {}
+ClearScene::ClearScene() : bgmHandle_(-1), bgmVoiceHandle_(-1), bgmVolume_(1.0f), isFadingOut_(false), frameCount_(0), isClear_(true), fadeAlpha_(0.0f), bounceTimer_(0) {}
 
 ClearScene::~ClearScene() {
-	delete ClearShadow_;
-	delete ClearEdge_;
-	delete ClearMain_;
-	delete pressSpaceSprite_;
-	delete fadeSprite_;
+	delete sprite_;
+	delete sprite2_;
+	delete BackGround_[1];
+
+	if (bgmVoiceHandle_ != -1) {
+		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
+	}
 }
 
 void ClearScene::Initialize(SceneManager* sceneManager) {
@@ -21,127 +24,179 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	dxCommon_ = KamataEngine::DirectXCommon::GetInstance();
 	input_ = KamataEngine::Input::GetInstance();
 
-	// GameClear画像
-	ClearTextureHandle_ = TextureManager::Load("./Resources/GameOver/GameOverSprite.png");
+	// === 2Dリソース ===
+	ClearTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
+	ClearBackGroundTextureHandle_ = TextureManager::Load("./Resources/ClearBG/ClearBG.png");
+	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
-	// GameClear(縁取り、影 等)
-	ClearShadow_ = KamataEngine::Sprite::Create(ClearTextureHandle_, {640, 360});
-	ClearEdge_ = KamataEngine::Sprite::Create(ClearTextureHandle_, {640, 360});
-	ClearMain_ = KamataEngine::Sprite::Create(ClearTextureHandle_, {640, 360});
+	sprite_ = KamataEngine::Sprite::Create(ClearTextureHandle_, {0, 0});
 
-	ClearShadow_->SetAnchorPoint({0.5f, 0.5f});
-	ClearEdge_->SetAnchorPoint({0.5f, 0.5f});
-	ClearMain_->SetAnchorPoint({0.5f, 0.5f});
+	// === 背景スプライトを2枚作る ===
 
-	// PRESS SPACE（点滅する）
-	ClearTextureHandle2_ = TextureManager::Load("./Resources/GameOver/GameOver.png");
-	pressSpaceSprite_ = KamataEngine::Sprite::Create(ClearTextureHandle2_, {640, 520});
-	pressSpaceSprite_->SetAnchorPoint({0.5f, 0.5f});
+	BackGround_[0] = KamataEngine::Sprite::Create(ClearBackGroundTextureHandle_, {0, 0});
+	bgSize_ = BackGround_[0]->GetSize();
+	BackGround_[1] = KamataEngine::Sprite::Create(ClearBackGroundTextureHandle_, {bgSize_.x, 0}); // 右にもう1枚配置
 
-	// GameOverBackGround画像
-	ClearBG_ = TextureManager::Load("./Resources/GameOver/GameOverBG.png");
-	ClearBgSprite_ = KamataEngine::Sprite::Create(ClearBG_, {0, 0});
-
-	// 黒フェードスプライト
-	uint32_t blackTex = TextureManager::Load("./Resources/Title/fadeTexture.png");
-	fadeSprite_ = KamataEngine::Sprite::Create(blackTex, {640, 360});
-	fadeSprite_->SetAnchorPoint({0.5f, 0.5f});
+	fadeSprite_ = KamataEngine::Sprite::Create(fadeTextureHandle_, {0, 0});
 	fadeSprite_->SetSize({1280, 720});
-	fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_}); // 最初は黒く覆う
+	fadeSprite_->SetColor({0.0f, 0.0f, 0.0f, 0.0f});
+
+	// === 3Dモデル ===
+	ClearModel_ = KamataEngine::Model::CreateFromOBJ("Clear", true);
+	ClearTransform_.Initialize();
+
+	// 正面向きに調整
+	ClearTransform_.rotation_.y = -1.5f;
+
+	ClearTransform_.scale_ = {3.0f, 3.0f, 3.0f};
+	ClearTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	ClearTransform_.UpdateMatrix();
+
+	Camera_.Initialize();
+
+	// === 音 ===
+	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
+	bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
+	bgmVolume_ = 0.5f;
+	Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
+
+	isFadingOut_ = false;
+	fadeAlpha_ = 0.0f;
+
+	// === バウンド設定 ===
+	bounceAmplitude_ = 15.0f;
+	bounceTimer_ = 0;
+	isBounceFinished_ = false;
+
+	// ===  ライト設定 ===
+	lightGroup_.reset(KamataEngine::LightGroup::Create());
+	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
+	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
+	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
+
+	ClearModel_->SetLightGroup(lightGroup_.get());
 }
 
 void ClearScene::Update() {
 	frameCount_++;
 
-	// ---------------- フェードイン ----------------
-	if (isFadingIn_) {
-		fadeAlpha_ -= 0.02f;
-		if (fadeAlpha_ <= 0.0f) {
-			fadeAlpha_ = 0.0f;
-			isFadingIn_ = false;
-		}
-		fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_});
-		return;
-	}
-
-	// ---------------- PRESS SPACE の点滅 ----------------
-	blinkAlpha_ = 0.5f + 0.5f * sin(frameCount_ * 0.1f);
-	if (pressSpaceSprite_) {
-		pressSpaceSprite_->SetColor({1.0f, 1.0f, 1.0f, blinkAlpha_});
-	}
-
-	// ---------------- スペース押下でフェードアウト開始 ----------------
-	if (!isFadingOut_ && !waitAfterFade_ && input_->TriggerKey(DIK_SPACE)) {
+	if (isClear_ && input_->TriggerKey(DIK_SPACE)) {
+		isClear_ = false;
 		isFadingOut_ = true;
 	}
 
-	// ---------------- フェードアウト（黒くなる） ----------------
-	if (isFadingOut_) {
-		fadeAlpha_ += 0.02f;
-		if (fadeAlpha_ >= 1.0f) {
-			fadeAlpha_ = 1.0f;
-			isFadingOut_ = false;
-			waitAfterFade_ = true; // ←★ フェード完了後に待機開始
-			waitTimer_ = 0;
-		}
-		fadeSprite_->SetColor({1.0f, 1.0f, 1.0f, fadeAlpha_});
+	// === 点滅 ===
+	if (isClear_) {
+		blinkTimer_++;
+		// 0.5〜1.0の範囲でふんわり明るさ変化（消えない）
+		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.25f + 0.75f);
+		// 色も少し明るく（RGB1.2倍）してポップさUP
+		sprite_->SetColor({1.2f, 1.2f, 1.2f, alpha});
 	}
 
-	// ---------------- 黒画面のまま待機 ----------------
-	if (waitAfterFade_) {
-		waitTimer_++;
+	// === バウンド演出 ===
+	const float targetY = 0.0f;
+	const float fallSpeed = 0.5f;
 
-		// 約2秒（60fps換算で120フレーム）待機
-		if (waitTimer_ > 120) {
-			sceneManager_->RequestScene(SceneID::TitleScene);
+	if (!isBounceFinished_) {
+		if (ClearTransform_.translation_.y > targetY && bounceTimer_ == 0) {
+			ClearTransform_.translation_.y -= fallSpeed;
+			if (ClearTransform_.translation_.y <= targetY) {
+				ClearTransform_.translation_.y = targetY;
+				bounceTimer_ = 60;
+				bounceAmplitude_ = 1.0f;
+			}
+		} else if (bounceTimer_ > 0) {
+			float t = (60 - bounceTimer_) / 10.0f;
+			ClearTransform_.translation_.y = targetY + std::abs(std::sin(t)) * bounceAmplitude_;
+			bounceAmplitude_ *= bounceDecay_;
+			bounceTimer_--;
+			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.01f) {
+				isBounceFinished_ = true;
+				ClearTransform_.translation_.y = targetY;
+			}
 		}
+	} else {
+		// ✨ ゆらゆらアニメ
+		ClearTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
+		ClearTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
+		ClearTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
+	}
+
+	ClearTransform_.UpdateMatrix();
+
+	// === フェード処理 ===
+	if (isFadingOut_) {
+		bgmVolume_ -= 0.1f;
+		if (bgmVolume_ < 0.0f)
+			bgmVolume_ = 0.0f;
+		Audio::GetInstance()->SetVolume(bgmVoiceHandle_, bgmVolume_);
+
+		fadeAlpha_ += 0.02f;
+		if (fadeAlpha_ > 1.0f)
+			fadeAlpha_ = 1.0f;
+		fadeSprite_->SetColor({0.0f, 0.0f, 0.0f, fadeAlpha_});
+
+		if (fadeAlpha_ >= 1.0f) {
+			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
+			sceneManager_->ChangeScene(SceneID::TitleScene);
+
+			return;
+		}
+	}
+
+	// === ライト回転（ポップに動かす） ===
+	Vector3 lightDir;
+	lightDir.x = std::cos(frameCount_ * 0.01f) * 0.6f;
+	lightDir.y = -1.0f;
+	lightDir.z = std::sin(frameCount_ * 0.01f) * 0.6f;
+	lightGroup_->SetDirLightDir(0, lightDir);
+	lightGroup_->Update();
+
+	// === 背景をループスクロール ===
+	for (int i = 0; i < 2; i++) {
+		Vector2 pos = BackGround_[i]->GetPosition();
+		pos.x -= bgScrollSpeed_; // 左方向にスクロール
+		// 左に完全に出たら右側に回す
+		if (pos.x <= -bgSize_.x) {
+			pos.x += bgSize_.x * 2;
+		}
+		BackGround_[i]->SetPosition(pos);
 	}
 }
 
 void ClearScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+	// === 2D（背景） ===
 	KamataEngine::Sprite::PreDraw(commandList);
 
-	// GameOver背景
-	if (ClearBgSprite_) {
-		ClearBgSprite_->Draw();
+	// 背景を先に描画
+	for (int i = 0; i < 2; i++) {
+		if (BackGround_[i])
+			BackGround_[i]->Draw();
 	}
 
-	// =====================
-	// === GAME OVERロゴ ===
-	// =====================
-	float bounce = std::sin(frameCount_ * 0.08f) * 6.0f; // 揺れ
-	Vector2 basePos = {640.0f, 320.0f + bounce};         // 画面中央より少し上
+	KamataEngine::Sprite::PostDraw();
 
-	// --- ①影（少し下＆右にずらす）---
-	ClearShadow_->SetPosition({basePos.x + 6.0f, basePos.y + 6.0f});
-	ClearShadow_->SetSize({640.0f, 360.0f});
-	ClearShadow_->SetColor({0.0f, 0.0f, 0.0f, 0.7f});
-	ClearShadow_->Draw();
+	dxCommon_->ClearDepthBuffer();
 
-	// --- ②縁取り（少し大きく）---
-	ClearEdge_->SetPosition(basePos);
-	ClearEdge_->SetSize({650.0f, 365.0f});           // 本体よりやや大きめ
-	ClearEdge_->SetColor({1.0f, 0.85f, 0.2f, 1.0f}); // ゴールド
-	ClearEdge_->Draw();
+	// === 3D（GameOver文字） ===
+	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+	if (ClearModel_) {
+		ClearModel_->Draw(ClearTransform_, Camera_);
+	}
+	Model::PostDraw();
 
-	// --- ③本体（発光赤）---
-	float glow = 0.5f + 0.5f * std::sin(frameCount_ * 0.05f);
-	ClearMain_->SetPosition(basePos);
-	ClearMain_->SetSize({640.0f, 360.0f});
-	ClearMain_->SetColor({1.0f, 0.2f + glow * 0.2f, 0.2f, 1.0f});
-	ClearMain_->Draw();
+	// === 2D（文字UIなど前景） ===
+	KamataEngine::Sprite::PreDraw(commandList);
 
-	// PRESS SPACE
-	if (pressSpaceSprite_) {
-		pressSpaceSprite_->Draw();
+	if (isClear_ && frameCount_ % 150 >= 30) {
+		sprite_->Draw(); // 「PRESS SPACE」など
 	}
 
-	// 黒フェード（最後に描画）
-	if (fadeSprite_) {
+	if (fadeSprite_)
 		fadeSprite_->Draw();
-	}
 
 	KamataEngine::Sprite::PostDraw();
 }

@@ -1,0 +1,35 @@
+// ParticleSystem.h
+#pragma once
+#include "3d/Camera.h"
+#include "3d/Model.h"
+#include "3d/WorldTransform.h"
+#include "KamataEngine.h"
+#include "math/Vector3.h"
+#include <vector>
+
+namespace KamataEngine {
+
+struct Particle {
+	Vector3 position;
+	Vector3 velocity;
+	float lifetime;
+};
+
+class ParticleSystem {
+public:
+	ParticleSystem(KamataEngine::Camera* camera);
+
+	void Initialize(int maxParticles);
+	void Emit(const KamataEngine::Vector3& position, const KamataEngine::Vector3& velocity, float lifetime);
+	void Update();
+	void Draw();
+
+private:
+	KamataEngine::Camera* camera_ = nullptr;
+	KamataEngine::Model* quadModel_ = nullptr; // 内部で生成
+	KamataEngine::WorldTransform worldTransform_;
+	std::vector<Particle> particles_;
+	int maxParticles_ = 0;
+};
+
+} // namespace KamataEngine

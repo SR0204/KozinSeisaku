@@ -1,5 +1,6 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Score/Score.h"
 #include "../Player/Player.h"
 #include "engine/Map/MapChipField.h" // 追加
 #include <3d/Model.h>
@@ -7,6 +8,8 @@
 
 // 前方宣言
 class Player;
+
+enum class EnemyState { Patrol, Chase };
 
 // 敵
 class Enemy {
@@ -33,8 +36,8 @@ public:
 	Vector3 GetWorldPosition();
 
 	// キャラクターの当たり判定サイズ
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 0.7f;
+	static inline const float kHeight = 0.7f;
 
 	AABB GetAABB();
 
@@ -54,6 +57,12 @@ public:
 	void AddWorldX(float dx) { worldTransform_.translation_.x += dx; }
 
 	int collisionCooldown_ = 0; // フレーム単位
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
+	void OnDead();
+
+	void SetScore(Score* score) { score_ = score; }
 
 private:
 	// ワールド変換データ
@@ -91,4 +100,13 @@ private:
 	// min～max の範囲でランダムな float を返す関数
 	// ==============================================
 	float RandRange(float min, float max) { return min + (max - min) * (rand() / static_cast<float>(RAND_MAX)); }
+
+	EnemyState state_ = EnemyState::Patrol;
+	float detectionRange_ = 5.0f; // プレイヤー検知距離
+
+	// デスフラグ
+	bool isDead_ = false;
+
+	//---------------スコア関係-------------------//
+	Score* score_ = nullptr;
 };

@@ -137,7 +137,7 @@ void TitleScene::Update() {
 
 		if (fadeAlpha_ >= 1.0f) {
 			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
-			sceneManager_->ChangeScene(SceneID::Game);
+			sceneManager_->ChangeScene(SceneID::StageSelect);
 
 			return;
 		}
