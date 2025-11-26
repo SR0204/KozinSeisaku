@@ -19,6 +19,7 @@ public:
 	void Initialize();
 
 	void Update();
+
 	/// <summary>
 	/// カメラが追従するようにプレイヤーをセット
 	/// </summary>
