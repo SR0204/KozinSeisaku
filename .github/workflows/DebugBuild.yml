@@ -3,7 +3,6 @@ on:
    push:
      branches:
      - master
-     
 env:
   #リポジトリのルートディレクトリを基点としたソリューションファイルのパス
   SOLUTION_FILE_PATH: project/DirectXGame.sln
