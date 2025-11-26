@@ -2,7 +2,7 @@ name: DebugBuild
 on:
    push:
      branches:
-     - master
+     - CreateStage
      
 env:
   #リポジトリのルートディレクトリを基点としたソリューションファイルのパス
