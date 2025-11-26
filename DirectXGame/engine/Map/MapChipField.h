@@ -16,6 +16,10 @@ struct MapChipData {
 	std::vector<std::vector<MapChipType>> data;
 };
 
+/// <summary>
+/// マップを作るサイズやcsvのロードをするクラス
+/// </summary>
+
 class MapChipField {
 
 public: // 関数

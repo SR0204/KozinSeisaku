@@ -15,6 +15,10 @@ struct Particle {
 	float lifetime;
 };
 
+/// <summary>
+/// 主にプレイヤーのパーティクルエフェクトを作るクラス
+/// </summary>
+
 class ParticleSystem {
 public:
 	ParticleSystem(KamataEngine::Camera* camera);

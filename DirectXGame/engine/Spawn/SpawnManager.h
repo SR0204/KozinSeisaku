@@ -1,9 +1,10 @@
-// SpawnManager.h
 #pragma once
 #include "../../engine/Enemy/Enemy.h"
 #include "../../engine/Enemy/EnemyManager.h"
 #include <vector>
-
+/// <summary>
+/// 敵を定期的に湧くようにしてスコアを競えるようにするクラス
+/// </summary>
 class SpawnManager {
 public:
 	void Initialize(EnemyManager* enemyManager);

@@ -6,6 +6,9 @@
 
 class GameScene;
 
+/// <summary>
+/// 制限時間を作るクラス
+/// </summary>
 class Timer {
 public:
 	// コンストラクタ

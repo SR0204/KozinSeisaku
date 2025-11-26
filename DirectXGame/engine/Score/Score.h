@@ -3,6 +3,10 @@
 #include "KamataEngine.h"
 #include <string>
 
+/// <summary>
+/// スコアを計算、描画を作るクラス
+/// </summary>
+
 class Score {
 public:
 	Score();

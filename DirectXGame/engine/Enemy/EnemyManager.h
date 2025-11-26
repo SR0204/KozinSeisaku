@@ -7,6 +7,9 @@
 #include <audio/Audio.h>
 #include <vector>
 
+/// <summary>
+/// Enemy.cppをまとめて当たり判定とかをまとめるクラス
+/// </summary>
 class EnemyManager {
 public:
 	EnemyManager();

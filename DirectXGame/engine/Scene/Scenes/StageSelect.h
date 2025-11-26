@@ -10,6 +10,9 @@
 
 class SceneManager;
 
+/// <summary>
+/// ステージ選択画面を作るクラス
+/// </summary>
 class StageSelect : public Scene {
 public:
 	StageSelect();

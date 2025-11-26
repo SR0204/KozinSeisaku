@@ -6,6 +6,9 @@
 #include <3d/DebugCamera.h>
 #include <KamataEngine.h>
 
+/// <summary>
+/// カメラコントローラーをまとめるマネージャークラス
+/// </summary>
 class CameraManager {
 public:
 	void Initialize(KamataEngine::Camera* mainCamera, Player* target);

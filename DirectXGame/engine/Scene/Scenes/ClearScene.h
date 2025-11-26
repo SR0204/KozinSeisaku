@@ -8,6 +8,9 @@ class Input;         // 前方宣言
 class Sprite;        // 前方宣言
 class SceneManager;
 
+/// <summary>
+/// クリアシーンを作るクラス
+/// </summary>
 class ClearScene : public Scene {
 public:
 	ClearScene();
