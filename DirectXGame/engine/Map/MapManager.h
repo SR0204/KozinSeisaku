@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+/// <summary>
+/// マップを生成するマネージャークラス
+/// </summary>
+
 class MapManager {
 public:
 	MapManager();

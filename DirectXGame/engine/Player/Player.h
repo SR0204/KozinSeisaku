@@ -18,6 +18,8 @@ class Enemy;
 class Player {
 
 public: // 引数を書くところ
+	Player();
+
 	~Player();
 
 	/// <summary>
@@ -110,6 +112,14 @@ public: // 引数を書くところ
 
 	void SetVelocityY(float vy) { velocity_.y = vy; }
 
+	float GetBouncePower() const { return bouncePower_; }
+
+	int consecutiveBouncePoints_ = 1;      // 踏み続けボーナス（初期1）
+	static const int kMaxBouncePoints = 5; // 最大ボーナス
+
+	KamataEngine::Sprite* bouncePointSprites_[kMaxBouncePoints] = {}; // 1～5までの数字スプライト
+	void OnLand() { consecutiveBouncePoints_ = 1; }                   // 地面に着地したらリセット
+
 private: // 関数（メンバ変数）
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -186,4 +196,7 @@ private: // 関数（メンバ変数）
 	ParticleSystem* hipDropParticles_ = nullptr;
 	KamataEngine::Model* quadModel_ = nullptr; // 四角形モデル（パーティクル用）
 	KamataEngine::Model* CreateQuadModel();
+
+	//-----------------バウンド----------------
+	float bouncePower_ = 0.35f; // デフォルトのバウンド力（好きに設定）
 };

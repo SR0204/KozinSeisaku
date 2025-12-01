@@ -7,6 +7,10 @@ class Input;         // 前方宣言
 class Sprite;        // 前方宣言
 class SceneManager;
 
+/// <summary>
+/// タイトルシーンを作るクラス
+/// </summary>
+
 class TitleScene : public Scene {
 public:
 	TitleScene();

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Player/Player.h"
 #include "../../engine/Score/Score.h"
 #include "Enemy.h"
@@ -7,6 +8,9 @@
 #include <audio/Audio.h>
 #include <vector>
 
+/// <summary>
+/// Enemy.cppをまとめて当たり判定とかをまとめるクラス
+/// </summary>
 class EnemyManager {
 public:
 	EnemyManager();
@@ -28,6 +32,8 @@ public:
 
 	void SpawnEnemy(const Vector3& pos);
 
+	void SetCameraManager(CameraManager* cameraManager);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
@@ -40,4 +46,15 @@ private:
 	uint32_t enemyDeathSE_ = 0;
 
 	Score* score_ = nullptr;
+
+	//------------スポーン---------------//
+	float spawnTimer_ = 0.0f;
+	float spawnInterval_ = 3.0f;       // 3秒ごとにスポーン
+	std::vector<Vector3> spawnPoints_; // CSVの3の位置
+
+	//-------------リアクション----------------//
+	float hitStopTime_ = 0.0f;
+	const float kHitStopDuration_ = 0.1f; // 0.06秒ほど止める
+
+	CameraManager* cameraManager_;
 };

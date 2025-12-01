@@ -10,7 +10,9 @@ struct Rect {
 	float bottom = 0.0f; // 下端
 	float top = 1.0f;    // 上端
 };
-
+/// <summary>
+/// カメラコントローラー(追従とかをする)クラス,カメラのベース
+/// </summary>
 class CameraController {
 
 public:
@@ -18,10 +20,15 @@ public:
 
 	void Update();
 
+	/// <summary>
+	/// カメラが追従するようにプレイヤーをセット
+	/// </summary>
+	/// <param name="target"></param>
 	void SetTarget(Player* target) { target_ = target; }
 
+	
 	void Reset();
-
+	
 	const Camera& GetViewProjection() const { return camera_; }
 
 	void SetMovableArea(Rect area) { movableArea_ = area; }

@@ -8,6 +8,9 @@
 #include <array>
 #include <numbers>
 
+/// <summary>
+/// プレイヤーが倒された時のデスパーティクルを出すクラス
+/// </summary>
 class DeathParticles {
 
 public:

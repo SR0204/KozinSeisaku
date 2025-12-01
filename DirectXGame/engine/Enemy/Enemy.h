@@ -11,7 +11,9 @@ class Player;
 
 enum class EnemyState { Patrol, Chase };
 
-// 敵
+/// <summary>
+/// 敵のベースを作るクラス
+/// </summary>
 class Enemy {
 public:
 	/// <summary>

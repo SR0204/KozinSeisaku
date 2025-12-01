@@ -10,6 +10,10 @@
 #include <3d/WorldTransform.h>
 #include <KamataEngine.h>
 
+
+/// <summary>
+/// プレイヤーや敵の現在の状態を作るクラス
+/// </summary>
 class PhaseManager {
 public:
 	enum class Phase { kTitle, kPlay, kDeath };

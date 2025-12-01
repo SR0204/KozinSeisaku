@@ -7,6 +7,10 @@
 #include "etc/MathUtilityForText.h"
 #include <vector>
 
+/// <summary>
+/// 敵を倒した時のエフェクトを追加するクラス
+/// </summary>
+
 class EnemyDeathParticles {
 public:
 	static constexpr int kNumParticles = 6;
