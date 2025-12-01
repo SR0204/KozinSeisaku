@@ -163,6 +163,24 @@ private: // メンバ変数（関数）
 
 	int ScoresTexture[10];
 
+	int currentScore_ = score_.GetScore();
+
+	const int kClearScore = 100;
+
+	// 進捗バー用
+	uint32_t progressTex_ = 0;
+	KamataEngine::Sprite* progressBase_;
+	KamataEngine::Sprite* progressFill_;
+
+	// --- エフェクト ---
+	float effectAlpha_ = 0.0f;
+	float effectScale_ = 1.0f;
+	bool isNearGoalEffect_ = false;
+
+	KamataEngine::Sprite* scoreMaxSprite_ = nullptr;
+	KamataEngine::Sprite* scoreMaxSprite2_ = nullptr;
+	KamataEngine::Sprite* scoreMaxSprite3_ = nullptr;
+
 	//------------------------時間制限------------------------------//
 	// 制限時間
 	Timer* timer_ = nullptr;

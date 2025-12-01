@@ -22,10 +22,18 @@ public:
 
 	void SetMovableArea(const Rect& area);
 
+	void StartShake(float duration, float strength);
+	void UpdateShake();
+
 private:
 	KamataEngine::Camera* camera_ = nullptr;
 	CameraController* cameraController_ = nullptr;
 	DebugCamera* debugCamera_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
+
+	float shakeTime_ = 0.0f;
+	float shakeStrength_ = 0.0f;
+
+	Vector3 baseCameraPos_;
 };
