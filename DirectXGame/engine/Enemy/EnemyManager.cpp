@@ -129,6 +129,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				// ★ 連続踏みポイントを増やす（最大5）
 				player->consecutiveBouncePoints_ = std::min(player->consecutiveBouncePoints_ + 1, Player::kMaxBouncePoints);
 
+
 				//------------------------------------------
 				// ★ 高く飛ぶ処理（スペース押しっぱで強化）
 				//------------------------------------------
