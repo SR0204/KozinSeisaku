@@ -1,4 +1,4 @@
-name: DebugBuild
+name: ReleaseBuild
 on:
    push:
      branches:
@@ -7,7 +7,7 @@ env:
   #リポジトリのルートディレクトリを基点としたソリューションファイルのパス
   SOLUTION_FILE_PATH: DirectXGame/DirectXGame.sln
   #VisualStadio の構成
-  CONFIGURATION: Debug
+  CONFIGURATION: Release
 
 jobs:
   build:
@@ -22,6 +22,6 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: Build
+      - name: Release
         run: |
           msbuild ${{env.SOLUTION_FILE_PATH}} /p:Platform=x64,Configuration=${{env.CONFIGURATION}}
