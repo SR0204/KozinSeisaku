@@ -26,12 +26,32 @@ struct MapChipData {
 class MapChipField {
 
 public: // 関数
+
+	/// <summary>
+	/// // マップチップデータをリセット
+	/// </summary>
 	void ResetMapChipData();
 
+	/// <summary>
+	/// // CSVからマップを読み込む
+	/// </summary>
+	/// <param name="filePath"></param>
 	void LoadMapchipCsv(const std::string& filePath);
 
+	/// <summary>
+	/// // インデックスからマップチップの種類を取得
+	/// </summary>
+	/// <param name="xIndex"></param>
+	/// <param name="yIndex"></param>
+	/// <returns></returns>
 	MapChipType GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex) const;
 
+	/// <summary>
+	/// // インデックス → ワールド座標
+	/// </summary>
+	/// <param name="xIndex"></param>
+	/// <param name="yIndex"></param>
+	/// <returns></returns>
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) const;
 
 	uint32_t GetNumBlockVirtical() { return kNumBlockVirtical; }
@@ -42,6 +62,11 @@ public: // 関数
 		uint32_t yIndex;
 	};
 
+	/// <summary>
+	/// // ワールド座標 → インデックス
+	/// </summary>
+	/// <param name="position"></param>
+	/// <returns></returns>
 	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
 
 	// 範囲短形
@@ -52,6 +77,12 @@ public: // 関数
 		float top;    // 上端
 	};
 
+	/// <summary>
+	/// // 指定ブロックの範囲矩形を取得
+	/// </summary>
+	/// <param name="xIndex"></param>
+	/// <param name="yIndex"></param>
+	/// <returns></returns>
 	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex) const;
 
 	// 指定インデックス位置の真下にあるブロックの上面Y座標を取得
