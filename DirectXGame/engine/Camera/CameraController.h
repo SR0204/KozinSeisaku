@@ -30,7 +30,7 @@ public:
 	/// リセット
 	/// </summary>
 	void Reset();
-	
+
 	const Camera& GetViewProjection() const { return camera_; }
 
 	/// <summary>
@@ -39,13 +39,19 @@ public:
 	/// <param name="area"></param>
 	void SetMovableArea(Rect area) { movableArea_ = area; }
 
-	// 座標補間割合
+	/// <summary>
+	/// 座標補間割合
+	/// </summary>
 	static inline const float kInterpolationRate = 0.1f;
 
-	// 速度掛け算
+	/// <summary>
+	/// 速度掛け算
+	/// </summary>
 	static inline const float kVelocityBias = 23.0f;
 
-	// 追従対象の各方向へのカメラ移動範囲
+	/// <summary>
+	/// 追従対象の各方向へのカメラ移動範囲
+	/// </summary>
 	static inline const Rect Margin = {-640.0, 640.0, -360.0, 360.0};
 
 private:

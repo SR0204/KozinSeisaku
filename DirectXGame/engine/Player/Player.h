@@ -84,31 +84,57 @@ public:
 	/// </summary>
 	void CheckMapCollision(CollisionMapInfo& info);
 
-	// 上方向衝突判定
+	/// <summary>
+	/// // 上方向衝突判定
+	/// </summary>
+	/// <param name="info"></param>
 	void CheckMapCollisionUp(CollisionMapInfo& info);
 
-	// 下方向衝突判定（着地判定）
+	/// <summary>
+	/// 下方向衝突判定（着地判定）
+	/// </summary>
+	/// <param name="info"></param>
 	void CheckMapCollisionDown(CollisionMapInfo& info);
 
-	// 左方向衝突判定
+	/// <summary>
+	/// 左方向衝突判定
+	/// </summary>
+	/// <param name="info"></param>
 	void CheckMapCollisionLeft(CollisionMapInfo& info);
 
-	// 右方向衝突判定
+	/// <summary>
+	/// 右方向衝突判定
+	/// </summary>
+	/// <param name="info"></param>
 	void CheckMapCollisionRight(CollisionMapInfo& info);
 
-	// 衝突後の処理（速度調整など）
+	/// <summary>
+	/// 衝突後の処理（速度調整など）
+	/// </summary>
+	/// <param name="info"></param>
 	void CheckMapCollisionHit(const CollisionMapInfo& info);
 
-	// 天井接触時の処理
+	/// <summary>
+	/// 天井接触時の処理
+	/// </summary>
+	/// <param name="info"></param>
 	void CellingContactHit(const CollisionMapInfo& info);
 
-	// 接地状態の切り替え（着地/空中）
+	/// <summary>
+	/// 接地状態の切り替え（着地/空中）
+	/// </summary>
+	/// <param name="info"></param>
 	void cellingSwitch(const CollisionMapInfo& info);
 
-	// 敵との衝突時の処理
+	/// <summary>
+	/// 敵との衝突時の処理
+	/// </summary>
+	/// <param name="info"></param>
 	void OnCollision(const Enemy* enemy);
 
-	// プレイヤー四隅の座標取得用
+	/// <summary>
+	/// プレイヤー四隅の座標取得用
+	/// </summary>
 	enum Corner {
 		kRightBottom, // 右下
 		kLeftBottom,  // 左下
@@ -117,19 +143,36 @@ public:
 		kNumCorner
 	};
 
-	// 指定した角のワールド座標を返す
+	/// <summary>
+	/// 指定した角のワールド座標を返す
+	/// </summary>
+	/// <param name="center"></param>
+	/// <param name="corner"></param>
+	/// <returns></returns>
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
-	// プレイヤーのワールド座標を返す
+	/// <summary>
+	/// プレイヤーのワールド座標を返す
+	/// </summary>
+	/// <returns></returns>
 	Vector3 GetWorldPosition();
 
-	// AABBを返す
+	/// <summary>
+	/// AABBを返す
+	/// </summary>
+	/// <returns></returns>
 	AABB GetAABB();
 
-	// デスフラグ
+	/// <summary>
+	/// デスフラグ
+	/// </summary>
+	/// <returns></returns>
 	bool IsDead() const { return isDead_; }
 
-	// y方向速度のSetter（ジャンプなど）
+	/// <summary>
+	/// y方向速度のSetter（ジャンプなど）
+	/// </summary>
+	/// <param name="vy"></param>
 	void SetVelocityY(float vy) { velocity_.y = vy; }
 
 	/// <summary>
@@ -138,7 +181,7 @@ public:
 	float GetBouncePower() const { return bouncePower_; }
 
 	// 連続踏みつけボーナス
-	int consecutiveBouncePoints_ = 1;
+	int consecutiveBouncePoints_ = 5;
 	static const int kMaxBouncePoints = 5;
 
 	// ボーナス表示スプライト
@@ -217,7 +260,7 @@ private:
 	bool hipDropReady_ = false;
 
 	// HP
-	int Hp_ = 2;
+	int Hp_ = 5;
 
 	// --- 無敵関連 ---
 	bool isInvincible_ = false;    // 無敵状態か

@@ -163,6 +163,7 @@
     <ClCompile Include="engine\Enemy\EnemyManager.cpp" />
     <ClCompile Include="engine\Scene\Scenes\GameOverScene.cpp" />
     <ClCompile Include="application\base\GameScene.cpp" />
+    <ClCompile Include="FileJson.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\Map\MapChipField.cpp" />
     <ClCompile Include="engine\Map\MapManager.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="engine\Time\Timer.h" />
     <ClInclude Include="engine\Spawn\SpawnManager.h" />
     <ClInclude Include="engine\Particle\ParticleSystem.h" />
+    <ClInclude Include="FileJson.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

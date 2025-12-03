@@ -48,11 +48,11 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	hipDropParticles_->Initialize(50);
 
 	// バウンドポイント表示用スプライト（1～5）ロード
-	for (int i = 0; i < kMaxBouncePoints; i++) {
-		bouncePointSprites_[i] = Sprite::Create(
-		    TextureManager::Load("./Resources/Numbers/number_" + std::to_string(i + 1) + ".png"), {50.0f + i * 20.0f, 50.0f} // 適当な位置に表示
-		);
-	}
+	//for (int i = 0; i < kMaxBouncePoints; i++) {
+	//	bouncePointSprites_[i] = Sprite::Create(
+	//	    TextureManager::Load("./Resources/Numbers/number_" + std::to_string(i + 1) + ".png"), {50.0f + i * 20.0f, 50.0f} // 適当な位置に表示
+	//	);
+	//}
 }
 
 /// <summary>
@@ -127,11 +127,11 @@ void Player::Draw() {
 	hipDropParticles_->Draw();
 
 	// 連続踏みポイント分だけ描画
-	for (int i = 0; i < consecutiveBouncePoints_; i++) {
+	/*for (int i = 0; i < consecutiveBouncePoints_; i++) {
 		if (i < kMaxBouncePoints && bouncePointSprites_[i]) {
 			bouncePointSprites_[i]->Draw();
 		}
-	}
+	}*/
 
 	model_->Draw(worldTransform_, *camera_);
 }

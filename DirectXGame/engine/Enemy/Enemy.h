@@ -31,7 +31,10 @@ public:
 	/// </summary>
 	void Draw();
 
-	// 衝突応答
+	/// <summary>
+	/// 衝突応答
+	/// </summary>
+	/// <param name="player"></param>
 	void OnCollision(const Player* player);
 
 	// ワールド座標を取得
@@ -50,7 +53,9 @@ public:
 	void SetAlive(bool alive) { isAlive_ = alive; }
 	bool IsAlive() const { return isAlive_; }
 
-	// 方向反転（velocity_.x も更新）
+	/// <summary>
+	/// 方向反転（velocity_.x も更新）
+	/// </summary>
 	void ReverseDirection() {
 		direction_ *= -1;
 		velocity_.x = kWalkSpeed * direction_;

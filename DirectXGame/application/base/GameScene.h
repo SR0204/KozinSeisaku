@@ -52,20 +52,30 @@ public: // メンバ関数(引数）
 	/// </summary>
 	void Draw();
 
-	// ゲームのフェーズ(型)
+	/// <summary>
+	/// ゲームのフェーズ(型)
+	/// </summary>
 	enum class Phase {
 		kTitle,
 		kPlay,  // ゲームプレイ
 		kDeath, // デス演出
 	};
 
-	// デスフラグのgetter
+	/// <summary>
+	/// デスフラグのgetter
+	/// </summary>
+	/// <returns></returns>
 	bool IsDead() const { return isDead_; }
 
-	// デスフラグのgeeter
+	/// <summary>
+	/// 終了フラグ
+	/// </summary>
+	/// <returns></returns>
 	bool IsFinished() const { return finished_; }
 
-	// 時間表示用の関数
+	/// <summary>
+	/// 時間表示用の関数
+	/// </summary>
 	void DrawTimeUI();
 
 private: // メンバ変数（関数）
