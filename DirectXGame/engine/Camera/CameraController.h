@@ -26,11 +26,17 @@ public:
 	/// <param name="target"></param>
 	void SetTarget(Player* target) { target_ = target; }
 
-	
+	/// <summary>
+	/// リセット
+	/// </summary>
 	void Reset();
 	
 	const Camera& GetViewProjection() const { return camera_; }
 
+	/// <summary>
+	/// カメラが動く範囲
+	/// </summary>
+	/// <param name="area"></param>
 	void SetMovableArea(Rect area) { movableArea_ = area; }
 
 	// 座標補間割合

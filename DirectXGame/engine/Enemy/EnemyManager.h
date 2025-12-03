@@ -19,19 +19,42 @@ public:
 	void Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath);
 	void Update(MapChipField* mapField);
 	void Draw();
+
+	/// <summary>
+	/// プレイヤーと敵の当たり判定
+	/// </summary>
+	/// <param name="player"></param>
 	void CheckAllCollisions(Player* player);
 	void HandleEnemyCollisions();
 
 	bool IsAllEnemyDefeated() const;
 
+	/// <summary>
+	/// csvファイル読み込み
+	/// </summary>
+	/// <param name="filename"></param>
+	/// <param name="mapField"></param>
+	/// <returns></returns>
 	std::vector<KamataEngine::Vector3> LoadEnemyPositionsFromCSV(const std::string& filename, MapChipField* mapField);
 
 	void AddEnemy(Enemy* enemy);
 
+	/// <summary>
+	/// スコア関係
+	/// </summary>
+	/// <param name="score"></param>
 	void SetScore(Score* score) { score_ = score; }
 
+	/// <summary>
+	/// スポーン
+	/// </summary>
+	/// <param name="pos"></param>
 	void SpawnEnemy(const Vector3& pos);
 
+	/// <summary>
+	/// カメラ
+	/// </summary>
+	/// <param name="cameraManager"></param>
 	void SetCameraManager(CameraManager* cameraManager);
 
 private:

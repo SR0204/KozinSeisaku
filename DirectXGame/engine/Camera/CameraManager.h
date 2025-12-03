@@ -11,10 +11,24 @@
 /// </summary>
 class CameraManager {
 public:
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="mainCamera"></param>
+	/// <param name="target"></param>
 	void Initialize(KamataEngine::Camera* mainCamera, Player* target);
+
 	void Update();
+
+	/// <summary>
+	/// カメラの行列
+	/// </summary>
 	void TransferMatrix();
 
+	/// <summary>
+	/// デバッグカメラ
+	/// </summary>
+	/// <param name="isActive"></param>
 	void SetDebugCameraActive(bool isActive);
 	bool IsDebugCameraActive() const;
 
@@ -22,6 +36,11 @@ public:
 
 	void SetMovableArea(const Rect& area);
 
+	/// <summary>
+	/// カメラの揺れ
+	/// </summary>
+	/// <param name="duration"></param>
+	/// <param name="strength"></param>
 	void StartShake(float duration, float strength);
 	void UpdateShake();
 

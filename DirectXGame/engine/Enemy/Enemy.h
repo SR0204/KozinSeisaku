@@ -43,6 +43,10 @@ public:
 
 	AABB GetAABB();
 
+	/// <summary>
+	/// 生存確認
+	/// </summary>
+	/// <param name="alive"></param>
 	void SetAlive(bool alive) { isAlive_ = alive; }
 	bool IsAlive() const { return isAlive_; }
 
@@ -52,8 +56,16 @@ public:
 		velocity_.x = kWalkSpeed * direction_;
 	}
 
+	/// <summary>
+	/// 向き
+	/// </summary>
+	/// <returns></returns>
 	int GetDirection() const { return direction_; }
 
+	/// <summary>
+	/// 位置
+	/// </summary>
+	/// <param name="x"></param>
 	void SetWorldX(float x) { worldTransform_.translation_.x = x; }
 
 	void AddWorldX(float dx) { worldTransform_.translation_.x += dx; }
@@ -64,6 +76,10 @@ public:
 	bool IsDead() const { return isDead_; }
 	void OnDead();
 
+	/// <summary>
+	/// 敵一人一人のスコア
+	/// </summary>
+	/// <param name="score"></param>
 	void SetScore(Score* score) { score_ = score; }
 
 private:
