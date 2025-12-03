@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <engine/Score/ScoreManager/ScoreManager.h>
 
 using namespace KamataEngine;
 
@@ -32,7 +33,6 @@ void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* m
 	for (auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
 		newEnemy->Initialize(enemyModel_, camera_, pos);
-		newEnemy->SetScore(score_);
 		enemies_.push_back(newEnemy);
 	}
 
@@ -113,9 +113,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				player->SetVelocityY(0.25f); // 軽くバウンド
 
 				// ----- ここでスコア加算 -----
-				if (score_) {
-					score_->AddScore(5);
-				}
+				ScoreManager::Instance().AddScore(5);
 
 				// --- 効果音を再生 ---
 				// Audio::GetInstance()->PlayWave(enemyDeathSE_);
@@ -255,7 +253,6 @@ void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
 void EnemyManager::SpawnEnemy(const Vector3& pos) {
 	Enemy* newEnemy = new Enemy();
 	newEnemy->Initialize(enemyModel_, camera_, pos);
-	newEnemy->SetScore(score_); // ★倒されたらスコア加算
 	enemies_.push_back(newEnemy);
 }
 

@@ -163,7 +163,7 @@
     <ClCompile Include="engine\Enemy\EnemyManager.cpp" />
     <ClCompile Include="engine\Scene\Scenes\GameOverScene.cpp" />
     <ClCompile Include="application\base\GameScene.cpp" />
-    <ClCompile Include="FileJson.cpp" />
+    <ClCompile Include="engine\LoadJson\FileJson\FileJson.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\Map\MapChipField.cpp" />
     <ClCompile Include="engine\Map\MapManager.cpp" />
@@ -179,6 +179,8 @@
     <ClCompile Include="engine\Time\Timer.cpp" />
     <ClCompile Include="engine\Spawn\SpawnManager.cpp" />
     <ClCompile Include="engine\Particle\ParticleSystem.cpp" />
+    <ClCompile Include="engine\Score\ScoreManager\ScoreManager.cpp" />
+    <ClCompile Include="engine\Score\Log\ScoreLog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -197,6 +199,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <None Include="Resources\Json\highScore.json" />
     <None Include="Resources\shaders\Obj.hlsli" />
     <None Include="Resources\shaders\Primitive.hlsli" />
     <None Include="Resources\shaders\Shape.hlsli">
@@ -297,14 +300,15 @@
     <ClInclude Include="engine\Scene\SceneManager\SceneID.h" />
     <ClInclude Include="engine\Scene\SceneManager\SceneManager.h" />
     <ClInclude Include="engine\Map\SkyDome\SkyDome.h" />
-    <ClInclude Include="engine\Map\StageID.h" />
     <ClInclude Include="engine\Scene\Scenes\TitleScene.h" />
     <ClInclude Include="engine\Scene\Scenes\StageSelect.h" />
     <ClInclude Include="engine\Score\Score.h" />
     <ClInclude Include="engine\Time\Timer.h" />
     <ClInclude Include="engine\Spawn\SpawnManager.h" />
     <ClInclude Include="engine\Particle\ParticleSystem.h" />
-    <ClInclude Include="FileJson.h" />
+    <ClInclude Include="engine\LoadJson\FileJson\FileJson.h" />
+    <ClInclude Include="engine\Score\ScoreManager\ScoreManager.h" />
+    <ClInclude Include="engine\Score\Log\ScoreLog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

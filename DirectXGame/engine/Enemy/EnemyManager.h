@@ -40,12 +40,6 @@ public:
 	void AddEnemy(Enemy* enemy);
 
 	/// <summary>
-	/// スコア関係
-	/// </summary>
-	/// <param name="score"></param>
-	void SetScore(Score* score) { score_ = score; }
-
-	/// <summary>
 	/// スポーン
 	/// </summary>
 	/// <param name="pos"></param>
@@ -67,8 +61,6 @@ private:
 	Model* enemyDeathParticleModel_ = nullptr;
 
 	uint32_t enemyDeathSE_ = 0;
-
-	Score* score_ = nullptr;
 
 	//------------スポーン---------------//
 	float spawnTimer_ = 0.0f;

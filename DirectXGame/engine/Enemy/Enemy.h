@@ -81,12 +81,6 @@ public:
 	bool IsDead() const { return isDead_; }
 	void OnDead();
 
-	/// <summary>
-	/// 敵一人一人のスコア
-	/// </summary>
-	/// <param name="score"></param>
-	void SetScore(Score* score) { score_ = score; }
-
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -130,6 +124,4 @@ private:
 	// デスフラグ
 	bool isDead_ = false;
 
-	//---------------スコア関係-------------------//
-	Score* score_ = nullptr;
 };
