@@ -12,7 +12,13 @@ public:
 	Score();
 
 	void Initialize();
+
+	/// <summary>
+	/// スコア加算
+	/// </summary>
+	/// <param name="value"></param>
 	void AddScore(int value);
+
 	void Draw(int numberTextures[], float x, float y);
 
 	int GetScore() const { return score; }

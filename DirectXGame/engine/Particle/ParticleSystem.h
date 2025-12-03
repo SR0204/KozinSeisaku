@@ -24,6 +24,12 @@ public:
 	ParticleSystem(KamataEngine::Camera* camera);
 
 	void Initialize(int maxParticles);
+	/// <summary>
+	/// パーティクル放出関係
+	/// </summary>
+	/// <param name="position"></param>
+	/// <param name="velocity"></param>
+	/// <param name="lifetime"></param>
 	void Emit(const KamataEngine::Vector3& position, const KamataEngine::Vector3& velocity, float lifetime);
 	void Update();
 	void Draw();

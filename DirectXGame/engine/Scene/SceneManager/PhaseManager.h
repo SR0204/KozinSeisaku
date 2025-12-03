@@ -26,10 +26,22 @@ public:
 
 	void Draw();
 
+	/// <summary>
+	/// フェーズのゲッター
+	/// </summary>
+	/// <returns></returns>
 	Phase GetPhase() const { return phase_; }
 
+	/// <summary>
+	///倒されているかの判定
+	/// </summary>
+	/// <returns></returns>
 	bool IsDead() const { return isDead_; }
 
+	/// <summary>
+	/// デスパーティクルモデル
+	/// </summary>
+	/// <returns></returns>
 	Model* GetDeathParticleModel() const { return deathParticleModel_; }
 
 	bool IsDeathEffectFinished() const { return isDeathEffectFinished_; }
