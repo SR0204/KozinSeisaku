@@ -12,6 +12,9 @@ enum class MapChipType {
 	kEnemy   // 敵のリス地
 };
 
+/// <summary>
+/// マップデータ
+/// </summary>
 struct MapChipData {
 	std::vector<std::vector<MapChipType>> data;
 };

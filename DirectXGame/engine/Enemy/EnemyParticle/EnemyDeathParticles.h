@@ -24,6 +24,10 @@ public:
 	void Update();
 	void Draw();
 
+	/// <summary>
+	/// 終了判定
+	/// </summary>
+	/// <returns></returns>
 	bool IsFinished() const { return isFinished_; }
 
 private:
