@@ -1,9 +1,9 @@
 #pragma once
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Player/Player.h"
-#include "../../engine/Score/Pop/ScorePop.h"
 #include "../../engine/Score/Score.h"
 #include "Enemy.h"
+#include "ScorePop.h"
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
 #include "engine/Map/MapChipField.h"
 #include <audio/Audio.h>
@@ -54,6 +54,8 @@ public:
 
 	void SetScore(Score* score);
 
+	void SetStompScore(int score) { stompScore_ = score; }
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
@@ -78,4 +80,6 @@ private:
 
 	//--------------スコア---------------------//
 	Score* score_ = nullptr;
+
+	int stompScore_ = 5; // デフォルト値
 };

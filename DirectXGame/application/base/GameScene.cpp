@@ -58,11 +58,6 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	score_.Initialize();
 
-	for (int i = 0; i < 10; ++i) {
-		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
-		ScoresTexture[i] = TextureManager::Load(path.c_str());
-	}
-
 	//----------------------------プレイヤー関係初期化----------------------------//
 	modelPlayer_ = Model::CreateFromOBJ("Penguin", true);
 	player_ = new Player();
@@ -87,11 +82,24 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	// 敵マネージャ初期化
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
+
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
 	enemyManager_->SetCameraManager(cameraManager_);
-
 	enemyManager_->SetScore(&score_);
+
+	// ステージ番号によって踏みスコアを変える
+	int stompScore = 5; // デフォルト
+
+	if (stageNo == 0) { // ステージ1
+		stompScore = 15;
+	} else if (stageNo == 1) { // ステージ2
+		stompScore = 10;
+	} else if (stageNo == 2) { // ステージ3
+		stompScore = 5;
+	}
+
+	enemyManager_->SetStompScore(stompScore);
 
 	phaseManager_ = new PhaseManager();
 	phaseManager_->Initialize(player_, enemyManager_, skydome_, cameraManager_, &worldTransformBlocks_, mapManager_->GetMapChipField(), sceneManager_);
@@ -237,7 +245,7 @@ void GameScene::Update() {
 		progressFill_->SetSize({300 * progress, 20});
 
 		// ★スコアクリア判定（ここ追加！）
-		if (score_.GetScore() >= 20) {
+		if (score_.GetScore() >= 50) {
 			sceneManager_->ChangeScene(SceneID::Clear);
 			return;
 		}

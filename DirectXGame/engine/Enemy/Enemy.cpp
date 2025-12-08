@@ -112,7 +112,6 @@ void Enemy::Draw() {
 		return;
 	Vector3 pos = GetWorldPosition();
 	char buf[128];
-	sprintf_s(buf, "Enemy::Draw called at (%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
 	OutputDebugStringA(buf);
 	model_->Draw(worldTransform_, *camera_);
 }

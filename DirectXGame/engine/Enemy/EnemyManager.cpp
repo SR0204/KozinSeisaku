@@ -114,7 +114,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 
 				// ----- ここでスコア加算 -----
 				if (score_) {
-					score_->AddScore(5); // ← Score クラスの加算関数に合わせて変更
+					score_->AddScore(stompScore_); // ← Score クラスの加算関数に合わせて変更
 				}
 
 				// --- 効果音を再生 ---
@@ -238,14 +238,6 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 		}
 		++row;
 	}
-
-	// デバッグ出力
-	std::ostringstream oss;
-	oss << "LoadEnemyPositionsFromCSV: loaded " << positions.size() << " enemies\n";
-	for (size_t i = 0; i < positions.size(); ++i) {
-		oss << "  [" << i << "] pos = (" << positions[i].x << ", " << positions[i].y << ", " << positions[i].z << ")\n";
-	}
-	OutputDebugStringA(oss.str().c_str());
 
 	return positions;
 }
