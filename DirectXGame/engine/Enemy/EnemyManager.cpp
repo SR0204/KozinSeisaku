@@ -3,10 +3,10 @@
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
 #include <algorithm>
+#include <engine/Score/ScoreManager/ScoreManager.h>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <engine/Score/ScoreManager/ScoreManager.h>
 
 using namespace KamataEngine;
 
@@ -113,7 +113,9 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				player->SetVelocityY(0.25f); // 軽くバウンド
 
 				// ----- ここでスコア加算 -----
-				ScoreManager::Instance().AddScore(5);
+				if (score_) {
+					score_->AddScore(5); // ← Score クラスの加算関数に合わせて変更
+				}
 
 				// --- 効果音を再生 ---
 				// Audio::GetInstance()->PlayWave(enemyDeathSE_);
@@ -257,3 +259,5 @@ void EnemyManager::SpawnEnemy(const Vector3& pos) {
 }
 
 void EnemyManager::SetCameraManager(CameraManager* cameraManager) { cameraManager_ = cameraManager; }
+
+void EnemyManager::SetScore(Score* score) { score_ = score; }

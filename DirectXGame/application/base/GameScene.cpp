@@ -237,7 +237,7 @@ void GameScene::Update() {
 		progressFill_->SetSize({300 * progress, 20});
 
 		// ★スコアクリア判定（ここ追加！）
-		if (score_.GetScore() >= 100) {
+		if (score_.GetScore() >= 20) {
 			sceneManager_->ChangeScene(SceneID::Clear);
 			return;
 		}

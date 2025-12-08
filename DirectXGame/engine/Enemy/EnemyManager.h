@@ -1,6 +1,7 @@
 #pragma once
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Player/Player.h"
+#include "../../engine/Score/Pop/ScorePop.h"
 #include "../../engine/Score/Score.h"
 #include "Enemy.h"
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
@@ -51,6 +52,8 @@ public:
 	/// <param name="cameraManager"></param>
 	void SetCameraManager(CameraManager* cameraManager);
 
+	void SetScore(Score* score);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
@@ -72,4 +75,7 @@ private:
 	const float kHitStopDuration_ = 0.1f; // 0.06秒ほど止める
 
 	CameraManager* cameraManager_;
+
+	//--------------スコア---------------------//
+	Score* score_ = nullptr;
 };
