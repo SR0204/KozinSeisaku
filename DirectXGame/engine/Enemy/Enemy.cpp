@@ -112,7 +112,6 @@ void Enemy::Draw() {
 		return;
 	Vector3 pos = GetWorldPosition();
 	char buf[128];
-	sprintf_s(buf, "Enemy::Draw called at (%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
 	OutputDebugStringA(buf);
 	model_->Draw(worldTransform_, *camera_);
 }
@@ -136,11 +135,6 @@ AABB Enemy::GetAABB() {
 }
 
 void Enemy::OnDead() {
-
-	// スコア加算
-	if (score_) {
-		score_->AddScore(10);
-	}
 
 	// 例：死亡エフェクトや削除処理
 	isDead_ = true;

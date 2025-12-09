@@ -79,6 +79,8 @@ public:
 	/// </summary>
 	/// <returns>定数バッファ</returns>
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetConstBuffer() const { return constBuffer_; }
+	const Matrix4x4& GetViewMatrix() const { return matView; }
+	const Matrix4x4& GetProjectionMatrix() const { return matProjection; }
 
 private:
 	// 定数バッファ

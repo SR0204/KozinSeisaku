@@ -18,7 +18,6 @@ void PhaseManager::Initialize(
 	phase_ = Phase::kPlay;
 }
 
-// PhaseManager.cpp
 std::optional<SceneID> PhaseManager::Update() {
 	switch (phase_) {
 	case Phase::kTitle:

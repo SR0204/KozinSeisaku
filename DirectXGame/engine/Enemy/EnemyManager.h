@@ -3,6 +3,7 @@
 #include "../../engine/Player/Player.h"
 #include "../../engine/Score/Score.h"
 #include "Enemy.h"
+#include "ScorePop.h"
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
 #include "engine/Map/MapChipField.h"
 #include <audio/Audio.h>
@@ -40,12 +41,6 @@ public:
 	void AddEnemy(Enemy* enemy);
 
 	/// <summary>
-	/// スコア関係
-	/// </summary>
-	/// <param name="score"></param>
-	void SetScore(Score* score) { score_ = score; }
-
-	/// <summary>
 	/// スポーン
 	/// </summary>
 	/// <param name="pos"></param>
@@ -56,6 +51,10 @@ public:
 	/// </summary>
 	/// <param name="cameraManager"></param>
 	void SetCameraManager(CameraManager* cameraManager);
+
+	void SetScore(Score* score);
+
+	void SetStompScore(int score) { stompScore_ = score; }
 
 private:
 	std::vector<Enemy*> enemies_;
@@ -68,8 +67,6 @@ private:
 
 	uint32_t enemyDeathSE_ = 0;
 
-	Score* score_ = nullptr;
-
 	//------------スポーン---------------//
 	float spawnTimer_ = 0.0f;
 	float spawnInterval_ = 3.0f;       // 3秒ごとにスポーン
@@ -80,4 +77,9 @@ private:
 	const float kHitStopDuration_ = 0.1f; // 0.06秒ほど止める
 
 	CameraManager* cameraManager_;
+
+	//--------------スコア---------------------//
+	Score* score_ = nullptr;
+
+	int stompScore_ = 5; // デフォルト値
 };

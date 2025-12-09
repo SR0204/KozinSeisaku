@@ -3,6 +3,7 @@
 #include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
 #include "../../engine/Player/Player.h"
 #include <algorithm>
+#include <engine/Score/ScoreManager/ScoreManager.h>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -32,7 +33,6 @@ void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* m
 	for (auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
 		newEnemy->Initialize(enemyModel_, camera_, pos);
-		newEnemy->SetScore(score_);
 		enemies_.push_back(newEnemy);
 	}
 
@@ -114,7 +114,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 
 				// ----- ここでスコア加算 -----
 				if (score_) {
-					score_->AddScore(5);
+					score_->AddScore(stompScore_); // ← Score クラスの加算関数に合わせて変更
 				}
 
 				// --- 効果音を再生 ---
@@ -240,14 +240,6 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 		++row;
 	}
 
-	// デバッグ出力
-	std::ostringstream oss;
-	oss << "LoadEnemyPositionsFromCSV: loaded " << positions.size() << " enemies\n";
-	for (size_t i = 0; i < positions.size(); ++i) {
-		oss << "  [" << i << "] pos = (" << positions[i].x << ", " << positions[i].y << ", " << positions[i].z << ")\n";
-	}
-	OutputDebugStringA(oss.str().c_str());
-
 	return positions;
 }
 
@@ -256,8 +248,9 @@ void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
 void EnemyManager::SpawnEnemy(const Vector3& pos) {
 	Enemy* newEnemy = new Enemy();
 	newEnemy->Initialize(enemyModel_, camera_, pos);
-	newEnemy->SetScore(score_); // ★倒されたらスコア加算
 	enemies_.push_back(newEnemy);
 }
 
 void EnemyManager::SetCameraManager(CameraManager* cameraManager) { cameraManager_ = cameraManager; }
+
+void EnemyManager::SetScore(Score* score) { score_ = score; }

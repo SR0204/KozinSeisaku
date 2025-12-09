@@ -150,6 +150,18 @@
     <ClCompile Include="engine\Particle\ParticleSystem.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\LoadJson\FileJson\FileJson.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Score\ScoreManager\ScoreManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Score\Log\ScoreLog.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ScorePop.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -199,6 +211,7 @@
     <None Include="Resources\shaders\Terrain.hlsli">
       <Filter>シェーダー ファイル</Filter>
     </None>
+    <None Include="Resources\Json\highScore.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="etc\AABB.h">
@@ -224,9 +237,6 @@
     </ClInclude>
     <ClInclude Include="engine\Map\SkyDome\SkyDome.h">
       <Filter>ヘッダー ファイル\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Map\StageID.h">
-      <Filter>ヘッダー ファイル\Game\Stage</Filter>
     </ClInclude>
     <ClInclude Include="engine\Camera\CameraController.h">
       <Filter>ヘッダー ファイル\Game\Camera</Filter>
@@ -277,6 +287,18 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\Particle\ParticleSystem.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\LoadJson\FileJson\FileJson.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Score\ScoreManager\ScoreManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Score\Log\ScoreLog.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ScorePop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
