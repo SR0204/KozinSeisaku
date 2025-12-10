@@ -11,6 +11,7 @@
 #include "../../engine/Score/Score.h"
 #include "../../engine/Spawn/SpawnManager.h"
 #include "../../engine/Time/Timer.h"
+#include "KamataEngine.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>

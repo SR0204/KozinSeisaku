@@ -59,3 +59,5 @@ void SceneManager::Draw() {
 		currentScene_->Draw();
 	}
 }
+
+void SceneManager::SetFinalScore(int score) { finalScore_ = score; }

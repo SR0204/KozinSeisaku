@@ -82,11 +82,22 @@ void Enemy::Update(MapChipField* mapField) {
 	if (hitWall)
 		ReverseDirection();
 
+	// ===== 向き回転アニメーション =====
+	if (turnTimer_ > 0.0f) {
+		turnTimer_ -= 1.0f / 60.0f;
+
+		float targetRotY = (direction_ > 0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+
+		float t = std::clamp(turnTimer_ / kEnemyTurnTime, 0.0f, 1.0f);
+
+		worldTransform_.rotation_.y = EaseInOut(targetRotY, turnFirstRotationY_, 1.0f - t);
+	} else {
+		// 通常はただの向きだけ反映
+		worldTransform_.rotation_.y = (direction_ > 0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+	}
+
 	// X方向は空中でも移動
 	worldTransform_.translation_.x += velocity_.x;
-
-	// ===== 向き =====
-	worldTransform_.rotation_.y = (velocity_.x > 0) ? std::numbers::pi_v<float> / 2 : -std::numbers::pi_v<float> / 2;
 
 	// ===== 4段階ジャンプ =====
 	jumpTimer_ += 1.0f / 120.0f;

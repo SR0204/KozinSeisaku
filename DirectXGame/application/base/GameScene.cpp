@@ -6,6 +6,8 @@
 #include <base/TextureManager.h>
 #include <cassert>
 
+using namespace KamataEngine;
+
 // コンストラクタ
 GameScene::GameScene() {}
 
@@ -244,8 +246,9 @@ void GameScene::Update() {
 
 		progressFill_->SetSize({300 * progress, 20});
 
-		// ★スコアクリア判定（ここ追加！）
+		// ★スコアクリア判定
 		if (score_.GetScore() >= 50) {
+			sceneManager_->SetFinalScore(score); // スコア格納
 			sceneManager_->ChangeScene(SceneID::Clear);
 			return;
 		}

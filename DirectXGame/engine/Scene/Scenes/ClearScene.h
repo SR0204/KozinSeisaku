@@ -20,6 +20,12 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	/// <summary>
+	/// スコア受け取り用
+	/// </summary>
+	/// <param name="score"></param>
+	void SetFinalScore(int score);
+
 private:
 	// シーン管理
 	SceneManager* sceneManager_ = nullptr;
@@ -72,4 +78,18 @@ private:
 	// ライト設定用
 	KamataEngine::DirectionalLight light{};
 	std::unique_ptr<KamataEngine::LightGroup> lightGroup_;
+
+	//-----------------スコア関係--------------
+	int finalScore_ = 0;                                  // 最終スコア
+	std::array<KamataEngine::Sprite*, 10> numberSprites_; // スコアの画像
+	int displayScore_ = 0;                                // カウントアップ表示するスコア
+	int scoreAddSpeed_ = 1;                               // 1フレームで増える量
+
+	float scoreAnimScale_ = 1.0f; // ポヨン拡大アニメ
+	float scoreAnimSpeed_ = 0.15f;
+	bool isScoreComplete_ = false;
+
+	KamataEngine::Sprite* shineSprite_; // 光エフェクト
+	float shineAlpha_ = 0.0f;
+	float shineX_ = 0.0f;
 };
