@@ -44,13 +44,20 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	titleTransform_.Initialize();
 
 	// 正面向きに調整
-	titleTransform_.rotation_.y = -1.5f;
+	titleTransform_.rotation_.y = 15.7f; // 正面
+	titleTransform_.rotation_.x = 0.0f;
+	titleTransform_.rotation_.z = 0.0f;
 
-	titleTransform_.scale_ = {3.0f, 3.0f, 3.0f};
-	titleTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	titleTransform_.scale_ = {2.9f, 2.9f, 2.9f};
+	titleTransform_.translation_ = {-12.0f, 5.0f, 0.0f};
 	titleTransform_.UpdateMatrix();
 
 	Camera_.Initialize();
+
+	Camera_.translation_ = {0.0f, 5.0f, -20.0f};
+	Camera_.rotation_ = {0.3f, 0.0f, 0.0f};
+
+	Camera_.UpdateMatrix();
 
 	// === 音 ===
 	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
@@ -116,9 +123,15 @@ void TitleScene::Update() {
 		}
 	} else {
 		// ✨ ゆらゆらアニメ
-		titleTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
+		float baseRotY = 15.7f; // ← 初期の向き（正面）
+		titleTransform_.rotation_.y = baseRotY + std::sin(frameCount_ * 0.01f) * 0.2f;
+
+		// X回転揺れはそのまま
 		titleTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
+
+		// Y位置のゆらゆらもそのまま
 		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
+
 	}
 
 	titleTransform_.UpdateMatrix();
