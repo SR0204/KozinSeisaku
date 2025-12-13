@@ -76,8 +76,8 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	// ===  ライト設定 ===
 	lightGroup_.reset(KamataEngine::LightGroup::Create());
 	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
-	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
+	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
+	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});
 
 	titleModel_->SetLightGroup(lightGroup_.get());
 }
@@ -96,7 +96,7 @@ void TitleScene::Update() {
 		// 0.5〜1.0の範囲でふんわり明るさ変化（消えない）
 		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.25f + 0.75f);
 		// 色も少し明るく（RGB1.2倍）してポップさUP
-		sprite_->SetColor({1.2f, 1.2f, 1.2f, alpha});
+		sprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
 	}
 
 	// === バウンド演出 ===

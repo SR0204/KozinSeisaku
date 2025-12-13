@@ -4,6 +4,7 @@
 #include "engine/Scene/SceneManager/SceneManager.h"
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 
 using namespace KamataEngine;
 
@@ -14,7 +15,8 @@ StageSelect::~StageSelect() {
 		delete BackGround_[i].release();
 	}
 	for (int i = 0; i < kMaxStage; i++) {
-		delete stageSprite_[i].release();
+		delete stageCubeModel_[i].release();
+		delete stageTextModel_[i].release();
 	}
 	delete cursorSprite_.release();
 	delete fadeSprite_.release();
@@ -35,38 +37,36 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	BackGround_[0].reset(Sprite::Create(bgTexHandle_, {0, 0}));
 	BackGround_[1].reset(Sprite::Create(bgTexHandle_, {1280, 0}));
 
-	// === ステージアイコン ===
-	stageTex_[0] = TextureManager::Load("./Resources/StageSelect/stage1.png");
-	stageTex_[1] = TextureManager::Load("./Resources/StageSelect/stage2.png");
-	stageTex_[2] = TextureManager::Load("./Resources/StageSelect/stage3.png");
+	//==========ステージアイコン==============
+	for (int i = 0; i < kMaxStage; i++) {
+		std::string base = "stage_" + std::to_string(i + 1);
 
-	float baseX = 520.0f;    // 左寄せ
-	float baseY = 250.0f;    // 上寄せ
-	float spacing = 300.0f;  // ステージ間隔
+		stageCubeModel_[i].reset(Model::CreateFromOBJ(base + "_Cube", true));
+		stageTextModel_[i].reset(Model::CreateFromOBJ(base + "_Text", true));
+
+		stageTransform_[i].Initialize();
+		float x = (i - (kMaxStage - 1) / 2.0f) * 8.0f;
+		stageTransform_[i].translation_ = {x, 0.0f, 0.0f};
+		stageTransform_[i].scale_ = {0.8f, 0.8f, 0.8f};
+
+		assert(stageCubeModel_[0] && "stage_1_Cube load failed");
+		assert(stageTextModel_[0] && "stage_1_Text load failed");
+	}
+
 	float stageScale = 0.5f; // ステージアイコンのサイズ倍率
 
 	Vector2 iconBaseSize = {500.0f * stageScale, 500.0f * stageScale};
 
-	for (int i = 0; i < kMaxStage; i++) {
-		stageSprite_[i].reset(Sprite::Create(stageTex_[i], {0, 0}));
-		stageSprite_[i]->SetSize(iconBaseSize);
-
-		float x = baseX + (i - (kMaxStage - 1) / 2.0f) * spacing;
-		float y = baseY;
-		stageSprite_[i]->SetPosition({x, y});
-	}
-
 	// === カーソル ===
-	cursorTexHandle_ = TextureManager::Load("./Resources/StageSelect/cursor.png");
+	cursorTexHandle_ = TextureManager::Load("./Resources/Stage/cursor.png");
 	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {0, 0}));
 
 	float cursorScale = 0.5f; // ← カーソルの大きさ調整
 	cursorSprite_->SetSize({128.0f * cursorScale, 128.0f * cursorScale});
 
 	// 初期位置をステージ0に合わせる
-	Vector2 stagePos =stageSprite_[currentStage_]->GetPosition();
-	float cursorOffsetY = iconBaseSize.y / 2.0f + 40.0f; // 下に配置
-	cursorSprite_->SetPosition({stagePos.x, stagePos.y + cursorOffsetY});
+	Vector3 pos = stageTransform_[currentStage_].translation_;
+	cursorSprite_->SetPosition({640 + pos.x * 50.0f, 360 - pos.y * 50.0f});
 
 	// === フェード ===
 	fadeTexHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
@@ -114,30 +114,44 @@ void StageSelect::Update() {
 			currentStage_ = std::max(currentStage_ - 1, 0);
 		}
 
-		// === カーソルの位置を選択中ステージに追従 ===
-		Vector2 stagePos = stageSprite_[currentStage_]->GetPosition();
-		Vector2 stageSize = stageSprite_[currentStage_]->GetSize();
-
-		// アイコン右下の座標
-		float rightX = stagePos.x + stageSize.x * 0.5f;
-		float bottomY = stagePos.y + stageSize.y * 0.5f;
-
-		// 少し右下にずらすオフセット（好みで調整）
-		float offsetX = 40.0f;
-		float offsetY = 40.0f;
-
-		cursorSprite_->SetPosition({rightX + offsetX, bottomY + offsetY});
-
 		// 決定
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerKey(DIK_RETURN)) {
 			isDecide_ = true;
-			isFadingOut_ = true;
+			isStageRotating_ = true;
+			rotateTimer_ = 0;
 		}
 
 		// タイトルに戻る
 		if (input_->TriggerKey(DIK_ESCAPE)) {
 			isFadingOut_ = true;
 			isDecide_ = false;
+		}
+	}
+
+	//================選択中に少し浮くようにする===========================
+	for (int i = 0; i < kMaxStage; i++) {
+		if (i == currentStage_) {
+			stageTransform_[i].scale_ = {1.0f, 1.0f, 1.0f};
+			stageTransform_[i].translation_.y = std::sin(frameCount_ * 0.05f) * 0.3f;
+		} else {
+			stageTransform_[i].scale_ = {0.7f, 0.7f, 0.7f};
+			stageTransform_[i].translation_.y = 0.0f;
+		}
+
+		stageTransform_[i].UpdateMatrix();
+	}
+
+	if (isStageRotating_) {
+		rotateTimer_++;
+
+		// 1回転（2π）
+		float rot = std::numbers::pi_v<float> * 2.0f * (rotateTimer_ / 60.0f);
+
+		stageTransform_[currentStage_].rotation_.y = rot;
+
+		if (rotateTimer_ >= 60) {
+			isStageRotating_ = false;
+			isFadingOut_ = true; // 回転後にフェード
 		}
 	}
 
@@ -200,6 +214,13 @@ void StageSelect::Draw() {
 	if (model_) {
 		model_->Draw(worldTransform_, camera_);
 	}
+
+	// ステージアイコン描画
+	for (int i = 0; i < kMaxStage; i++) {
+		stageCubeModel_[i]->Draw(stageTransform_[i], camera_);
+		stageTextModel_[i]->Draw(stageTransform_[i], camera_);
+	}
+
 	Model::PostDraw();
 
 	// === 2D ===
@@ -209,12 +230,6 @@ void StageSelect::Draw() {
 	for (int i = 0; i < 2; i++) {
 		if (BackGround_[i])
 			BackGround_[i]->Draw();
-	}
-
-	// ステージアイコン描画
-	for (int i = 0; i < kMaxStage; i++) {
-		if (stageSprite_[i])
-			stageSprite_[i]->Draw();
 	}
 
 	// カーソル（点滅演出）
@@ -227,4 +242,26 @@ void StageSelect::Draw() {
 		fadeSprite_->Draw();
 
 	Sprite::PostDraw();
+}
+
+void StageSelect::DrawImGui() {
+
+#ifdef _DEBUG
+	ImGui::Begin("Stage Icon Adjust");
+
+	ImGui::DragFloat3("Stage Position", &stageTransform_[debugStageIndex_].translation_.x, 0.1f);
+
+	ImGui::DragFloat3("Stage Rotation", &stageTransform_[debugStageIndex_].rotation_.x, 0.01f);
+
+	ImGui::DragFloat3("Stage Scale", &stageTransform_[debugStageIndex_].scale_.x, 0.01f);
+
+	ImGui::End();
+
+	ImGui::Begin("Camera");
+
+	ImGui::DragFloat3("Camera Pos", &camera_.translation_.x, 0.1f);
+	ImGui::DragFloat3("Camera Rot", &camera_.rotation_.x, 0.01f);
+
+	ImGui::End();
+#endif // DEBUG
 }

@@ -8,6 +8,7 @@
 #include "../../engine/Player/Player.h"
 #include "../../engine/Scene/SceneManager/PhaseManager.h"
 #include "../../engine/Scene/SceneManager/SceneManager.h"
+#include "../../engine/Scene/Scenes/StageSelect.h"
 #include "../../engine/Score/Score.h"
 #include "../../engine/Spawn/SpawnManager.h"
 #include "../../engine/Time/Timer.h"
@@ -78,6 +79,11 @@ public: // メンバ関数(引数）
 	/// 時間表示用の関数
 	/// </summary>
 	void DrawTimeUI();
+
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui();
 
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
@@ -199,6 +205,9 @@ private: // メンバ変数（関数）
 
 	//------------------------敵のスポーン関係------------------------//
 	SpawnManager* spawnManager_;
+
+	//=========================ImGui用=========================
+	StageSelect* StageSelect_;
 
 	/// <summary>
 	/// ゲームシーン用

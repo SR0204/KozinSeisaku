@@ -49,11 +49,13 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	ClearModel_ = KamataEngine::Model::CreateFromOBJ("Clear", true);
 	ClearTransform_.Initialize();
 
-	// 正面向きに調整
-	ClearTransform_.rotation_.y = -1.5f;
+	baseRotY = 5.0f;
 
-	ClearTransform_.scale_ = {3.0f, 3.0f, 3.0f};
-	ClearTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	// 正面向きに調整
+	ClearTransform_.rotation_ = {0.0f, baseRotY, 0.0f};
+
+	ClearTransform_.scale_ = {8.5f, 8.5f, 8.5f};
+	ClearTransform_.translation_ = {-26.0f, 15.0f, 0.0f};
 	ClearTransform_.UpdateMatrix();
 
 	Camera_.Initialize();
@@ -75,8 +77,8 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	// ===  ライト設定 ===
 	lightGroup_.reset(KamataEngine::LightGroup::Create());
 	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
-	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
+	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
+	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});
 
 	ClearModel_->SetLightGroup(lightGroup_.get());
 
@@ -138,13 +140,18 @@ void ClearScene::Update() {
 			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.01f) {
 				isBounceFinished_ = true;
 				ClearTransform_.translation_.y = targetY;
+				swayTimer_ = 0;
 			}
 		}
 	} else {
+		swayTimer_++;
+
 		// ✨ ゆらゆらアニメ
-		ClearTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
-		ClearTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
-		ClearTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
+		ClearTransform_.rotation_.y = baseRotY + std::sin(swayTimer_ * 0.01f) * 0.2f;
+
+		ClearTransform_.rotation_.x = std::sin(swayTimer_ * 0.015f) * 0.1f;
+
+		ClearTransform_.translation_.y = targetY + std::sin(swayTimer_ * 0.03f) * 0.3f;
 	}
 
 	ClearTransform_.UpdateMatrix();

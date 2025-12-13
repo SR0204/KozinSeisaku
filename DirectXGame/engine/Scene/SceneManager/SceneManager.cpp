@@ -2,7 +2,7 @@
 #include "../../DirectXGame/application/base/GameScene.h"
 #include "../DirectXGame/engine/Scene/Scenes/ClearScene.h"
 #include "../DirectXGame/engine/Scene/Scenes/GameOverScene.h"
-#include "../DirectXGame/engine/Scene/Scenes/StageSelect.h"
+
 #include "../DirectXGame/engine/Scene/Scenes/TitleScene.h"
 
 SceneManager::SceneManager() : currentID_(SceneID::None) { RequestScene(SceneID::TitleScene); }
@@ -58,6 +58,7 @@ void SceneManager::Draw() {
 	if (currentScene_) {
 		currentScene_->Draw();
 	}
+	
 }
 
 void SceneManager::SetFinalScore(int score) { finalScore_ = score; }

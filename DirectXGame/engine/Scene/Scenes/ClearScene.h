@@ -65,6 +65,8 @@ private:
 	float fadeAlpha_ = 0.0f; // 画面暗転のアルファ値
 	int bounceTimer_ = 0;    // ロゴバウンド用タイマー
 	int blinkTimer_ = 0;     // 点滅用
+	float baseRotY = 0;      // ゆらゆらアニメーション用
+	int swayTimer_ = 0;      // ゆらゆらタイマー
 
 	// バウンド用
 	float bounceAmplitude_;

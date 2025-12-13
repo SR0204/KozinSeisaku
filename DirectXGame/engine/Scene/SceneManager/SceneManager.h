@@ -1,4 +1,5 @@
 #pragma once
+#include "../DirectXGame/engine/Scene/Scenes/StageSelect.h"
 #include "Scene.h"
 #include "SceneID.h"
 #include <memory>
@@ -34,6 +35,8 @@ private:
 	SceneID currentID_;
 	SceneID nextScene_ = SceneID::None; // 切り替えフラグ
 	int selectedStage_ = 0;
+
+	
 
 	//-----------------スコア関係--------------
 	int finalScore_ = 0; // 最終スコア
