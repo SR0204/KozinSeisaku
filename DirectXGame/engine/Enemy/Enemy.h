@@ -11,6 +11,11 @@ class Player;
 
 enum class EnemyState { Patrol, Chase };
 
+enum class EnemyType {
+	Normal, // ===============普通に踏める敵==============
+	MidBoss // ===============中ボス====================
+};
+
 /// <summary>
 /// 敵のベースを作るクラス
 /// </summary>
@@ -84,6 +89,19 @@ public:
 	bool IsDead() const { return isDead_; }
 	void OnDead();
 
+	/// <summary>
+	/// 中ボス初期化
+	/// </summary>
+	/// <param name="model"></param>
+	/// <param name="camera"></param>
+	/// <param name="pos"></param>
+	void InitializeMidBoss(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
+
+	/// <summary>
+	/// 中ボス更新
+	/// </summary>
+	void UpdateMidBoss();
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -136,4 +154,8 @@ private:
 		float tt = t * t * (3 - 2 * t); // 3t² - 2t³
 		return start + (end - start) * tt;
 	}
+
+	//=====================中ボス用======================
+	EnemyType type_ = EnemyType::Normal;
+	float spawnTimer_ = 0; // スポーン時間
 };

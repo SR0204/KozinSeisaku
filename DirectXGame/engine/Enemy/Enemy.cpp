@@ -116,6 +116,11 @@ void Enemy::Update(MapChipField* mapField) {
 	worldTransform_.rotation_.x = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
 
 	worldTransform_.UpdateMatrix();
+
+	//====================中ボス更新=====================
+	if (type_ == EnemyType::MidBoss) {
+		return;
+	}
 }
 
 void Enemy::Draw() {
@@ -149,4 +154,26 @@ void Enemy::OnDead() {
 
 	// 例：死亡エフェクトや削除処理
 	isDead_ = true;
+}
+
+void Enemy::InitializeMidBoss(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos) {
+
+	type_ = EnemyType::MidBoss;
+
+	isAlive_ = true;
+	velocity_ = {0, 0, 0};
+	spawnTimer_ = 0.0f;
+}
+
+void Enemy::UpdateMidBoss() {
+	spawnTimer_ += 1.0f / 60.0f;
+
+	if (spawnTimer_ >= 0.8f) {
+		spawnTimer_ = 0.0f;
+
+		// 少しランダムで放出
+		Vector3 spawnPos = worldTransform_.translation_;
+		spawnPos.x += (rand() % 200 - 100) * 0.01f;
+		spawnPos.y -= 0.5f;
+	}
 }

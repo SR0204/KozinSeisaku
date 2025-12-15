@@ -26,6 +26,10 @@ public:
 	/// </summary>
 	/// <param name="player"></param>
 	void CheckAllCollisions(Player* player);
+
+	/// <summary>
+	/// AABBの当たり判定
+	/// </summary>
 	void HandleEnemyCollisions();
 
 	bool IsAllEnemyDefeated() const;
@@ -38,6 +42,10 @@ public:
 	/// <returns></returns>
 	std::vector<KamataEngine::Vector3> LoadEnemyPositionsFromCSV(const std::string& filename, MapChipField* mapField);
 
+	/// <summary>
+	/// 追加の敵の関数
+	/// </summary>
+	/// <param name="enemy"></param>
 	void AddEnemy(Enemy* enemy);
 
 	/// <summary>
