@@ -47,12 +47,12 @@ public: // メンバ関数(引数）
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲームのフェーズ(型)
@@ -83,7 +83,7 @@ public: // メンバ関数(引数）
 	/// <summary>
 	/// ImGui用
 	/// </summary>
-	void DrawImGui();
+	void DrawImGui() override;
 
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
@@ -205,9 +205,6 @@ private: // メンバ変数（関数）
 
 	//------------------------敵のスポーン関係------------------------//
 	SpawnManager* spawnManager_;
-
-	//=========================ImGui用=========================
-	StageSelect* StageSelect_;
 
 	/// <summary>
 	/// ゲームシーン用

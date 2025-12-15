@@ -58,7 +58,15 @@ void SceneManager::Draw() {
 	if (currentScene_) {
 		currentScene_->Draw();
 	}
-	
+
+#ifdef USE_IMGUI
+
+	ImGuiManager::GetInstance()->Begin();
+	if (currentScene_) {
+		currentScene_->DrawImGui();
+	}
+	ImGuiManager::GetInstance()->End();
+#endif // DEBUG
 }
 
 void SceneManager::SetFinalScore(int score) { finalScore_ = score; }

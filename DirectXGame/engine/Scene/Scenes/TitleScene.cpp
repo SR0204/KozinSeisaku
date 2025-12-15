@@ -131,7 +131,6 @@ void TitleScene::Update() {
 
 		// Y位置のゆらゆらもそのまま
 		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
-
 	}
 
 	titleTransform_.UpdateMatrix();
@@ -204,3 +203,5 @@ void TitleScene::Draw() {
 
 	KamataEngine::Sprite::PostDraw();
 }
+
+void TitleScene::DrawImGui() {}

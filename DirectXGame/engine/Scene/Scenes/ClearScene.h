@@ -26,6 +26,11 @@ public:
 	/// <param name="score"></param>
 	void SetFinalScore(int score);
 
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
+
 private:
 	// シーン管理
 	SceneManager* sceneManager_ = nullptr;

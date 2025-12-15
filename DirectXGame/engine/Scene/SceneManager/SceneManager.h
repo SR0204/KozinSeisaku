@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "SceneID.h"
 #include <memory>
+
 /// <summary>
 /// シーン切り替えをするクラス
 /// </summary>

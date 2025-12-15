@@ -42,7 +42,6 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 		std::string base = "stage_" + std::to_string(i + 1);
 
 		stageCubeModel_[i].reset(Model::CreateFromOBJ(base + "_Cube", true));
-		stageTextModel_[i].reset(Model::CreateFromOBJ(base + "_Text", true));
 
 		stageTransform_[i].Initialize();
 		float x = (i - (kMaxStage - 1) / 2.0f) * 8.0f;
@@ -50,7 +49,6 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 		stageTransform_[i].scale_ = {0.8f, 0.8f, 0.8f};
 
 		assert(stageCubeModel_[0] && "stage_1_Cube load failed");
-		assert(stageTextModel_[0] && "stage_1_Text load failed");
 	}
 
 	float stageScale = 0.5f; // ステージアイコンのサイズ倍率
@@ -85,9 +83,13 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 
 	// === ライト設定 ===
 	lightGroup_.reset(LightGroup::Create());
-	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.3f, 1.2f, 1.1f});
-	model_->SetLightGroup(lightGroup_.get());
+	/*lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
+	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
+	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});*/
+
+	for (int i = 0; i < kMaxStage; i++) {
+		stageCubeModel_[i]->SetLightGroup(lightGroup_.get());
+	}
 
 	// === BGM ===
 	// bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/StageSelectBGM.mp3");
@@ -99,6 +101,10 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	isFadingOut_ = false;
 	isDecide_ = false;
 	fadeAlpha_ = 0.0f;
+
+	for (int i = 0; i < kMaxStage; i++) {
+		baseScale_[i] = {0.7f, 0.7f, 0.7f};
+	}
 }
 
 void StageSelect::Update() {
@@ -131,10 +137,10 @@ void StageSelect::Update() {
 	//================選択中に少し浮くようにする===========================
 	for (int i = 0; i < kMaxStage; i++) {
 		if (i == currentStage_) {
-			stageTransform_[i].scale_ = {1.0f, 1.0f, 1.0f};
+			stageTransform_[i].scale_ = baseScale_[i];
 			stageTransform_[i].translation_.y = std::sin(frameCount_ * 0.05f) * 0.3f;
 		} else {
-			stageTransform_[i].scale_ = {0.7f, 0.7f, 0.7f};
+			stageTransform_[i].scale_ = baseScale_[i];
 			stageTransform_[i].translation_.y = 0.0f;
 		}
 
@@ -218,7 +224,6 @@ void StageSelect::Draw() {
 	// ステージアイコン描画
 	for (int i = 0; i < kMaxStage; i++) {
 		stageCubeModel_[i]->Draw(stageTransform_[i], camera_);
-		stageTextModel_[i]->Draw(stageTransform_[i], camera_);
 	}
 
 	Model::PostDraw();
@@ -242,26 +247,76 @@ void StageSelect::Draw() {
 		fadeSprite_->Draw();
 
 	Sprite::PostDraw();
+
+	ImGuiManager::GetInstance()->Draw();
+	DrawImGui();
+	ImGuiManager::GetInstance()->End();
 }
 
 void StageSelect::DrawImGui() {
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("Stage Icon Adjust");
 
-	ImGui::DragFloat3("Stage Position", &stageTransform_[debugStageIndex_].translation_.x, 0.1f);
+	// --- ステージ番号選択 ---
+	ImGui::SliderInt("Stage Index", &debugStageIndex_, 0, kMaxStage - 1);
 
-	ImGui::DragFloat3("Stage Rotation", &stageTransform_[debugStageIndex_].rotation_.x, 0.01f);
+	if (0 <= debugStageIndex_ && debugStageIndex_ < kMaxStage) {
 
-	ImGui::DragFloat3("Stage Scale", &stageTransform_[debugStageIndex_].scale_.x, 0.01f);
+		// ===== Position =====
+		Vector3& pos = stageTransform_[debugStageIndex_].translation_;
+		float posBuf[3] = {pos.x, pos.y, pos.z};
+
+		if (ImGui::DragFloat3("Stage Position", posBuf, 0.1f)) {
+			pos.x = posBuf[0];
+			pos.y = posBuf[1];
+			pos.z = posBuf[2];
+			stageTransform_[debugStageIndex_].UpdateMatrix();
+		}
+
+		// ===== Rotation =====
+		Vector3& rot = stageTransform_[debugStageIndex_].rotation_;
+		float rotBuf[3] = {rot.x, rot.y, rot.z};
+
+		if (ImGui::DragFloat3("Stage Rotation", rotBuf, 0.01f)) {
+			rot.x = rotBuf[0];
+			rot.y = rotBuf[1];
+			rot.z = rotBuf[2];
+			stageTransform_[debugStageIndex_].UpdateMatrix();
+		}
+
+		// ===== Scale =====
+		Vector3& scl = baseScale_[debugStageIndex_];
+		float sclBuf[3] = {scl.x, scl.y, scl.z};
+
+		if (ImGui::DragFloat3("Stage Base Scale", sclBuf, 0.01f)) {
+			scl.x = sclBuf[0];
+			scl.y = sclBuf[1];
+			scl.z = sclBuf[2];
+		}
+	}
 
 	ImGui::End();
 
+	// ===== Camera =====
 	ImGui::Begin("Camera");
 
-	ImGui::DragFloat3("Camera Pos", &camera_.translation_.x, 0.1f);
-	ImGui::DragFloat3("Camera Rot", &camera_.rotation_.x, 0.01f);
+	{
+		float camPos[3] = {camera_.translation_.x, camera_.translation_.y, camera_.translation_.z};
+		if (ImGui::DragFloat3("Camera Pos", camPos, 0.1f)) {
+			camera_.translation_.x = camPos[0];
+			camera_.translation_.y = camPos[1];
+			camera_.translation_.z = camPos[2];
+		}
+
+		float camRot[3] = {camera_.rotation_.x, camera_.rotation_.y, camera_.rotation_.z};
+		if (ImGui::DragFloat3("Camera Rot", camRot, 0.01f)) {
+			camera_.rotation_.x = camRot[0];
+			camera_.rotation_.y = camRot[1];
+			camera_.rotation_.z = camRot[2];
+		}
+	}
 
 	ImGui::End();
-#endif // DEBUG
+#endif
 }

@@ -1,13 +1,14 @@
 #pragma once
 #include "../SceneManager/Scene.h"
 #include "3d/LightGroup.h"
+#include "3d/WorldTransform.h"
 #include "KamataEngine.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <Audio/Audio.h>
-#include <memory>
 
+#include <memory>
 
 class SceneManager;
 
@@ -23,7 +24,10 @@ public:
 	void Update() override;
 	void Draw() override;
 
-	void DrawImGui();
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
 
 private:
 	SceneManager* sceneManager_ = nullptr;
@@ -75,4 +79,5 @@ private:
 
 	//==============デバッグ用================
 	int debugStageIndex_ = 0;
+	KamataEngine::Vector3 baseScale_[kMaxStage];
 };

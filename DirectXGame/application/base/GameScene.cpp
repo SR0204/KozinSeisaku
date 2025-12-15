@@ -333,11 +333,6 @@ void GameScene::Draw() {
 	}
 
 	Sprite::PostDraw();
-
-	ImGuiManager::GetInstance()->Begin();
-	StageSelect_->DrawImGui();
-	ImGuiManager::GetInstance()->End();
-	ImGuiManager::GetInstance()->Draw();
 }
 
 void GameScene::DrawTimeUI() {
@@ -345,12 +340,5 @@ void GameScene::DrawTimeUI() {
 		timer_->Draw(numberTextures_, 1000.0f, 10.0f); // TimeクラスのDrawを呼び出す
 	}
 }
-void GameScene::DrawImGui() {
-#ifdef _DEBUG
-	ImGui::Begin("GameScene");
-	StageSelect_->DrawImGui();
-	ImGui::End();
-	
 
-#endif // DEBUG_
-}
+void GameScene::DrawImGui() {}

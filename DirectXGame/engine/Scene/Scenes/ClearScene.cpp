@@ -319,3 +319,5 @@ void ClearScene::Draw() {
 }
 
 void ClearScene::SetFinalScore(int score) { finalScore_ = score; }
+
+void ClearScene::DrawImGui() {}

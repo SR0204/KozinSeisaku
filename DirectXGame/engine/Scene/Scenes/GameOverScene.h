@@ -21,6 +21,11 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
+
 private:
 	// シーン管理
 	SceneManager* sceneManager_ = nullptr;

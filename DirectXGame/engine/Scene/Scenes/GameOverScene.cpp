@@ -200,3 +200,5 @@ void GameOverScene::Draw() {
 
 	KamataEngine::Sprite::PostDraw();
 }
+
+void GameOverScene::DrawImGui() {}
