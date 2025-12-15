@@ -8,9 +8,11 @@
 #include "../../engine/Player/Player.h"
 #include "../../engine/Scene/SceneManager/PhaseManager.h"
 #include "../../engine/Scene/SceneManager/SceneManager.h"
+#include "../../engine/Scene/Scenes/StageSelect.h"
 #include "../../engine/Score/Score.h"
 #include "../../engine/Spawn/SpawnManager.h"
 #include "../../engine/Time/Timer.h"
+#include "KamataEngine.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/DebugCamera.h>
@@ -45,12 +47,12 @@ public: // メンバ関数(引数）
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲームのフェーズ(型)
@@ -77,6 +79,11 @@ public: // メンバ関数(引数）
 	/// 時間表示用の関数
 	/// </summary>
 	void DrawTimeUI();
+
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
 
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;

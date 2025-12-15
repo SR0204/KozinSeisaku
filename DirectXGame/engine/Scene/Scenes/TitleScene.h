@@ -20,6 +20,11 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
+
 private:
 	// シーン管理
 	SceneManager* sceneManager_ = nullptr;
@@ -30,8 +35,8 @@ private:
 	KamataEngine::Audio* audio_ = nullptr;
 
 	// スプライト
-	KamataEngine::Sprite* sprite_ = nullptr;     // PRESS SPACE
-	KamataEngine::Sprite* sprite2_ = nullptr;    // Title ロゴ
+	KamataEngine::Sprite* sprite_ = nullptr;  // PRESS SPACE
+	KamataEngine::Sprite* sprite2_ = nullptr; // Title ロゴ
 
 	// テクスチャハンドル
 	uint32_t TitleTextureHandle_ = 0;

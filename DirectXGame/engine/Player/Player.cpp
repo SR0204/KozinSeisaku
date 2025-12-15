@@ -46,13 +46,6 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 	hipDropParticles_ = new ParticleSystem(camera_);
 	hipDropParticles_->Initialize(50);
-
-	// バウンドポイント表示用スプライト（1～5）ロード
-	//for (int i = 0; i < kMaxBouncePoints; i++) {
-	//	bouncePointSprites_[i] = Sprite::Create(
-	//	    TextureManager::Load("./Resources/Numbers/number_" + std::to_string(i + 1) + ".png"), {50.0f + i * 20.0f, 50.0f} // 適当な位置に表示
-	//	);
-	//}
 }
 
 /// <summary>
@@ -126,13 +119,6 @@ void Player::Draw() {
 	dashParticles_->Draw();
 	hipDropParticles_->Draw();
 
-	// 連続踏みポイント分だけ描画
-	/*for (int i = 0; i < consecutiveBouncePoints_; i++) {
-		if (i < kMaxBouncePoints && bouncePointSprites_[i]) {
-			bouncePointSprites_[i]->Draw();
-		}
-	}*/
-
 	model_->Draw(worldTransform_, *camera_);
 }
 
@@ -155,12 +141,23 @@ void Player::InputMove() {
 
 	if (input->PushKey(DIK_D)) {
 		velocity_.x = moveSpeed;
-		lrDirection_ = LRDirection::kRight;
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+
+		if (lrDirection_ != LRDirection::kRight) {
+			// ターン開始
+			lrDirection_ = LRDirection::kRight;
+			turnFirstRotationY_ = worldTransform_.rotation_.y;
+			turnTimer_ = kTimeTurn; // 0.2f など
+		}
+
 	} else if (input->PushKey(DIK_A)) {
 		velocity_.x = -moveSpeed;
-		lrDirection_ = LRDirection::kLeft;
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+
+		if (lrDirection_ != LRDirection::kLeft) {
+			// ターン開始
+			lrDirection_ = LRDirection::kLeft;
+			turnFirstRotationY_ = worldTransform_.rotation_.y;
+			turnTimer_ = kTimeTurn;
+		}
 	}
 
 	// ジャンプ（地上でのみ）
@@ -210,21 +207,20 @@ void Player::InputMove() {
 
 void Player::AnimateTurn() {
 
-	// 旋回制御
-	// 左右の自キャラ角度テーブル(左右の向き状態に合わせて、適切な角度に回転する処理
 	if (turnTimer_ > 0.0f) {
 
-		turnTimer_ -= 1 / 60.0f;
+		turnTimer_ -= 1.0f / 60.0f;
+		float t = 1.0f - (turnTimer_ / kTimeTurn); // 0→1
 
 		float destinationRotationYTable[] = {
-		    std::numbers::pi_v<float> / 2.0f,
-		    std::numbers::pi_v<float> * 3.0f / 2.0f,
+		    std::numbers::pi_v<float> / 2.0f,        // 右向き
+		    std::numbers::pi_v<float> * 3.0f / 2.0f, // 左向き
 		};
-		// 状態に応じた角度を取得する
-		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
 
-		// 自キャラの角度を設定する
-		worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+		float destination = destinationRotationYTable[(uint32_t)lrDirection_];
+
+		// スムーズに向きを補間
+		worldTransform_.rotation_.y = EaseInOut(turnFirstRotationY_, destination, t);
 	}
 }
 

@@ -210,7 +210,7 @@ private:
 	float turnFirstRotationY_ = 0.0f;
 
 	// 旋回演出のタイマー
-	float turnTimer_ = 0.0f;
+	float turnTimer_ = 0.15f;
 
 	// 接地しているか
 	bool onGround_ = true;

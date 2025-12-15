@@ -1,9 +1,13 @@
+#define NOMINMAX
 #include "ClearScene.h"
 #include "../../Scene/SceneManager/SceneID.h"
 #include "../../Scene/SceneManager/SceneManager.h"
 #include <Audio/Audio.h>
+#include <algorithm>
 #include <cmath>
 #include <numbers>
+#include <string> // std::string
+#include <vector> // std::vector
 
 using namespace KamataEngine;
 
@@ -45,11 +49,13 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	ClearModel_ = KamataEngine::Model::CreateFromOBJ("Clear", true);
 	ClearTransform_.Initialize();
 
-	// 正面向きに調整
-	ClearTransform_.rotation_.y = -1.5f;
+	baseRotY = 5.0f;
 
-	ClearTransform_.scale_ = {3.0f, 3.0f, 3.0f};
-	ClearTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	// 正面向きに調整
+	ClearTransform_.rotation_ = {0.0f, baseRotY, 0.0f};
+
+	ClearTransform_.scale_ = {8.5f, 8.5f, 8.5f};
+	ClearTransform_.translation_ = {-26.0f, 15.0f, 0.0f};
 	ClearTransform_.UpdateMatrix();
 
 	Camera_.Initialize();
@@ -71,10 +77,30 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	// ===  ライト設定 ===
 	lightGroup_.reset(KamataEngine::LightGroup::Create());
 	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
-	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
+	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
+	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});
 
 	ClearModel_->SetLightGroup(lightGroup_.get());
+
+	//=================================スコア関係=====================
+
+	// SceneManager から最終スコアを取得
+	finalScore_ = sceneManager_->GetFinalScore();
+
+	displayScore_ = 0; // 最初は０からスタート
+
+	// === 数字スプライト読み込み ===
+	for (int i = 0; i < 10; i++) {
+		std::string path = "./Resources/Numbers/number_" + std::to_string(i) + ".png";
+		uint32_t tex = TextureManager::Load(path);
+		numberSprites_[i] = KamataEngine::Sprite::Create(tex, {0, 0});
+	}
+
+	//=============光のエフェクト===============
+	uint32_t shineTex = TextureManager::Load("./Resources/Effect/shine.png");
+	shineSprite_ = KamataEngine::Sprite::Create(shineTex, {0, 0});
+	shineSprite_->SetSize({200, 40});
+	shineSprite_->SetColor({1, 1, 1, 0}); // 初期は透明
 }
 
 void ClearScene::Update() {
@@ -114,13 +140,18 @@ void ClearScene::Update() {
 			if (bounceTimer_ <= 0 || bounceAmplitude_ < 0.01f) {
 				isBounceFinished_ = true;
 				ClearTransform_.translation_.y = targetY;
+				swayTimer_ = 0;
 			}
 		}
 	} else {
+		swayTimer_++;
+
 		// ✨ ゆらゆらアニメ
-		ClearTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
-		ClearTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
-		ClearTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
+		ClearTransform_.rotation_.y = baseRotY + std::sin(swayTimer_ * 0.01f) * 0.2f;
+
+		ClearTransform_.rotation_.x = std::sin(swayTimer_ * 0.015f) * 0.1f;
+
+		ClearTransform_.translation_.y = targetY + std::sin(swayTimer_ * 0.03f) * 0.3f;
 	}
 
 	ClearTransform_.UpdateMatrix();
@@ -163,6 +194,47 @@ void ClearScene::Update() {
 		}
 		BackGround_[i]->SetPosition(pos);
 	}
+
+	// === スコアのカウントアップ（イージング） ===
+	{
+		if (!isScoreComplete_) {
+
+			int diff = finalScore_ - displayScore_;
+
+			if (diff > 0) {
+				// 徐々に遅くなる加速
+				int add = (std::max)(1, diff / 10);
+
+				displayScore_ += add;
+
+				// ポヨンアニメ開始（毎回少し大きく）
+				scoreAnimScale_ = 1.3f;
+
+				// 到達判定
+				if (displayScore_ >= finalScore_) {
+					displayScore_ = finalScore_;
+					isScoreComplete_ = true;
+
+					// 光エフェクト開始
+					shineAlpha_ = 1.0f;
+					shineX_ = 500;
+				}
+			}
+		}
+
+		// ポヨンアニメの収束
+		scoreAnimScale_ += (1.0f - scoreAnimScale_) * scoreAnimSpeed_;
+	}
+	//=============--光エフェクト==============
+	if (shineAlpha_ > 0.0f) {
+		shineX_ += 20;        // 右へ走らせる
+		shineAlpha_ -= 0.05f; // フェードアウト
+		if (shineAlpha_ < 0.0f)
+			shineAlpha_ = 0.0f;
+
+		shineSprite_->SetPosition({shineX_, 480});
+		shineSprite_->SetColor({1, 1, 1, shineAlpha_});
+	}
 }
 
 void ClearScene::Draw() {
@@ -198,5 +270,54 @@ void ClearScene::Draw() {
 	if (fadeSprite_)
 		fadeSprite_->Draw();
 
+	if (shineAlpha_ > 0.0f) {
+		shineSprite_->Draw();
+	}
+
+	// === スコア描画 ===
+	{
+		int score = displayScore_;
+
+		float baseX = 600;
+		float y = 500;
+
+		std::vector<int> digits;
+		if (score == 0) {
+			digits.push_back(0);
+		} else {
+			int s = score;
+			while (s > 0) {
+				digits.push_back(s % 10);
+				s /= 10;
+			}
+			std::reverse(digits.begin(), digits.end());
+		}
+
+		// 元画像サイズ（60×80）
+		float originalW = 80.0f;
+		float originalH = 100.0f;
+
+		// 拡大後のサイズ
+		float digitWidth = originalW * scoreAnimScale_;
+		float digitHeight = originalH * scoreAnimScale_;
+
+		float totalWidth = digitWidth * digits.size();
+		float x = baseX - totalWidth / 2;
+
+		for (int d : digits) {
+			numberSprites_[d]->SetPosition({x, y});
+			numberSprites_[d]->SetAnchorPoint({0.5f, 0.5f});
+
+			numberSprites_[d]->SetSize({digitWidth, digitHeight});
+
+			numberSprites_[d]->Draw();
+			x += digitWidth;
+		}
+	}
+
 	KamataEngine::Sprite::PostDraw();
 }
+
+void ClearScene::SetFinalScore(int score) { finalScore_ = score; }
+
+void ClearScene::DrawImGui() {}

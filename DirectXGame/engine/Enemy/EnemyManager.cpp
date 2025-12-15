@@ -108,7 +108,7 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				hitStopTime_ = kHitStopDuration_;
 
 				// ★カメラシェイク（0.1秒・揺れ0.15）
-				cameraManager_->StartShake(0.12f, 0.35f);
+				cameraManager_->StartShake(0.2f, 0.35f);
 
 				player->SetVelocityY(0.25f); // 軽くバウンド
 

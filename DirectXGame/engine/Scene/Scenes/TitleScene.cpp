@@ -44,13 +44,20 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	titleTransform_.Initialize();
 
 	// 正面向きに調整
-	titleTransform_.rotation_.y = -1.5f;
+	titleTransform_.rotation_.y = 15.7f; // 正面
+	titleTransform_.rotation_.x = 0.0f;
+	titleTransform_.rotation_.z = 0.0f;
 
-	titleTransform_.scale_ = {3.0f, 3.0f, 3.0f};
-	titleTransform_.translation_ = {0.0f, 10.0f, 0.0f};
+	titleTransform_.scale_ = {2.9f, 2.9f, 2.9f};
+	titleTransform_.translation_ = {-12.0f, 5.0f, 0.0f};
 	titleTransform_.UpdateMatrix();
 
 	Camera_.Initialize();
+
+	Camera_.translation_ = {0.0f, 5.0f, -20.0f};
+	Camera_.rotation_ = {0.3f, 0.0f, 0.0f};
+
+	Camera_.UpdateMatrix();
 
 	// === 音 ===
 	bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/TitleBGM.mp3");
@@ -69,8 +76,8 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	// ===  ライト設定 ===
 	lightGroup_.reset(KamataEngine::LightGroup::Create());
 	lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {1.4f, 1.3f, 1.2f}); // 少し暖色寄り
-	lightGroup_->SetAmbientColor({0.9f, 0.8f, 0.7f});     // 明るい雰囲気
+	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
+	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});
 
 	titleModel_->SetLightGroup(lightGroup_.get());
 }
@@ -89,7 +96,7 @@ void TitleScene::Update() {
 		// 0.5〜1.0の範囲でふんわり明るさ変化（消えない）
 		float alpha = (std::sin(blinkTimer_ * 0.05f) * 0.25f + 0.75f);
 		// 色も少し明るく（RGB1.2倍）してポップさUP
-		sprite_->SetColor({1.2f, 1.2f, 1.2f, alpha});
+		sprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
 	}
 
 	// === バウンド演出 ===
@@ -116,8 +123,13 @@ void TitleScene::Update() {
 		}
 	} else {
 		// ✨ ゆらゆらアニメ
-		titleTransform_.rotation_.y = -1.5f + std::sin(frameCount_ * 0.01f) * 0.2f;
+		float baseRotY = 15.7f; // ← 初期の向き（正面）
+		titleTransform_.rotation_.y = baseRotY + std::sin(frameCount_ * 0.01f) * 0.2f;
+
+		// X回転揺れはそのまま
 		titleTransform_.rotation_.x = std::sin(frameCount_ * 0.015f) * 0.1f;
+
+		// Y位置のゆらゆらもそのまま
 		titleTransform_.translation_.y = targetY + std::sin(frameCount_ * 0.03f) * 0.3f;
 	}
 
@@ -191,3 +203,5 @@ void TitleScene::Draw() {
 
 	KamataEngine::Sprite::PostDraw();
 }
+
+void TitleScene::DrawImGui() {}

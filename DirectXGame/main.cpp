@@ -22,6 +22,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// ★ 最初のシーンをTitleSceneに設定
 	sceneManager->ChangeScene(SceneID::TitleScene);
 
+#ifdef USE_IMGUI
+	ImGuiManager::GetInstance()->Initialize();
+#endif
+
 	// メインループ
 	while (true) {
 		// エンジンの更新

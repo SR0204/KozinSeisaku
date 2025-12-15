@@ -6,6 +6,8 @@
 #include <base/TextureManager.h>
 #include <cassert>
 
+using namespace KamataEngine;
+
 // コンストラクタ
 GameScene::GameScene() {}
 
@@ -245,8 +247,9 @@ void GameScene::Update() {
 
 		progressFill_->SetSize({300 * progress, 20});
 
-		// ★スコアクリア判定（ここ追加！）
+		// ★スコアクリア判定
 		if (score_.GetScore() >= 50) {
+			sceneManager_->SetFinalScore(score); // スコア格納
 			sceneManager_->ChangeScene(SceneID::Clear);
 			return;
 		}
@@ -338,3 +341,5 @@ void GameScene::DrawTimeUI() {
 		timer_->Draw(numberTextures_, 1000.0f, 10.0f); // TimeクラスのDrawを呼び出す
 	}
 }
+
+void GameScene::DrawImGui() {}

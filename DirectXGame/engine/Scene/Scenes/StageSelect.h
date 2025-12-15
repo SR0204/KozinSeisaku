@@ -1,11 +1,13 @@
 #pragma once
 #include "../SceneManager/Scene.h"
 #include "3d/LightGroup.h"
+#include "3d/WorldTransform.h"
 #include "KamataEngine.h"
 #include <2d/Sprite.h>
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <Audio/Audio.h>
+
 #include <memory>
 
 class SceneManager;
@@ -22,11 +24,17 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	/// <summary>
+	/// ImGui用
+	/// </summary>
+	void DrawImGui() override;
+
 private:
 	SceneManager* sceneManager_ = nullptr;
 
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::ImGuiManager* ImGui_ = nullptr;
 
 	// === 背景 ===
 	std::unique_ptr<KamataEngine::Sprite> BackGround_[2];
@@ -35,8 +43,13 @@ private:
 
 	// === ステージアイコン ===
 	static const int kMaxStage = 3;
-	std::unique_ptr<KamataEngine::Sprite> stageSprite_[kMaxStage];
-	uint32_t stageTex_[kMaxStage] = {};
+
+	std::unique_ptr<KamataEngine::Model> stageCubeModel_[kMaxStage];
+	std::unique_ptr<KamataEngine::Model> stageTextModel_[kMaxStage];
+	KamataEngine::WorldTransform stageTransform_[kMaxStage];
+
+	bool isStageRotating_ = false;
+	int rotateTimer_ = 0;
 
 	// === カーソル ===
 	std::unique_ptr<KamataEngine::Sprite> cursorSprite_;
@@ -63,4 +76,8 @@ private:
 
 	// === 決定演出 ===
 	int frameCount_ = 0;
+
+	//==============デバッグ用================
+	int debugStageIndex_ = 0;
+	KamataEngine::Vector3 baseScale_[kMaxStage];
 };

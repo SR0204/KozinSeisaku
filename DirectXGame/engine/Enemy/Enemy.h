@@ -59,6 +59,9 @@ public:
 	void ReverseDirection() {
 		direction_ *= -1;
 		velocity_.x = kWalkSpeed * direction_;
+		// ---- 回転アニメ開始 ----
+		turnFirstRotationY_ = worldTransform_.rotation_.y;
+		turnTimer_ = kEnemyTurnTime;
 	}
 
 	/// <summary>
@@ -124,4 +127,13 @@ private:
 	// デスフラグ
 	bool isDead_ = false;
 
+	// ===== 回転アニメ用 =====
+	float turnTimer_ = 0.0f;
+	float turnFirstRotationY_ = 0.0f;
+	static inline constexpr float kEnemyTurnTime = 0.25f; // 回転にかかる時間
+
+	float EaseInOut(float end, float start, float t) {
+		float tt = t * t * (3 - 2 * t); // 3t² - 2t³
+		return start + (end - start) * tt;
+	}
 };
