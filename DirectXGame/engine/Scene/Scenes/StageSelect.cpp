@@ -44,16 +44,11 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 		stageCubeModel_[i].reset(Model::CreateFromOBJ(base + "_Cube", true));
 
 		stageTransform_[i].Initialize();
-		float x = (i - (kMaxStage - 1) / 2.0f) * 8.0f;
-		stageTransform_[i].translation_ = {x, 0.0f, 0.0f};
-		stageTransform_[i].scale_ = {0.8f, 0.8f, 0.8f};
-
-		assert(stageCubeModel_[0] && "stage_1_Cube load failed");
+		float x = (i - (kMaxStage - 1) / 2.0f) * 12.0f;
+		stageTransform_[i].translation_ = {x, 0.0f, -20.0f};
+		stageTransform_[i].rotation_ = {0.0, -14.2f, 0.0f};
+		baseScale_[i] = {3.5f, 3.5f, 3.5f};
 	}
-
-	float stageScale = 0.5f; // ステージアイコンのサイズ倍率
-
-	Vector2 iconBaseSize = {500.0f * stageScale, 500.0f * stageScale};
 
 	// === カーソル ===
 	cursorTexHandle_ = TextureManager::Load("./Resources/Stage/cursor.png");
@@ -83,9 +78,9 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 
 	// === ライト設定 ===
 	lightGroup_.reset(LightGroup::Create());
-	/*lightGroup_->SetDirLightDir(0, {0.3f, -1.0f, 0.4f});
-	lightGroup_->SetDirLightColor(0, {0.6f, 0.2f, 0.2f});
-	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});*/
+	lightGroup_->SetDirLightDir(0, {0.5f, -0.7f, 0.5f});
+	lightGroup_->SetDirLightColor(0, {1.0f, 1.0f, 1.0f});
+	lightGroup_->SetAmbientColor({0.4f, 0.4f, 0.4f});
 
 	for (int i = 0; i < kMaxStage; i++) {
 		stageCubeModel_[i]->SetLightGroup(lightGroup_.get());
@@ -101,10 +96,6 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	isFadingOut_ = false;
 	isDecide_ = false;
 	fadeAlpha_ = 0.0f;
-
-	for (int i = 0; i < kMaxStage; i++) {
-		baseScale_[i] = {0.7f, 0.7f, 0.7f};
-	}
 }
 
 void StageSelect::Update() {
@@ -210,6 +201,24 @@ void StageSelect::Update() {
 	lightDir.z = std::sin(frameCount_ * 0.01f) * 0.5f;
 	lightGroup_->SetDirLightDir(0, lightDir);
 	lightGroup_->Update();
+
+	// === カーソル位置更新（アイコン中心基準） ===
+
+	// 画面中央
+	const float baseX = 640.0f;
+	const float baseY = 360.0f;
+
+	// アイコン同士の間隔（見た目に合わせて調整）
+	const float iconSpacing = 550.0f;
+
+	// 現在ステージのオフセット
+	float offsetX = (currentStage_ - (kMaxStage - 1) / 2.0f) * iconSpacing;
+
+	// カーソルサイズ
+	Vector2 cursorSize = cursorSprite_->GetSize();
+
+	// アイコン中心に合わせる
+	cursorSprite_->SetPosition({baseX + offsetX - cursorSize.x * 0.5f, baseY - cursorSize.y * 0.5f});
 }
 
 void StageSelect::Draw() {
