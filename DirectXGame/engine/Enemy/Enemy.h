@@ -1,5 +1,6 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Enemy/EnemyManager.h"
 #include "../../engine/Score/Score.h"
 #include "../Player/Player.h"
 #include "engine/Map/MapChipField.h" // 追加
@@ -8,6 +9,7 @@
 
 // 前方宣言
 class Player;
+class EnemyManager;
 
 enum class EnemyState { Patrol, Chase };
 
@@ -102,6 +104,14 @@ public:
 	/// </summary>
 	void UpdateMidBoss();
 
+	/// <summary>
+	/// 敵マネージャーのセッター
+	/// </summary>
+	/// <param name="manager"></param>
+	void SetEnemyManager(EnemyManager* manager);
+
+	EnemyType GetType() const { return type_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -158,4 +168,6 @@ private:
 	//=====================中ボス用======================
 	EnemyType type_ = EnemyType::Normal;
 	float spawnTimer_ = 0; // スポーン時間
+	const float spawnInterval_ = 2.5f;
+	EnemyManager* enemyManager_ = nullptr;
 };

@@ -86,7 +86,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	EnemyModel_ = Model::CreateFromOBJ("Mushroom", true);
 
 	enemyManager_ = new EnemyManager();
-	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
+	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV, stageNo);
 	enemyManager_->SetCameraManager(cameraManager_);
 	enemyManager_->SetScore(&score_);
 

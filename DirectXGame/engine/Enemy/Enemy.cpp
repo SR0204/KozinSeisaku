@@ -23,6 +23,22 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 }
 
 void Enemy::Update(MapChipField* mapField) {
+
+	//====================中ボス更新=====================
+	if (type_ == EnemyType::MidBoss) {
+
+		spawnTimer_ += 1.0f / 60.0f;
+
+		if (spawnTimer_ >= spawnInterval_) {
+			spawnTimer_ = 0.0f;
+
+			Vector3 spawnPos = worldTransform_.translation_;
+			spawnPos.y += 2.0f;
+
+			enemyManager_->SpawnEnemy(spawnPos);
+		}
+	}
+
 	if (collisionCooldown_ > 0)
 		collisionCooldown_--;
 
@@ -116,11 +132,6 @@ void Enemy::Update(MapChipField* mapField) {
 	worldTransform_.rotation_.x = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
 
 	worldTransform_.UpdateMatrix();
-
-	//====================中ボス更新=====================
-	if (type_ == EnemyType::MidBoss) {
-		return;
-	}
 }
 
 void Enemy::Draw() {
@@ -156,12 +167,12 @@ void Enemy::OnDead() {
 	isDead_ = true;
 }
 
-void Enemy::InitializeMidBoss(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos) {
-
+void Enemy::InitializeMidBoss(Model* model, Camera* camera, const Vector3& pos) {
+	Initialize(model, camera, pos);
 	type_ = EnemyType::MidBoss;
 
-	isAlive_ = true;
 	velocity_ = {0, 0, 0};
+	worldTransform_.scale_ = {1.5f, 1.5f, 1.5f}; // 見た目を大きく
 	spawnTimer_ = 0.0f;
 }
 
@@ -175,5 +186,9 @@ void Enemy::UpdateMidBoss() {
 		Vector3 spawnPos = worldTransform_.translation_;
 		spawnPos.x += (rand() % 200 - 100) * 0.01f;
 		spawnPos.y -= 0.5f;
+
+		enemyManager_->SpawnEnemy(spawnPos);
 	}
 }
+
+void Enemy::SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }
