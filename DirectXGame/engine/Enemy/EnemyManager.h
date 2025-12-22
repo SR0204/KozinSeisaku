@@ -17,7 +17,7 @@ public:
 	EnemyManager();
 	~EnemyManager();
 
-	void Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath, int stageNo);
+	void Initialize(KamataEngine::Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath);
 	void Update(MapChipField* mapField);
 	void Draw();
 

@@ -19,25 +19,17 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 	walkTimer_ = 0.0f;
 
-	worldTransform_.scale_ = {0.5, 0.5, 0.5};
+	// ★ 敵タイプごとの見た目
+	if (type_ == EnemyType::Jumper) {
+		worldTransform_.scale_ = {0.65f, 0.65f, 0.65f}; // 少し大きい
+	} else if (type_ == EnemyType::Dasher) {
+		worldTransform_.scale_ = {0.55f, 0.55f, 0.55f}; // 細め
+	} else {
+		worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
+	}
 }
 
 void Enemy::Update(MapChipField* mapField) {
-
-	//====================中ボス更新=====================
-	if (type_ == EnemyType::MidBoss) {
-
-		spawnTimer_ += 1.0f / 60.0f;
-
-		if (spawnTimer_ >= spawnInterval_) {
-			spawnTimer_ = 0.0f;
-
-			Vector3 spawnPos = worldTransform_.translation_;
-			spawnPos.y += 2.0f;
-
-			enemyManager_->SpawnEnemy(spawnPos);
-		}
-	}
 
 	if (collisionCooldown_ > 0)
 		collisionCooldown_--;
@@ -115,16 +107,23 @@ void Enemy::Update(MapChipField* mapField) {
 	// X方向は空中でも移動
 	worldTransform_.translation_.x += velocity_.x;
 
-	// ===== 4段階ジャンプ =====
-	jumpTimer_ += 1.0f / 120.0f;
-	if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
-		// 4段階のジャンプ高さ（自然に見えるように小刻み）
-		float jumpHeights[4] = {0.35f, 0.5f, 0.65f, 0.8f};
-		int idx = rand() % 4; // ランダムに選択
-		velocity_.y = jumpHeights[idx];
+	// ===== 4段階ジャンプ（Jumperのみ） =====
+	if (type_ == EnemyType::Jumper) {
 
-		jumpInterval_ = RandRange(1.0f, 3.0f);
-		jumpTimer_ = 0.0f;
+		jumpTimer_ += 1.0f / 120.0f;
+
+		if (isOnGround_ && jumpTimer_ >= jumpInterval_) {
+			float jumpHeights[4] = {0.35f, 0.5f, 0.65f, 0.8f};
+			int idx = rand() % 4;
+			velocity_.y = jumpHeights[idx];
+
+			jumpInterval_ = RandRange(1.0f, 3.0f);
+			jumpTimer_ = 0.0f;
+		}
+
+		if (type_ == EnemyType::Jumper && !isOnGround_) {
+			worldTransform_.rotation_.z = std::sin(walkTimer_ * 10.0f) * 0.3f;
+		}
 	}
 
 	// ===== 歩行モーション =====
@@ -132,6 +131,46 @@ void Enemy::Update(MapChipField* mapField) {
 	worldTransform_.rotation_.x = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
 
 	worldTransform_.UpdateMatrix();
+
+	//========================-突進========================
+	if (type_ == EnemyType::Dasher && isOnGround_) {
+
+		dashTimer_ += 1.0f / 60.0f;
+
+		// 構え
+		if (!isDashing_ && dashTimer_ < dashChargeTime_) {
+			velocity_.x = 0.0f;
+
+			// ★ ブルブル震える演出
+			worldTransform_.rotation_.z = std::sin(dashTimer_ * 30.0f) * 0.15f;
+		}
+
+		// 突進開始
+		if (!isDashing_ && dashTimer_ >= dashChargeTime_) {
+			isDashing_ = true;
+			dashTimer_ = 0.0f;
+			velocity_.x = direction_ * kWalkSpeed * 3.5f; // 超高速
+		}
+	}
+	if (type_ == EnemyType::Dasher && isDashing_) {
+
+		dashTimer_ += 1.0f / 60.0f;
+
+		if (dashTimer_ >= dashDuration_) {
+			isDashing_ = false;
+			dashTimer_ = 0.0f;
+			velocity_.x = direction_ * kWalkSpeed; // 通常速度へ
+		}
+	}
+	if (hitWall) {
+		ReverseDirection();
+
+		if (type_ == EnemyType::Dasher) {
+			isDashing_ = false;
+			dashTimer_ = 0.0f;
+			velocity_.x = direction_ * kWalkSpeed;
+		}
+	}
 }
 
 void Enemy::Draw() {
@@ -166,29 +205,3 @@ void Enemy::OnDead() {
 	// 例：死亡エフェクトや削除処理
 	isDead_ = true;
 }
-
-void Enemy::InitializeMidBoss(Model* model, Camera* camera, const Vector3& pos) {
-	Initialize(model, camera, pos);
-	type_ = EnemyType::MidBoss;
-
-	velocity_ = {0, 0, 0};
-	worldTransform_.scale_ = {1.5f, 1.5f, 1.5f}; // 見た目を大きく
-	spawnTimer_ = 0.0f;
-}
-
-void Enemy::UpdateMidBoss() {
-	spawnTimer_ += 1.0f / 60.0f;
-
-	if (spawnTimer_ >= 0.8f) {
-		spawnTimer_ = 0.0f;
-
-		// 少しランダムで放出
-		Vector3 spawnPos = worldTransform_.translation_;
-		spawnPos.x += (rand() % 200 - 100) * 0.01f;
-		spawnPos.y -= 0.5f;
-
-		enemyManager_->SpawnEnemy(spawnPos);
-	}
-}
-
-void Enemy::SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }

@@ -19,7 +19,7 @@ EnemyManager::~EnemyManager() {
 	enemies_.clear();
 }
 
-void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath, int stageNo) {
+void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* mapField, const std::string& csvPath) {
 	enemyModel_ = enemyModel;
 	camera_ = camera;
 	audio_ = Audio::GetInstance();
@@ -37,18 +37,6 @@ void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* m
 	}
 
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
-
-	// ===== ステージ2：中ボス専用 =====
-	if (stageNo == 2) {
-		Vector3 bossPos = {10.0f, 5.0f, 0.0f};
-
-		Enemy* midBoss = new Enemy();
-		midBoss->InitializeMidBoss(enemyModel_, camera_, bossPos);
-		midBoss->SetEnemyManager(this);
-		enemies_.push_back(midBoss);
-
-		return; // ★ 通常敵を出さない
-	}
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
@@ -111,21 +99,6 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 			continue; // 既に倒れていたらスキップ
 
 		if (IsColision(playerAABB, enemy->GetAABB())) {
-
-			//=========================中ボス用=============================
-			if (enemy->GetType() == EnemyType::MidBoss) {
-
-				// 中ボスは消えない
-				player->SetVelocityY(player->GetBouncePower() * 2.0f);
-
-				if (score_) {
-					score_->AddScore(500);
-				}
-
-				player->consecutiveBouncePoints_ = std::min(player->consecutiveBouncePoints_ + 1, Player::kMaxBouncePoints);
-
-				return;
-			}
 
 			// 上から踏んだ判定
 			if (player->GetVelocity().y < 0.0f && playerAABB.min.y > enemy->GetAABB().max.y - 1.0f) {
@@ -275,9 +248,20 @@ std::vector<KamataEngine::Vector3> EnemyManager::LoadEnemyPositionsFromCSV(const
 void EnemyManager::AddEnemy(Enemy* enemy) { enemies_.push_back(enemy); }
 
 void EnemyManager::SpawnEnemy(const Vector3& pos) {
-	Enemy* newEnemy = new Enemy();
-	newEnemy->Initialize(enemyModel_, camera_, pos);
-	enemies_.push_back(newEnemy);
+	Enemy* e = new Enemy();
+
+	int r = rand() % 10;
+	if (r < 3) {
+		e->SetType(EnemyType::Jumper);
+	} else if (r < 5) {
+		e->SetType(EnemyType::Dasher);
+	} else {
+		e->SetType(EnemyType::Normal);
+	}
+
+	e->Initialize(enemyModel_, camera_, pos);
+
+	enemies_.push_back(e);
 }
 
 void EnemyManager::SetCameraManager(CameraManager* cameraManager) { cameraManager_ = cameraManager; }

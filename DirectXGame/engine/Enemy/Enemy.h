@@ -11,11 +11,12 @@
 class Player;
 class EnemyManager;
 
-enum class EnemyState { Patrol, Chase };
+enum class EnemyState { Ground, Jump, Dash };
 
 enum class EnemyType {
-	Normal, // ===============普通に踏める敵==============
-	MidBoss // ===============中ボス====================
+	Normal, // 通常
+	Jumper, // ジャンプ状態
+	Dasher, // 突進状態
 };
 
 /// <summary>
@@ -91,25 +92,7 @@ public:
 	bool IsDead() const { return isDead_; }
 	void OnDead();
 
-	/// <summary>
-	/// 中ボス初期化
-	/// </summary>
-	/// <param name="model"></param>
-	/// <param name="camera"></param>
-	/// <param name="pos"></param>
-	void InitializeMidBoss(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
-
-	/// <summary>
-	/// 中ボス更新
-	/// </summary>
-	void UpdateMidBoss();
-
-	/// <summary>
-	/// 敵マネージャーのセッター
-	/// </summary>
-	/// <param name="manager"></param>
-	void SetEnemyManager(EnemyManager* manager);
-
+	void SetType(EnemyType type) { type_ = type; }
 	EnemyType GetType() const { return type_; }
 
 private:
@@ -149,7 +132,7 @@ private:
 	// ==============================================
 	float RandRange(float min, float max) { return min + (max - min) * (rand() / static_cast<float>(RAND_MAX)); }
 
-	EnemyState state_ = EnemyState::Patrol;
+	EnemyState state_ = EnemyState::Ground;
 	float detectionRange_ = 5.0f; // プレイヤー検知距離
 
 	// デスフラグ
@@ -165,9 +148,11 @@ private:
 		return start + (end - start) * tt;
 	}
 
-	//=====================中ボス用======================
 	EnemyType type_ = EnemyType::Normal;
-	float spawnTimer_ = 0; // スポーン時間
-	const float spawnInterval_ = 2.5f;
-	EnemyManager* enemyManager_ = nullptr;
+
+	// 突進用
+	float dashTimer_ = 0.0f;
+	float dashChargeTime_ = 0.6f; // 構え時間
+	float dashDuration_ = 0.4f;   // 突進時間
+	bool isDashing_ = false;
 };
