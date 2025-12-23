@@ -2,7 +2,6 @@
 #include "../../DirectXGame/etc/AABB.h"
 #include "../../engine/Enemy/EnemyManager.h"
 #include "../../engine/Score/Score.h"
-#include "../Player/Player.h"
 #include "engine/Map/MapChipField.h" // 追加
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
@@ -17,6 +16,7 @@ enum class EnemyType {
 	Normal, // 通常
 	Jumper, // ジャンプ状態
 	Dasher, // 突進状態
+	Aim,    // プレイヤーを見る
 };
 
 /// <summary>
@@ -95,6 +95,16 @@ public:
 	void SetType(EnemyType type) { type_ = type; }
 	EnemyType GetType() const { return type_; }
 
+	/// <summary>
+	/// プレイヤーを確認する
+	/// </summary>
+	/// <param name="player"></param>
+	void FacePlayer(const Player* player);
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	bool IsDashing() const { return isDashing_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -155,4 +165,7 @@ private:
 	float dashChargeTime_ = 0.6f; // 構え時間
 	float dashDuration_ = 0.4f;   // 突進時間
 	bool isDashing_ = false;
+
+	//==========プレイヤー============
+	Player* player_ = nullptr;
 };

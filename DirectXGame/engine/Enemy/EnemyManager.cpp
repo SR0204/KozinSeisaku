@@ -179,7 +179,7 @@ void EnemyManager::HandleEnemyCollisions() {
 			if (!e2->IsAlive())
 				continue;
 
-			if (IsColision(e1->GetAABB(), e2->GetAABB()) && e1->collisionCooldown_ == 0 && e2->collisionCooldown_ == 0) {
+			if (IsColision(e1->GetAABB(), e2->GetAABB()) && e1->collisionCooldown_ == 0 && e2->collisionCooldown_ == 0 && !e1->IsDashing() && !e2->IsDashing()) {
 
 				e1->ReverseDirection();
 				e2->ReverseDirection();
@@ -260,6 +260,7 @@ void EnemyManager::SpawnEnemy(const Vector3& pos) {
 	}
 
 	e->Initialize(enemyModel_, camera_, pos);
+	e->SetPlayer(player_);
 
 	enemies_.push_back(e);
 }

@@ -89,12 +89,12 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
 	enemyManager_->SetCameraManager(cameraManager_);
 	enemyManager_->SetScore(&score_);
-
+	
 	// ステージ番号によって踏みスコアを変える
 	int stompScore = 5; // デフォルト
 
 	if (stageNo == 0) { // ステージ1
-		stompScore = 15;
+		stompScore = 10;
 	} else if (stageNo == 1) { // ステージ2
 		stompScore = 10;
 	} else if (stageNo == 2) { // ステージ3
@@ -247,7 +247,7 @@ void GameScene::Update() {
 		progressFill_->SetSize({300 * progress, 20});
 
 		// ★スコアクリア判定
-		if (score_.GetScore() >= 50) {
+		if (score_.GetScore() >= 100) {
 			sceneManager_->SetFinalScore(score); // スコア格納
 			sceneManager_->ChangeScene(SceneID::Clear);
 			return;

@@ -64,6 +64,8 @@ public:
 
 	void SetStompScore(int score) { stompScore_ = score; }
 
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
@@ -74,6 +76,8 @@ private:
 	Model* enemyDeathParticleModel_ = nullptr;
 
 	uint32_t enemyDeathSE_ = 0;
+
+	Player* player_ = nullptr;
 
 	//------------スポーン---------------//
 	float spawnTimer_ = 0.0f;

@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "../../DirectXGame/etc/MathUtilityFortext.h"
+#include "../Player/Player.h"
 #include <algorithm>
 #include <cassert>
 #include <numbers>
@@ -87,9 +88,20 @@ void Enemy::Update(MapChipField* mapField) {
 			hitWall = true;
 	}
 
-	if (hitWall)
-		ReverseDirection();
+	if (type_ == EnemyType::Dasher && isDashing_) {
+		velocity_.x = std::clamp(velocity_.x, -kWalkSpeed * 2.0f, kWalkSpeed * 2.0f);
+	}
 
+	if (hitWall) {
+		if (type_ == EnemyType::Dasher && isDashing_) {
+			// 突進中に壁 → 突進中断
+			isDashing_ = false;
+			dashTimer_ = 0.0f;
+			velocity_.x = direction_ * kWalkSpeed;
+		}
+
+		ReverseDirection();
+	}
 	// ===== 向き回転アニメーション =====
 	if (turnTimer_ > 0.0f) {
 		turnTimer_ -= 1.0f / 60.0f;
@@ -105,8 +117,9 @@ void Enemy::Update(MapChipField* mapField) {
 	}
 
 	// X方向は空中でも移動
-	worldTransform_.translation_.x += velocity_.x;
-
+	if (!(type_ == EnemyType::Dasher && isDashing_)) {
+		worldTransform_.translation_.x += velocity_.x;
+	}
 	// ===== 4段階ジャンプ（Jumperのみ） =====
 	if (type_ == EnemyType::Jumper) {
 
@@ -147,6 +160,10 @@ void Enemy::Update(MapChipField* mapField) {
 
 		// 突進開始
 		if (!isDashing_ && dashTimer_ >= dashChargeTime_) {
+			if (player_) {
+				FacePlayer(player_);
+			}
+
 			isDashing_ = true;
 			dashTimer_ = 0.0f;
 			velocity_.x = direction_ * kWalkSpeed * 3.5f; // 超高速
@@ -160,15 +177,6 @@ void Enemy::Update(MapChipField* mapField) {
 			isDashing_ = false;
 			dashTimer_ = 0.0f;
 			velocity_.x = direction_ * kWalkSpeed; // 通常速度へ
-		}
-	}
-	if (hitWall) {
-		ReverseDirection();
-
-		if (type_ == EnemyType::Dasher) {
-			isDashing_ = false;
-			dashTimer_ = 0.0f;
-			velocity_.x = direction_ * kWalkSpeed;
 		}
 	}
 }
@@ -204,4 +212,16 @@ void Enemy::OnDead() {
 
 	// 例：死亡エフェクトや削除処理
 	isDead_ = true;
+}
+
+void Enemy::FacePlayer(const Player* player) {
+	if (!player)
+		return;
+
+	Vector3 p = player->GetWorldPosition();
+	Vector3 e = GetWorldPosition();
+
+	direction_ = (p.x > e.x) ? 1 : -1;
+
+	worldTransform_.rotation_.y = (direction_ > 0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
 }

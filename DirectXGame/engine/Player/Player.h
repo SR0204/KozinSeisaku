@@ -155,7 +155,7 @@ public:
 	/// プレイヤーのワールド座標を返す
 	/// </summary>
 	/// <returns></returns>
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() const;
 
 	/// <summary>
 	/// AABBを返す
