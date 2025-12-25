@@ -32,11 +32,16 @@ void EnemyManager::Initialize(Model* enemyModel, Camera* camera, MapChipField* m
 	// ★ 初期敵を生成（今まで通り）
 	for (auto& pos : enemyPositions) {
 		Enemy* newEnemy = new Enemy();
+		newEnemy->SetEnemyManager(this);
 		newEnemy->Initialize(enemyModel_, camera_, pos);
+		newEnemy->SetPlayer(player_);
 		enemies_.push_back(newEnemy);
 	}
 
 	enemyDeathParticleModel_ = Model::CreateFromOBJ("deathParticle", true);
+
+	// ★ 弾モデルをここでロード（1回だけ）
+	bulletModel_ = Model::CreateFromOBJ("enemyBullet", true);
 }
 
 void EnemyManager::Update(MapChipField* mapField) {
@@ -77,6 +82,13 @@ void EnemyManager::Update(MapChipField* mapField) {
 		hitStopTime_ -= 1.0f / 60.0f;
 		return; // 敵の更新を止める
 	}
+
+	//=====================-弾更新====================-
+	for (auto& b : bullets_) {
+		b->Update();
+	}
+
+	bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(), [](auto& b) { return b->IsDead(); }), bullets_.end());
 }
 
 void EnemyManager::Draw() {
@@ -86,6 +98,10 @@ void EnemyManager::Draw() {
 
 	for (auto* p : deathParticles_) {
 		p->Draw();
+	}
+
+	for (auto& b : bullets_) {
+		b->Draw();
 	}
 }
 
@@ -149,6 +165,27 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 			} else {
 				// 横や下から当たった場合
 				player->OnCollision(enemy);
+			}
+		}
+		//=====================-プレイヤー × 弾---------------------
+		for (auto& bullet : bullets_) {
+
+			if (bullet->IsDead())
+				continue;
+
+			if (IsColision(playerAABB, bullet->GetAABB())) {
+
+				// プレイヤーにダメージ
+				player->OnDamage();
+
+				// 弾は消す
+				bullet->Kill();
+
+				// ヒット演出（任意）
+				hitStopTime_ = 0.05f;
+				cameraManager_->StartShake(0.1f, 0.2f);
+
+				break; // 多段ヒット防止
 			}
 		}
 	}
@@ -258,7 +295,7 @@ void EnemyManager::SpawnEnemy(const Vector3& pos) {
 	} else {
 		e->SetType(EnemyType::Normal);
 	}
-
+	e->SetEnemyManager(this);
 	e->Initialize(enemyModel_, camera_, pos);
 	e->SetPlayer(player_);
 
@@ -268,3 +305,9 @@ void EnemyManager::SpawnEnemy(const Vector3& pos) {
 void EnemyManager::SetCameraManager(CameraManager* cameraManager) { cameraManager_ = cameraManager; }
 
 void EnemyManager::SetScore(Score* score) { score_ = score; }
+
+void EnemyManager::SpawnBullet(const Vector3& pos, const Vector3& vel) {
+	auto bullet = std::make_unique<EnemyBullet>();
+	bullet->Initialize(bulletModel_, camera_, pos, vel);
+	bullets_.push_back(std::move(bullet));
+}

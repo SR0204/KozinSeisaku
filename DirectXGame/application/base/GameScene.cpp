@@ -87,6 +87,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize(EnemyModel_, &camera_, mapManager_->GetMapChipField(), enemyCSV);
+	enemyManager_->SetPlayer(player_);
 	enemyManager_->SetCameraManager(cameraManager_);
 	enemyManager_->SetScore(&score_);
 	

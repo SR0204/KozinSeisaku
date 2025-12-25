@@ -487,6 +487,32 @@ AABB Player::GetAABB() {
 	return aabb;
 }
 
+void Player::OnDamage() {
+
+	// 無敵中ならダメージを受けない
+	if (isInvincible_)
+		return;
+
+	// HP 減少
+	Hp_--;
+
+	// 無敵時間開始
+	isInvincible_ = true;
+	invincibleTimer_ = invincibleDuration_;
+
+	// ノックバック（例）
+	velocity_.y = 0.2f;
+	velocity_.x = (velocity_.x >= 0) ? -0.2f : 0.2f;
+
+	// SE 再生（あれば）
+	// Audio::GetInstance()->PlayWave(damageSE_);
+
+	// 死亡判定
+	if (Hp_ <= 0) {
+		isDead_ = true;
+	}
+}
+
 // Quadモデルを作成する
 KamataEngine::Model* Player::CreateQuadModel() {
 

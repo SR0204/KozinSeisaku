@@ -148,25 +148,33 @@ void Enemy::Update(MapChipField* mapField) {
 	//========================-突進========================
 	if (type_ == EnemyType::Dasher && isOnGround_) {
 
-		dashTimer_ += 1.0f / 60.0f;
+		float dist = DistanceToPlayer();
 
-		// 構え
-		if (!isDashing_ && dashTimer_ < dashChargeTime_) {
-			velocity_.x = 0.0f;
+		// プレイヤーが近い時だけ突進
+		if (dist <= kDashTriggerDistance) {
+			dashTimer_ += 1.0f / 60.0f;
 
-			// ★ ブルブル震える演出
-			worldTransform_.rotation_.z = std::sin(dashTimer_ * 30.0f) * 0.15f;
-		}
+			// 構え
+			if (!isDashing_ && dashTimer_ < dashChargeTime_) {
+				velocity_.x = 0.0f;
 
-		// 突進開始
-		if (!isDashing_ && dashTimer_ >= dashChargeTime_) {
-			if (player_) {
-				FacePlayer(player_);
+				// ★ ブルブル震える演出
+				worldTransform_.rotation_.z = std::sin(dashTimer_ * 30.0f) * 0.15f;
 			}
 
-			isDashing_ = true;
+			// 突進開始
+			if (!isDashing_ && dashTimer_ >= dashChargeTime_) {
+				if (player_) {
+					FacePlayer(player_);
+				}
+
+				isDashing_ = true;
+				dashTimer_ = 0.0f;
+				velocity_.x = direction_ * kWalkSpeed * 3.5f; // 超高速
+			}
+		} else {
+			// プレイヤーが離れたらリセット
 			dashTimer_ = 0.0f;
-			velocity_.x = direction_ * kWalkSpeed * 3.5f; // 超高速
 		}
 	}
 	if (type_ == EnemyType::Dasher && isDashing_) {
@@ -177,6 +185,23 @@ void Enemy::Update(MapChipField* mapField) {
 			isDashing_ = false;
 			dashTimer_ = 0.0f;
 			velocity_.x = direction_ * kWalkSpeed; // 通常速度へ
+		}
+	}
+
+	// ===== 弾発射（ランダム） =====
+	if (type_ == EnemyType::Dasher || type_ == EnemyType::Jumper) {
+
+		shootTimer_ += 1.0f / 60.0f;
+
+		if (shootTimer_ >= shootInterval_) {
+
+			// ランダム判定
+			float r = RandRange(0.0f, 1.0f);
+			if (r <= shootProbability_) {
+				Shoot();
+			}
+
+			shootTimer_ = 0.0f;
 		}
 	}
 }
@@ -224,4 +249,33 @@ void Enemy::FacePlayer(const Player* player) {
 	direction_ = (p.x > e.x) ? 1 : -1;
 
 	worldTransform_.rotation_.y = (direction_ > 0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+}
+
+float Enemy::DistanceToPlayer() {
+	if (!player_)
+		return FLT_MAX;
+
+	float dx = player_->GetWorldPosition().x - GetWorldPosition().x;
+	return std::abs(dx); // ★ 横距離だけ
+}
+
+void Enemy::Shoot() {
+	if (!player_ || !enemyManager_)
+		return;
+
+	Vector3 enemyPos = GetWorldPosition();
+	Vector3 playerPos = player_->GetWorldPosition();
+
+	Vector3 dir = playerPos - enemyPos;
+	dir.y = 0;
+
+	float len = std::abs(dir.x);
+	if (len <= 0.001f)
+		return;
+
+	dir.x /= len;
+
+	Vector3 bulletVelocity = dir * 0.25f;
+
+	enemyManager_->SpawnBullet(enemyPos + Vector3(direction_ * 0.6f, 0.3f, 0), bulletVelocity);
 }

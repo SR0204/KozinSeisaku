@@ -190,6 +190,11 @@ public:
 	// 着地したらボーナスリセット
 	void OnLand() { consecutiveBouncePoints_ = 1; }
 
+	/// <summary>
+	/// 弾に当たった時のダメージ
+	/// </summary>
+	void OnDamage();
+
 private:
 	// マップチップフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -263,9 +268,10 @@ private:
 	int Hp_ = 5;
 
 	// --- 無敵関連 ---
-	bool isInvincible_ = false;    // 無敵状態か
-	int invincibleTimer_ = 0;      // 残り無敵フレーム
-	int invincibleDuration_ = 180; // 無敵時間（3秒）
+	bool isInvincible_ = false;                     // 無敵状態か
+	int invincibleTimer_ = 0;                       // 残り無敵フレーム
+	int invincibleDuration_ = 180;                  // 無敵時間（3秒）
+	static constexpr float kInvincibleTime_ = 1.0f; // 1秒無敵
 
 	// --- パーティクル ---
 	ParticleSystem* dashParticles_ = nullptr;    // ダッシュ時パーティクル

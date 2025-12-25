@@ -105,6 +105,15 @@ public:
 
 	bool IsDashing() const { return isDashing_; }
 
+	float DistanceToPlayer();
+
+	/// <summary>
+	/// 射撃用
+	/// </summary>
+	void Shoot();
+
+	void SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -165,7 +174,15 @@ private:
 	float dashChargeTime_ = 0.6f; // 構え時間
 	float dashDuration_ = 0.4f;   // 突進時間
 	bool isDashing_ = false;
+	static constexpr float kDashTriggerDistance = 10.0f; // 突進開始距離（調整用）
 
 	//==========プレイヤー============
 	Player* player_ = nullptr;
+
+	//=================--射撃用====================
+	float shootTimer_ = 0.0f;
+	float shootInterval_ = 2.0f;    // 最低発射間隔
+	float shootProbability_ = 0.3f; // 30%で撃つ
+
+	EnemyManager* enemyManager_ = nullptr;
 };

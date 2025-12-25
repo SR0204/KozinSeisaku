@@ -154,6 +154,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Enemy\EnemyBullet\EnemyBullet.cpp" />
     <ClCompile Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.cpp" />
     <ClCompile Include="engine\Camera\CameraController.cpp" />
     <ClCompile Include="engine\Camera\CameraManager.cpp" />
@@ -181,7 +182,6 @@
     <ClCompile Include="engine\Particle\ParticleSystem.cpp" />
     <ClCompile Include="engine\Score\ScoreManager\ScoreManager.cpp" />
     <ClCompile Include="engine\Score\Log\ScoreLog.cpp" />
-    <ClCompile Include="ScorePop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -282,6 +282,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Enemy\EnemyBullet\EnemyBullet.h" />
     <ClInclude Include="engine\Enemy\EnemyParticle\EnemyDeathParticles.h" />
     <ClInclude Include="etc\AABB.h" />
     <ClInclude Include="engine\Camera\CameraController.h" />
@@ -310,7 +311,6 @@
     <ClInclude Include="engine\LoadJson\FileJson\FileJson.h" />
     <ClInclude Include="engine\Score\ScoreManager\ScoreManager.h" />
     <ClInclude Include="engine\Score\Log\ScoreLog.h" />
-    <ClInclude Include="ScorePop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

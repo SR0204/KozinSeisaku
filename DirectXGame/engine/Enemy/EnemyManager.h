@@ -2,8 +2,8 @@
 #include "../../engine/Camera/CameraManager.h"
 #include "../../engine/Player/Player.h"
 #include "../../engine/Score/Score.h"
+#include "../Enemy/EnemyBullet/EnemyBullet.h"
 #include "Enemy.h"
-#include "ScorePop.h"
 #include "engine/Enemy/EnemyParticle/EnemyDeathParticles.h"
 #include "engine/Map/MapChipField.h"
 #include <audio/Audio.h>
@@ -60,11 +60,30 @@ public:
 	/// <param name="cameraManager"></param>
 	void SetCameraManager(CameraManager* cameraManager);
 
+	/// <summary>
+	/// スコア管理
+	/// </summary>
+	/// <param name="score"></param>
 	void SetScore(Score* score);
 
+	/// <summary>
+	/// 倒した時のスコア表示
+	/// </summary>
+	/// <param name="score"></param>
 	void SetStompScore(int score) { stompScore_ = score; }
 
+	/// <summary>
+	/// プレイヤーのセッター
+	/// </summary>
+	/// <param name="player"></param>
 	void SetPlayer(Player* player) { player_ = player; }
+
+	/// <summary>
+	/// 弾生成
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <param name="vel"></param>
+	void SpawnBullet(const Vector3& pos, const Vector3& vel);
 
 private:
 	std::vector<Enemy*> enemies_;
@@ -94,4 +113,8 @@ private:
 	Score* score_ = nullptr;
 
 	int stompScore_ = 5; // デフォルト値
+
+	//=========================弾管理===============
+	std::vector<std::unique_ptr<EnemyBullet>> bullets_;
+	Model* bulletModel_ = nullptr;
 };
