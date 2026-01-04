@@ -90,7 +90,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	enemyManager_->SetPlayer(player_);
 	enemyManager_->SetCameraManager(cameraManager_);
 	enemyManager_->SetScore(&score_);
-	
+
 	// ステージ番号によって踏みスコアを変える
 	int stompScore = 5; // デフォルト
 
@@ -181,20 +181,10 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	progressFill_->SetSize({0.0f, 20.0f});
 	progressFill_->SetColor({0.0f, 1.0f, 0.0f, 1.0f});
 
-	// 進捗バーの最大値(100)表示
-	uint32_t num1 = numberTextures_[1];
-	uint32_t num0 = numberTextures_[0];
-
 	// "100" を作るために3つスプライト作成
-	scoreMaxSprite_ = Sprite::Create(num1, {360.0f, 50.0f});
-	scoreMaxSprite_->SetSize({20.0f, 20.0f});
-
-	// "0" を2つ追加
-	scoreMaxSprite2_ = Sprite::Create(num0, {380.0f, 50.0f});
-	scoreMaxSprite2_->SetSize({20.0f, 20.0f});
-
-	scoreMaxSprite3_ = Sprite::Create(num0, {400.0f, 50.0f});
-	scoreMaxSprite3_->SetSize({20.0f, 20.0f});
+	// 初期状態
+	resultScoreSprites_.clear();
+	lastDrawScore_ = -1;
 
 	//---------------------スコア関係初期化--------------------------//
 }
@@ -325,9 +315,7 @@ void GameScene::Draw() {
 		progressFill_->Draw();
 
 		// "100" の描画
-		scoreMaxSprite_->Draw();
-		scoreMaxSprite2_->Draw();
-		scoreMaxSprite3_->Draw();
+		DrawResultScore(score_.GetScore(), 360.0f, 50.0f);
 
 		// タイマー描画（画面右上あたりに表示）
 		timer_->Draw(numberTextures_, 1000.0f, 10.0f);
@@ -343,3 +331,35 @@ void GameScene::DrawTimeUI() {
 }
 
 void GameScene::DrawImGui() {}
+
+void GameScene::DrawResultScore(int score, float x, float y) {
+
+	if (lastDrawScore_ != score) {
+
+		for (auto s : resultScoreSprites_) {
+			delete s;
+		}
+		resultScoreSprites_.clear();
+
+		std::string str = std::to_string(score);
+
+		float digitWidth = 20.0f; // ★ サイズと合わせる
+
+		for (size_t i = 0; i < str.size(); i++) {
+			int num = str[i] - '0';
+
+			Sprite* s = Sprite::Create(numberTextures_[num], {x + digitWidth * i, y});
+
+			s->SetSize({20.0f, 20.0f});
+			s->SetAnchorPoint({0.5f, 0.5f}); // ★重要
+
+			resultScoreSprites_.push_back(s);
+		}
+
+		lastDrawScore_ = score;
+	}
+
+	for (auto s : resultScoreSprites_) {
+		s->Draw();
+	}
+}
