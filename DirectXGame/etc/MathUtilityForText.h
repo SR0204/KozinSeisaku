@@ -33,6 +33,15 @@ Matrix4x4 MatrixMultiply(Matrix4x4& m1, Matrix4x4& m2);
 // Vector3の足算
 const Vector3 operator+(const Vector3& v1, const Vector3& v2);
 
+/// <summary>
+/// Vector3の引き算
+/// </summary>
+/// <param name="lhv"></param>
+/// <param name="rhv"></param>
+/// <returns></returns>
+Vector3& operator-=(Vector3& lhv, const Vector3& rhv);
+const Vector3 operator-(const Vector3& v1, const Vector3& v2);
+
 // 代入演算子オーバーロード
 // Vector3の足算
 Vector3& operator*=(Vector3& v, float s);

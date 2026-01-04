@@ -1,15 +1,23 @@
 #pragma once
 #include "../../DirectXGame/etc/AABB.h"
+#include "../../engine/Enemy/EnemyManager.h"
 #include "../../engine/Score/Score.h"
-#include "../Player/Player.h"
 #include "engine/Map/MapChipField.h" // 追加
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
 
 // 前方宣言
 class Player;
+class EnemyManager;
 
-enum class EnemyState { Patrol, Chase };
+enum class EnemyState { Ground, Jump, Dash };
+
+enum class EnemyType {
+	Normal, // 通常
+	Jumper, // ジャンプ状態
+	Dasher, // 突進状態
+	Aim,    // プレイヤーを見る
+};
 
 /// <summary>
 /// 敵のベースを作るクラス
@@ -84,6 +92,28 @@ public:
 	bool IsDead() const { return isDead_; }
 	void OnDead();
 
+	void SetType(EnemyType type) { type_ = type; }
+	EnemyType GetType() const { return type_; }
+
+	/// <summary>
+	/// プレイヤーを確認する
+	/// </summary>
+	/// <param name="player"></param>
+	void FacePlayer(const Player* player);
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	bool IsDashing() const { return isDashing_; }
+
+	float DistanceToPlayer();
+
+	/// <summary>
+	/// 射撃用
+	/// </summary>
+	void Shoot();
+
+	void SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -121,7 +151,7 @@ private:
 	// ==============================================
 	float RandRange(float min, float max) { return min + (max - min) * (rand() / static_cast<float>(RAND_MAX)); }
 
-	EnemyState state_ = EnemyState::Patrol;
+	EnemyState state_ = EnemyState::Ground;
 	float detectionRange_ = 5.0f; // プレイヤー検知距離
 
 	// デスフラグ
@@ -136,4 +166,23 @@ private:
 		float tt = t * t * (3 - 2 * t); // 3t² - 2t³
 		return start + (end - start) * tt;
 	}
+
+	EnemyType type_ = EnemyType::Normal;
+
+	// 突進用
+	float dashTimer_ = 0.0f;
+	float dashChargeTime_ = 0.6f; // 構え時間
+	float dashDuration_ = 0.4f;   // 突進時間
+	bool isDashing_ = false;
+	static constexpr float kDashTriggerDistance = 10.0f; // 突進開始距離（調整用）
+
+	//==========プレイヤー============
+	Player* player_ = nullptr;
+
+	//=================--射撃用====================
+	float shootTimer_ = 0.0f;
+	float shootInterval_ = 2.0f;    // 最低発射間隔
+	float shootProbability_ = 0.3f; // 30%で撃つ
+
+	EnemyManager* enemyManager_ = nullptr;
 };

@@ -159,7 +159,7 @@
     <ClCompile Include="engine\Score\Log\ScoreLog.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ScorePop.cpp">
+    <ClCompile Include="engine\Enemy\EnemyBullet\EnemyBullet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -298,7 +298,7 @@
     <ClInclude Include="engine\Score\Log\ScoreLog.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ScorePop.h">
+    <ClInclude Include="engine\Enemy\EnemyBullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
