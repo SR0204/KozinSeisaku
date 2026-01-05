@@ -93,6 +93,11 @@ public: // メンバ関数(引数）
 	/// <param name="y"></param>
 	void DrawResultScore(int score, float x, float y);
 
+	/// <summary>
+	/// シールド用UI
+	/// </summary>
+	void DrawShieldUI();
+
 private: // メンバ変数（関数）
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
@@ -212,6 +217,11 @@ private: // メンバ変数（関数）
 
 	//------------------------敵のスポーン関係------------------------//
 	SpawnManager* spawnManager_;
+
+	// --- シールドUI ---
+	KamataEngine::Sprite* shieldBase_ = nullptr;
+	KamataEngine::Sprite* shieldFill_ = nullptr;
+
 
 	/// <summary>
 	/// ゲームシーン用

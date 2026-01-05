@@ -5,9 +5,9 @@
 #include <algorithm>
 #include <engine/Score/ScoreManager/ScoreManager.h>
 #include <fstream>
+#include <numbers>
 #include <sstream>
 #include <string>
-#include <numbers>
 
 using namespace KamataEngine;
 
@@ -168,26 +168,36 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				player->OnCollision(enemy);
 			}
 		}
-		//=====================-プレイヤー × 弾---------------------
+
+		// ===== プレイヤー × 弾 =====
 		for (auto& bullet : bullets_) {
 
 			if (bullet->IsDead())
 				continue;
 
-			if (IsColision(playerAABB, bullet->GetAABB())) {
+			if (!IsColision(playerAABB, bullet->GetAABB()))
+				continue; // ← 当たってなければ何もしない
 
-				// プレイヤーにダメージ
-				player->OnDamage();
+			// ===== ここに来た時点で「当たっている」 =====
 
-				// 弾は消す
+			// シールドが出ている
+			if (player->IsShieldActive() && IsColision(player->GetShieldAABB(), bullet->GetAABB())) {
+
+				player->DamageShield(1);
 				bullet->Kill();
 
-				// ヒット演出（任意）
-				hitStopTime_ = 0.05f;
-				cameraManager_->StartShake(0.1f, 0.2f);
-
-				break; // 多段ヒット防止
+				hitStopTime_ = 0.03f;
+				cameraManager_->StartShake(0.05f, 0.1f);
+				break;
 			}
+
+			// シールドなし → プレイヤーダメージ
+			player->OnDamage();
+			bullet->Kill();
+
+			hitStopTime_ = 0.05f;
+			cameraManager_->StartShake(0.1f, 0.2f);
+			break;
 		}
 	}
 

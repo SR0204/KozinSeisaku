@@ -184,16 +184,57 @@ public:
 	int consecutiveBouncePoints_ = 5;
 	static const int kMaxBouncePoints = 5;
 
-	// ボーナス表示スプライト
+	/// <summary>
+	/// ボーナス表示スプライト
+	/// </summary>
 	KamataEngine::Sprite* bouncePointSprites_[kMaxBouncePoints] = {};
 
-	// 着地したらボーナスリセット
+	/// <summary>
+	/// 着地したらボーナスリセット
+	/// </summary>
 	void OnLand() { consecutiveBouncePoints_ = 1; }
 
 	/// <summary>
 	/// 弾に当たった時のダメージ
 	/// </summary>
 	void OnDamage();
+
+	/// <summary>
+	/// シールド用AABB
+	/// </summary>
+	/// <returns></returns>
+	AABB GetShieldAABB() const;
+
+	/// <summary>
+	/// シールドのゲッター
+	/// </summary>
+	/// <returns></returns>
+	bool IsShield() const;
+
+	/// <summary>
+	/// シールド用更新
+	/// </summary>
+	void UpdateShieldTransform();
+
+	/// <summary>
+	/// シールドのダメージ
+	/// </summary>
+	/// <param name="damage"></param>
+	void DamageShield(int damage);
+
+	bool IsShieldActive() const { return isShield_ && shieldHP_ > 0; }
+
+	/// <summary>
+	/// シールドの体力
+	/// </summary>
+	/// <returns></returns>
+	int GetShieldHP() const { return shieldHP_; }
+
+	/// <summary>
+	/// シールドの最大体力
+	/// </summary>
+	/// <returns></returns>
+	int GetMaxShieldHP() const { return kMaxShieldHP; }
 
 private:
 	// マップチップフィールド
@@ -281,4 +322,18 @@ private:
 
 	// 敵を踏んだときのバウンド力
 	float bouncePower_ = 0.35f;
+
+	// ==== シールド関連 ====
+	bool isShield_ = false;
+	float shieldTimer_ = 0.0f;
+	float shieldCooldown_ = 0.0f;
+
+	static constexpr float kShieldTime = 0.4f;
+	static constexpr float kShieldCooldown = 1.0f;
+
+	Model* shieldModel_ = nullptr;
+	WorldTransform shieldTransform_;
+
+	static constexpr int kMaxShieldHP = 10;
+	int shieldHP_ = kMaxShieldHP;
 };
