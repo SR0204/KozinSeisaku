@@ -278,4 +278,7 @@ void Enemy::Shoot() {
 	Vector3 bulletVelocity = dir * 0.25f;
 
 	enemyManager_->SpawnBullet(enemyPos + Vector3(direction_ * 0.6f, 0.3f, 0), bulletVelocity);
+
+	bool toRight = (direction_ > 0);
+	enemyManager_->SpawnBulletRandom(worldTransform_.translation_, toRight);
 }

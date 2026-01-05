@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <numbers>
 
 using namespace KamataEngine;
 
@@ -310,4 +311,21 @@ void EnemyManager::SpawnBullet(const Vector3& pos, const Vector3& vel) {
 	auto bullet = std::make_unique<EnemyBullet>();
 	bullet->Initialize(bulletModel_, camera_, pos, vel);
 	bullets_.push_back(std::move(bullet));
+}
+
+void EnemyManager::SpawnBulletRandom(const Vector3& pos, bool toRight) {
+	float speed = 0.25f;
+
+	// 角度範囲（-30° ～ +30°）
+	float angleMin = -30.0f * std::numbers::pi_v<float> / 180.0f;
+	float angleMax = 30.0f * std::numbers::pi_v<float> / 180.0f;
+
+	float angle = angleMin + (float)rand() / RAND_MAX * (angleMax - angleMin);
+
+	Vector3 vel{};
+	vel.x = std::cos(angle) * speed * (toRight ? 1.0f : -1.0f);
+	vel.y = std::sin(angle) * speed;
+	vel.z = 0.0f;
+
+	SpawnBullet(pos, vel);
 }

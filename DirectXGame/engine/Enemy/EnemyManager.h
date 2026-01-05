@@ -85,6 +85,13 @@ public:
 	/// <param name="vel"></param>
 	void SpawnBullet(const Vector3& pos, const Vector3& vel);
 
+	/// <summary>
+	/// 弾をランダムで飛ばすようにする
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <param name="toRight"></param>
+	void SpawnBulletRandom(const Vector3& pos, bool toRight);
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;
