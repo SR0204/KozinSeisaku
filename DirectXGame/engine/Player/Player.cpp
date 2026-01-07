@@ -46,6 +46,11 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 	hipDropParticles_ = new ParticleSystem(camera_);
 	hipDropParticles_->Initialize(50);
+
+	// シールドモデル
+	shieldModel_ = Model::CreateFromOBJ("shieldQuad", true);
+	shieldTransform_.Initialize();
+	shieldTransform_.scale_ = {0.8f, 0.8f, 0.8f};
 }
 
 /// <summary>
@@ -84,6 +89,11 @@ void Player::Update() {
 		}
 	}
 
+	// シールドが出ている時だけ位置更新
+	if (isShield_) {
+		UpdateShieldTransform();
+	}
+
 	// 行列更新
 	worldTransform_.UpdateMatrix();
 }
@@ -102,6 +112,11 @@ void Player::Draw() {
 	hipDropParticles_->Draw();
 
 	model_->Draw(worldTransform_, *camera_);
+
+	// シールド描画
+	if (isShield_) {
+		shieldModel_->Draw(shieldTransform_, *camera_);
+	}
 }
 
 void Player::InputMove() {
@@ -169,6 +184,18 @@ void Player::InputMove() {
 		if (velocity_.y < -maxFallSpeed) {
 			velocity_.y = -maxFallSpeed;
 		}
+	}
+
+	// シールド長押し
+	if (Input::GetInstance()->PushKey(DIK_P) && shieldHP_ > 0) {
+		isShield_ = true;
+	} else {
+		isShield_ = false;
+	}
+
+	// クールダウン
+	if (shieldCooldown_ > 0.0f) {
+		shieldCooldown_ -= 1.0f / 60.0f;
 	}
 }
 
@@ -511,6 +538,55 @@ void Player::OnDamage() {
 	if (Hp_ <= 0) {
 		isDead_ = true;
 	}
+}
+
+AABB Player::GetShieldAABB() const {
+
+	Vector3 pos;
+	pos.x = shieldTransform_.matWorld_.m[3][0];
+	pos.y = shieldTransform_.matWorld_.m[3][1];
+	pos.z = shieldTransform_.matWorld_.m[3][2];
+
+	AABB aabb;
+	aabb.min = {pos.x - 0.4f, pos.y - 0.3f, pos.z - 0.3f};
+	aabb.max = {pos.x + 0.4f, pos.y + 0.3f, pos.z + 0.3f};
+
+	return aabb;
+}
+
+bool Player::IsShield() const { return isShield_; }
+
+void Player::UpdateShieldTransform() {
+
+	if (!isShield_)
+		return;
+
+	float dir = (lrDirection_ == LRDirection::kRight) ? 1.0f : -1.0f;
+
+	// プレイヤーの正面に配置
+	shieldTransform_.translation_ = worldTransform_.translation_;
+	shieldTransform_.translation_.x += dir * (kWidth * 1.4f);
+	shieldTransform_.translation_.y += 0.0f;
+	shieldTransform_.translation_.z += 0.0f;
+
+	// 向きはプレイヤーと完全同期
+	shieldTransform_.rotation_.y = worldTransform_.rotation_.y;
+
+	shieldTransform_.UpdateMatrix();
+}
+
+void Player::DamageShield(int damage) {
+
+	shieldHP_ -= damage;
+
+	if (shieldHP_ <= 0) {
+		shieldHP_ = 0;
+		isShield_ = false;
+
+		// 破壊演出を入れるならここ
+		// PlayShieldBreakSE();
+	}
+	DebugText::GetInstance()->ConsolePrintf("ShieldHP: %d\n", shieldHP_);
 }
 
 // Quadモデルを作成する

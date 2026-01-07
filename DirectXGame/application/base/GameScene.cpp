@@ -188,6 +188,18 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	lastDrawScore_ = -1;
 
 	//---------------------スコア関係初期化--------------------------//
+
+	//---------------------シールドUI初期化--------------------------//
+
+	// 背景バー
+	shieldBase_ = Sprite::Create(progressTex_, {50.0f, 80.0f});
+	shieldBase_->SetSize({200.0f, 14.0f});
+	shieldBase_->SetColor({0.1f, 0.1f, 0.4f, 1.0f}); // 濃い青
+
+	// 中身バー
+	shieldFill_ = Sprite::Create(progressTex_, {50.0f, 80.0f});
+	shieldFill_->SetSize({0.0f, 14.0f});
+	shieldFill_->SetColor({0.3f, 0.6f, 1.0f, 1.0f}); // 水色
 }
 
 void GameScene::Update() {
@@ -259,6 +271,17 @@ void GameScene::Update() {
 			return;
 		}
 	}
+	// --- シールドゲージ更新 ---
+	if (player_->GetShieldHP() > 0) {
+
+		float ratio = (float)player_->GetShieldHP() / player_->GetMaxShieldHP();
+
+		ratio = std::clamp(ratio, 0.0f, 1.0f);
+
+		shieldFill_->SetSize({200.0f * ratio, 14.0f});
+	} else {
+		shieldFill_->SetSize({0.0f, 14.0f});
+	}
 }
 
 void GameScene::Draw() {
@@ -318,6 +341,12 @@ void GameScene::Draw() {
 		// "100" の描画
 		DrawResultScore(score_.GetScore(), 360.0f, 50.0f);
 
+		// シールドUI
+		if (player_->GetShieldHP() > 0) {
+			shieldBase_->Draw();
+			shieldFill_->Draw();
+		}
+
 		// タイマー描画（画面右上あたりに表示）
 		timer_->Draw(numberTextures_, 1000.0f, 10.0f);
 	}
@@ -364,3 +393,5 @@ void GameScene::DrawResultScore(int score, float x, float y) {
 		s->Draw();
 	}
 }
+
+void GameScene::DrawShieldUI() {}

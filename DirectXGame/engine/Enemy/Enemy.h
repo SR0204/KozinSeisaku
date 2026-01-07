@@ -112,6 +112,10 @@ public:
 	/// </summary>
 	void Shoot();
 
+	/// <summary>
+	/// 敵マネージャーのセッター
+	/// </summary>
+	/// <param name="manager"></param>
 	void SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }
 
 private:

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <engine/Score/ScoreManager/ScoreManager.h>
 #include <fstream>
+#include <numbers>
 #include <sstream>
 #include <string>
 
@@ -168,26 +169,36 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				player->OnCollision(enemy);
 			}
 		}
-		//=====================-プレイヤー × 弾---------------------
+
+		// ===== プレイヤー × 弾 =====
 		for (auto& bullet : bullets_) {
 
 			if (bullet->IsDead())
 				continue;
 
-			if (IsColision(playerAABB, bullet->GetAABB())) {
+			if (!IsColision(playerAABB, bullet->GetAABB()))
+				continue; // ← 当たってなければ何もしない
 
-				// プレイヤーにダメージ
-				player->OnDamage();
+			// ===== ここに来た時点で「当たっている」 =====
 
-				// 弾は消す
+			// シールドが出ている
+			if (player->IsShieldActive() && IsColision(player->GetShieldAABB(), bullet->GetAABB())) {
+
+				player->DamageShield(1);
 				bullet->Kill();
 
-				// ヒット演出（任意）
-				hitStopTime_ = 0.05f;
-				cameraManager_->StartShake(0.1f, 0.2f);
-
-				break; // 多段ヒット防止
+				hitStopTime_ = 0.03f;
+				cameraManager_->StartShake(0.05f, 0.1f);
+				break;
 			}
+
+			// シールドなし → プレイヤーダメージ
+			player->OnDamage();
+			bullet->Kill();
+
+			hitStopTime_ = 0.05f;
+			cameraManager_->StartShake(0.1f, 0.2f);
+			break;
 		}
 	}
 
@@ -311,4 +322,21 @@ void EnemyManager::SpawnBullet(const Vector3& pos, const Vector3& vel) {
 	auto bullet = std::make_unique<EnemyBullet>();
 	bullet->Initialize(bulletModel_, camera_, pos, vel);
 	bullets_.push_back(std::move(bullet));
+}
+
+void EnemyManager::SpawnBulletRandom(const Vector3& pos, bool toRight) {
+	float speed = 0.25f;
+
+	// 角度範囲（-30° ～ +30°）
+	float angleMin = -30.0f * std::numbers::pi_v<float> / 180.0f;
+	float angleMax = 30.0f * std::numbers::pi_v<float> / 180.0f;
+
+	float angle = angleMin + (float)rand() / RAND_MAX * (angleMax - angleMin);
+
+	Vector3 vel{};
+	vel.x = std::cos(angle) * speed * (toRight ? 1.0f : -1.0f);
+	vel.y = std::sin(angle) * speed;
+	vel.z = 0.0f;
+
+	SpawnBullet(pos, vel);
 }
