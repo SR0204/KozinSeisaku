@@ -589,6 +589,11 @@ void Player::DamageShield(int damage) {
 	DebugText::GetInstance()->ConsolePrintf("ShieldHP: %d\n", shieldHP_);
 }
 
+void Player::ResetTutorialFlags() {
+	moved_ = false;
+	attacked_ = false;
+}
+
 // Quadモデルを作成する
 KamataEngine::Model* Player::CreateQuadModel() {
 

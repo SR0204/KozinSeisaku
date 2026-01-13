@@ -236,6 +236,29 @@ public:
 	/// <returns></returns>
 	int GetMaxShieldHP() const { return kMaxShieldHP; }
 
+	/// <summary>
+	/// チュートリアル用ムーブ
+	/// </summary>
+	/// <returns></returns>
+	bool IsMoved() const { return moved_; }
+
+	/// <summary>
+	/// チュートリアル用攻撃
+	/// </summary>
+	/// <returns></returns>
+	bool IsAttacked() const { return attacked_; }
+
+	/// <summary>
+	/// チュートリアル用敵
+	/// </summary>
+	/// <returns></returns>
+	bool IsNearEnemy() const { return nearEnemy_; }
+
+	/// <summary>
+	/// チュートリアル用フラグ
+	/// </summary>
+	void ResetTutorialFlags();
+
 private:
 	// マップチップフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -336,4 +359,11 @@ private:
 
 	static constexpr int kMaxShieldHP = 10;
 	int shieldHP_ = kMaxShieldHP;
+
+	/// <summary>
+	/// チュートリアル用
+	/// </summary>
+	bool moved_;
+	bool attacked_;
+	bool nearEnemy_;
 };
