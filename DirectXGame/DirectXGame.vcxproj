@@ -182,6 +182,7 @@
     <ClCompile Include="engine\Particle\ParticleSystem.cpp" />
     <ClCompile Include="engine\Score\ScoreManager\ScoreManager.cpp" />
     <ClCompile Include="engine\Score\Log\ScoreLog.cpp" />
+    <ClCompile Include="engine\Scene\Scenes\Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -311,6 +312,7 @@
     <ClInclude Include="engine\LoadJson\FileJson\FileJson.h" />
     <ClInclude Include="engine\Score\ScoreManager\ScoreManager.h" />
     <ClInclude Include="engine\Score\Log\ScoreLog.h" />
+    <ClInclude Include="engine\Scene\Scenes\Tutorial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

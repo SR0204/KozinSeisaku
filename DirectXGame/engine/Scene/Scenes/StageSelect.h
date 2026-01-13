@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../engine/Scene/Scenes/Tutorial.h"
 #include "../SceneManager/Scene.h"
 #include "3d/LightGroup.h"
 #include "3d/WorldTransform.h"
@@ -11,6 +12,8 @@
 #include <memory>
 
 class SceneManager;
+
+enum class StageSelectState { Select, Help };
 
 /// <summary>
 /// ステージ選択画面を作るクラス
@@ -76,6 +79,18 @@ private:
 
 	// === 決定演出 ===
 	int frameCount_ = 0;
+
+	StageSelectState state_ = StageSelectState::Select;
+
+	KamataEngine::Sprite* helpSprite_ = nullptr;
+
+	// チュートリアル
+	TutorialUI tutorial_;
+
+	// 操作説明（F1）
+	std::unique_ptr<Sprite> f1HelpSprite_;
+	uint32_t f1HelpTexHandle_ = 0;
+
 
 	//==============デバッグ用================
 	int debugStageIndex_ = 0;

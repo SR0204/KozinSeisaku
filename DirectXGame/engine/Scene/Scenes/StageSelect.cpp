@@ -25,6 +25,8 @@ StageSelect::~StageSelect() {
 	if (bgmVoiceHandle_ != -1) {
 		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 	}
+
+	delete f1HelpSprite_.release();
 }
 
 void StageSelect::Initialize(SceneManager* sceneManager) {
@@ -86,6 +88,24 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 		stageCubeModel_[i]->SetLightGroup(lightGroup_.get());
 	}
 
+	// 操作説明
+	tutorial_.Initialize(&camera_);
+
+	// === F1 操作説明UI ===
+	f1HelpTexHandle_ = TextureManager::Load("./Resources/UI/tutorial.png");
+
+	// 画面上中央ちょい上
+	f1HelpSprite_.reset(Sprite::Create(f1HelpTexHandle_, {640.0f, 100.0f}));
+
+	// 中心基準
+	f1HelpSprite_->SetAnchorPoint({0.5f, 0.5f});
+
+	// サイズ調整（画像に合わせて）
+	f1HelpSprite_->SetSize({400.0f, 80.0f});
+
+	// 少し半透明にするとUIっぽい
+	f1HelpSprite_->SetColor({1.0f, 1.0f, 1.0f, 0.85f});
+
 	// === BGM ===
 	// bgmHandle_ = Audio::GetInstance()->LoadWave("./Resources/Sound/StageSelectBGM.mp3");
 	// bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmHandle_, true);
@@ -101,8 +121,29 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 void StageSelect::Update() {
 	frameCount_++;
 
+	if (state_ == StageSelectState::Help) {
+		return;
+	}
+
+	// F1
+	if (input_->TriggerKey(DIK_F1)) {
+		if (tutorial_.IsVisible()) {
+			tutorial_.Hide();
+		} else {
+			tutorial_.Show();
+		}
+	}
+
+	tutorial_.Update();
+
+	// Help中は操作停止
+	if (tutorial_.IsVisible()) {
+		return;
+	}
+
 	// === 入力 ===
-	if (!isDecide_) {
+
+	if (state_ == StageSelectState::Select && !isDecide_) {
 		// ←左右入力でステージ選択
 		if (input_->TriggerKey(DIK_RIGHT) || input_->TriggerKey(XINPUT_GAMEPAD_DPAD_RIGHT)) {
 			currentStage_ = std::min(currentStage_ + 1, kMaxStage - 1);
@@ -226,6 +267,7 @@ void StageSelect::Draw() {
 
 	// === 3D ===
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
+
 	if (model_) {
 		model_->Draw(worldTransform_, camera_);
 	}
@@ -237,6 +279,16 @@ void StageSelect::Draw() {
 
 	Model::PostDraw();
 
+	// === 操作説明（最前面OBJ）===
+	Model::PreDraw(
+	    Model::CullingMode::kNone, Model::BlendMode::kNormal,
+	    Model::DepthTestMode::kOff // ★ ここが重要
+	);
+
+	tutorial_.Draw(); // OBJのまま
+
+	Model::PostDraw();
+
 	// === 2D ===
 	Sprite::PreDraw(commandList);
 
@@ -244,6 +296,11 @@ void StageSelect::Draw() {
 	for (int i = 0; i < 2; i++) {
 		if (BackGround_[i])
 			BackGround_[i]->Draw();
+	}
+
+	// ★ F1 操作説明（常時）
+	if (f1HelpSprite_) {
+		f1HelpSprite_->Draw();
 	}
 
 	// カーソル（点滅演出）

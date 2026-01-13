@@ -9,6 +9,7 @@
 #include "../../engine/Scene/SceneManager/PhaseManager.h"
 #include "../../engine/Scene/SceneManager/SceneManager.h"
 #include "../../engine/Scene/Scenes/StageSelect.h"
+#include "../../engine/Scene/Scenes/Tutorial.h"
 #include "../../engine/Score/Score.h"
 #include "../../engine/Spawn/SpawnManager.h"
 #include "../../engine/Time/Timer.h"
@@ -222,6 +223,8 @@ private: // メンバ変数（関数）
 	KamataEngine::Sprite* shieldBase_ = nullptr;
 	KamataEngine::Sprite* shieldFill_ = nullptr;
 
+	// チュートリアル
+	TutorialUI tutorial_;
 
 	/// <summary>
 	/// ゲームシーン用
