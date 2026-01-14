@@ -1,19 +1,16 @@
 #include "Tutorial.h"
 #include <numbers>
 
-void TutorialUI::Initialize(Camera* camera) {
-	camera_ = camera;
+void TutorialUI::Initialize() {
+	uint32_t tex = TextureManager::Load("./Resources/OperationHelp/OperationHelp.png");
+	sprite_.reset(Sprite::Create(tex, {640.0f, 360.0f}));
 
-	model_ = Model::CreateFromOBJ("OperationHelp", true);
-
-	transform_.Initialize();
-	transform_.translation_ = {0.0f, 1.0f, -10.0f};
-	transform_.scale_ = {3.5f, 3.5f, 3.5f};
-
-	// ★ 正面補正（左向き → 正面）
-	transform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
+	sprite_->SetAnchorPoint({0.5f, 0.5f});
+	sprite_->SetSize({1280.0f, 750.0f});
 
 	alpha_ = 0.0f;
+	fadeState_ = FadeState::None;
+	isVisible_ = false;
 }
 
 void TutorialUI::Show() {
@@ -38,15 +35,13 @@ void TutorialUI::Update() {
 			isVisible_ = false;
 		}
 	}
-
-	transform_.UpdateMatrix();
 }
 
 void TutorialUI::Draw() {
 	if (!isVisible_)
 		return;
-	if (!model_)
+	if (!sprite_)
 		return;
-	model_->SetAlpha(alpha_);
-	model_->Draw(transform_, *camera_);
+	sprite_->SetColor({1.0f, 1.0f, 1.0f, alpha_});
+	sprite_->Draw();
 }

@@ -201,7 +201,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	shieldFill_->SetColor({0.3f, 0.6f, 1.0f, 1.0f}); // 水色
 
 	// チュートリアル
-	tutorial_.Initialize(&camera_);
+	tutorial_.Initialize();
 }
 
 void GameScene::Update() {
@@ -236,10 +236,15 @@ void GameScene::Update() {
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
 
-		if (input_->TriggerKey(DIK_F1)) {
-			tutorial_.Show();
-		}
 		tutorial_.Update();
+
+		if (input_->TriggerKey(DIK_F1)) {
+			if (tutorial_.IsVisible()) {
+				tutorial_.Hide();
+			} else {
+				tutorial_.Show();
+			}
+		}
 
 		// 制限時間更新
 		timer_->Update();
@@ -301,7 +306,6 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 
 	Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOn);
-	tutorial_.Draw();
 
 	if (!player_->IsDead())
 		player_->Draw();
@@ -358,6 +362,9 @@ void GameScene::Draw() {
 		// タイマー描画（画面右上あたりに表示）
 		timer_->Draw(numberTextures_, 1000.0f, 10.0f);
 	}
+
+	// チュートリアル
+	tutorial_.Draw();
 
 	Sprite::PostDraw();
 }
