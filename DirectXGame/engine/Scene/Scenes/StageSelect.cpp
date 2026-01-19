@@ -89,7 +89,7 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	}
 
 	// 操作説明
-	tutorial_.Initialize(&camera_);
+	tutorial_.Initialize();
 
 	// === F1 操作説明UI ===
 	f1HelpTexHandle_ = TextureManager::Load("./Resources/UI/tutorial.png");
@@ -285,8 +285,6 @@ void StageSelect::Draw() {
 	    Model::DepthTestMode::kOff // ★ ここが重要
 	);
 
-	tutorial_.Draw(); // OBJのまま
-
 	Model::PostDraw();
 
 	// === 2D ===
@@ -307,6 +305,9 @@ void StageSelect::Draw() {
 	if (frameCount_ % 60 < 40 && cursorSprite_) {
 		cursorSprite_->Draw();
 	}
+
+	// ゲーム内チュートリアル
+	tutorial_.Draw();
 
 	// フェード
 	if (fadeSprite_)

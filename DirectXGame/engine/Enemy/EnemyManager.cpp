@@ -132,6 +132,9 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 
 				player->SetVelocityY(0.25f); // 軽くバウンド
 
+				comboCount_++;
+				comboTimer_ = 1.0f;
+
 				// ----- ここでスコア加算 -----
 				if (score_) {
 					score_->AddScore(stompScore_); // ← Score クラスの加算関数に合わせて変更

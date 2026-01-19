@@ -2,9 +2,11 @@
 #include "../../../engine/Player/Player.h"
 #include "KamataEngine.h"
 
+enum class FadeState { None, FadeIn, FadeOut };
+
 class TutorialUI {
 public:
-	void Initialize(Camera* camera);
+	void Initialize();
 	void Update();
 	void Draw();
 
@@ -13,14 +15,9 @@ public:
 	bool IsVisible() const { return isVisible_; }
 
 private:
-	Model* model_ = nullptr;
-	WorldTransform transform_;
-	Camera* camera_ = nullptr;
+	std::unique_ptr<Sprite> sprite_;
 
-	float alpha_ = 0.0f;
-
-	enum class FadeState { None, FadeIn, FadeOut };
-
-	FadeState fadeState_ = FadeState::None;
 	bool isVisible_ = false;
+	FadeState fadeState_ = FadeState::None;
+	float alpha_ = 0.0f;
 };
