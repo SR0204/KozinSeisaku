@@ -94,6 +94,16 @@ void Player::Update() {
 		UpdateShieldTransform();
 	}
 
+	// 上昇中だけジャンプ扱い
+	isJumping_ = (!onGround_ && velocity_.y > 0.0f);
+
+	if (comboTimer_ > 0.0f) {
+		comboTimer_ -= 1.0f / 60.0f;
+		if (comboTimer_ <= 0.0f) {
+			comboCount_ = 0;
+		}
+	}
+
 	// 行列更新
 	worldTransform_.UpdateMatrix();
 }
@@ -593,6 +603,14 @@ void Player::ResetTutorialFlags() {
 	moved_ = false;
 	attacked_ = false;
 }
+
+bool Player::IsJumping() const { return isJumping_; }
+
+bool Player::IsComboActive() const { return comboCount_ > 1; }
+
+bool Player::IsJumpApex() const { return IsJumping() && std::abs(velocity_.y) < 0.05f; }
+
+float Player::GetMoveDirection() const { return velocity_.x; }
 
 // Quadモデルを作成する
 KamataEngine::Model* Player::CreateQuadModel() {

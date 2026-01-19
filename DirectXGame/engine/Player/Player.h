@@ -259,6 +259,26 @@ public:
 	/// </summary>
 	void ResetTutorialFlags();
 
+	/// <summary>
+	/// ジャンプ
+	/// </summary>
+	/// <returns></returns>
+	bool IsJumping() const;
+
+	/// <summary>
+	/// コンボ用
+	/// </summary>
+	/// <returns></returns>
+	bool IsComboActive() const;
+
+	/// <summary>
+	/// 頂点ジャンプ用
+	/// </summary>
+	/// <returns></returns>
+	bool IsJumpApex() const;
+
+	float GetMoveDirection() const;
+
 private:
 	// マップチップフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -366,4 +386,12 @@ private:
 	bool moved_;
 	bool attacked_;
 	bool nearEnemy_;
+
+	/// <summary>
+	/// ジャンプ用
+	/// </summary>
+	bool isJumping_ = false;
+
+	int comboCount_ = 0;
+	float comboTimer_ = 0.0f;
 };

@@ -121,6 +121,9 @@ private:
 
 	int stompScore_ = 5; // デフォルト値
 
+	int comboCount_ = 0;
+	float comboTimer_ = 0.0f;
+
 	//=========================弾管理===============
 	std::vector<std::unique_ptr<EnemyBullet>> bullets_;
 	Model* bulletModel_ = nullptr;
