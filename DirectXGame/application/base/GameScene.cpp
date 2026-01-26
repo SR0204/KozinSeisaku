@@ -205,7 +205,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	//======ポーズUI========
 	pause_.Initialize(sceneManager_);
-	PauseUI_ = TextureManager::Load("./Resources/Pause/Pause.png");
+	PauseUI_ = TextureManager::Load("./Resources/PauseUI/Pause.png");
 	PauseSprite_ = Sprite::Create(PauseUI_, {640.0f, 50.0f});
 	PauseSprite_->SetAnchorPoint({0.5f, 0.5f});
 	PauseSprite_->SetSize({400.0f, 200.0f});
@@ -394,6 +394,8 @@ void GameScene::Draw() {
 	if (isGameActive_ && !pause_.IsPause()) {
 		PauseSprite_->Draw();
 	}
+
+	pause_.Draw();
 
 	Sprite::PostDraw();
 }
