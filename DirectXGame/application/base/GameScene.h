@@ -230,6 +230,10 @@ private: // メンバ変数（関数）
 	//======ポーズ用=========
 	Pause pause_;
 
+	uint32_t PauseUI_ = 0;
+	Sprite* PauseSprite_ = nullptr;
+
+	WorldTransform PauseModelTransform;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

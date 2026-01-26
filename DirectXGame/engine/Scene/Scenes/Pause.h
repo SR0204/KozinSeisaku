@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../engine/Scene/SceneManager/SceneManager.h"
 #include <3d/Camera.h>
 #include <3d/Model.h>
 #include <3d/WorldTransform.h>
@@ -11,7 +12,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(SceneManager* sceneManager);
 
 	/// <summary>
 	/// 更新
@@ -29,8 +30,16 @@ public:
 	/// <returns></returns>
 	bool IsPause() const { return isPoused_; }
 
+	/// <summary>
+	/// タイトルに戻った時
+	/// </summary>
+	/// <returns></returns>
+	bool IsReturnTitle() const { return requestReturnTitle_; }
+
 private:
 	KamataEngine::Input* input_ = nullptr;
 
 	bool isPoused_ = false;
+	SceneManager* sceneManager_ = nullptr;
+	bool requestReturnTitle_ = false;
 };

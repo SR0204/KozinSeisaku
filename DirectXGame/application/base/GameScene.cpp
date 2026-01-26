@@ -203,14 +203,23 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	// チュートリアル
 	tutorial_.Initialize();
 
-	//======ポーズ========
-	pause_.Initialize();
+	//======ポーズUI========
+	pause_.Initialize(sceneManager_);
+	PauseUI_ = TextureManager::Load("./Resources/Pause/Pause.png");
+	PauseSprite_ = Sprite::Create(PauseUI_, {640.0f, 50.0f});
+	PauseSprite_->SetAnchorPoint({0.5f, 0.5f});
+	PauseSprite_->SetSize({400.0f, 200.0f});
 }
 
 void GameScene::Update() {
 
 	//===========ポーズは常に更新=======
 	pause_.Update();
+
+	if (pause_.IsReturnTitle()) {
+		sceneManager_->ChangeScene(SceneID::TitleScene);
+		return;
+	}
 
 	timer_->SetActive(isGameActive_ && !pause_.IsPause());
 
@@ -382,7 +391,9 @@ void GameScene::Draw() {
 	tutorial_.Draw();
 
 	//===============ポーズ=============
-	pause_.Draw();
+	if (isGameActive_ && !pause_.IsPause()) {
+		PauseSprite_->Draw();
+	}
 
 	Sprite::PostDraw();
 }
