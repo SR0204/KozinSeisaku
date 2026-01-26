@@ -183,6 +183,7 @@
     <ClCompile Include="engine\Score\ScoreManager\ScoreManager.cpp" />
     <ClCompile Include="engine\Score\Log\ScoreLog.cpp" />
     <ClCompile Include="engine\Scene\Scenes\Tutorial.cpp" />
+    <ClCompile Include="engine\Scene\Scenes\Pause.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -313,6 +314,7 @@
     <ClInclude Include="engine\Score\ScoreManager\ScoreManager.h" />
     <ClInclude Include="engine\Score\Log\ScoreLog.h" />
     <ClInclude Include="engine\Scene\Scenes\Tutorial.h" />
+    <ClInclude Include="engine\Scene\Scenes\Pause.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -36,7 +36,6 @@ GameScene::~GameScene() {
 	delete timer_;
 }
 
-
 void GameScene::Initialize(SceneManager* sceneManager) {
 	sceneManager_ = sceneManager;
 
@@ -203,9 +202,20 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 
 	// チュートリアル
 	tutorial_.Initialize();
+
+	//======ポーズ========
+	pause_.Initialize();
 }
 
 void GameScene::Update() {
+
+	//===========ポーズは常に更新=======
+	pause_.Update();
+
+	timer_->SetActive(isGameActive_ && !pause_.IsPause());
+
+	// 制限時間更新
+	timer_->Update();
 
 	// ----------------------------スリーカウント演出---------------------------- //
 	if (isStarting_) {
@@ -228,7 +238,7 @@ void GameScene::Update() {
 		} else {
 			isStarting_ = false;
 			isGameActive_ = true;
-			timer_->isActive = true;
+			timer_->SetActive(true);
 		}
 
 		return; // カウント中はゲーム停止
@@ -236,6 +246,12 @@ void GameScene::Update() {
 
 	// ----------------------------ゲーム本編処理---------------------------- //
 	if (isGameActive_) {
+
+		//===========ポーズ中ならゲームを止める==========
+		if (pause_.IsPause()) {
+			timer_->SetActive(false);
+			return;
+		}
 
 		tutorial_.Update();
 
@@ -246,9 +262,6 @@ void GameScene::Update() {
 				tutorial_.Show();
 			}
 		}
-
-		// 制限時間更新
-		timer_->Update();
 
 		// ★制限時間切れチェック
 		if (timer_->IsTimeOver()) {
@@ -284,6 +297,7 @@ void GameScene::Update() {
 			return;
 		}
 	}
+
 	// --- シールドゲージ更新 ---
 	if (player_->GetShieldHP() > 0) {
 
@@ -366,6 +380,9 @@ void GameScene::Draw() {
 
 	// チュートリアル
 	tutorial_.Draw();
+
+	//===============ポーズ=============
+	pause_.Draw();
 
 	Sprite::PostDraw();
 }

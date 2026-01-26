@@ -8,6 +8,7 @@
 #include "../../engine/Player/Player.h"
 #include "../../engine/Scene/SceneManager/PhaseManager.h"
 #include "../../engine/Scene/SceneManager/SceneManager.h"
+#include "../../engine/Scene/Scenes/Pause.h"
 #include "../../engine/Scene/Scenes/StageSelect.h"
 #include "../../engine/Scene/Scenes/Tutorial.h"
 #include "../../engine/Score/Score.h"
@@ -225,6 +226,9 @@ private: // メンバ変数（関数）
 
 	// チュートリアル
 	TutorialUI tutorial_;
+
+	//======ポーズ用=========
+	Pause pause_;
 
 	/// <summary>
 	/// ゲームシーン用

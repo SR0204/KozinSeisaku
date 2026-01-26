@@ -18,12 +18,14 @@ void Timer::Initialize() {
 }
 
 void Timer::Update() {
-	if (!isActive)
-		return;
 
 	LARGE_INTEGER currentTime;
 	QueryPerformanceCounter(&currentTime);
 
+	if (!isActive) {
+		prevTime = currentTime;
+		return;
+	}
 	float deltaTime = static_cast<float>(currentTime.QuadPart - prevTime.QuadPart) / frequency.QuadPart;
 
 	elapsedTime += deltaTime;
