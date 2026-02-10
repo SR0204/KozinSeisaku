@@ -25,8 +25,8 @@ void GameOverScene::Initialize(SceneManager* sceneManager) {
 	input_ = KamataEngine::Input::GetInstance();
 
 	// === 2Dリソース ===
-	GameOverTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
-	GameOverBackGroundTextureHandle_ = TextureManager::Load("./Resources/GameOverBG/GameOverBG.png");
+	GameOverTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.dds");
+	GameOverBackGroundTextureHandle_ = TextureManager::Load("./Resources/GameOverBG/GameOverBG.dds");
 	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
 	sprite_ = KamataEngine::Sprite::Create(GameOverTextureHandle_, {0, 0});

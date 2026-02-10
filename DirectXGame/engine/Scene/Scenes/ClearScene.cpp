@@ -29,8 +29,8 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	input_ = KamataEngine::Input::GetInstance();
 
 	// === 2Dリソース ===
-	ClearTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
-	ClearBackGroundTextureHandle_ = TextureManager::Load("./Resources/ClearBG/ClearBG.png");
+	ClearTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.dds");
+	ClearBackGroundTextureHandle_ = TextureManager::Load("./Resources/ClearBG/ClearBG.dds");
 	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
 	sprite_ = KamataEngine::Sprite::Create(ClearTextureHandle_, {0, 0});
@@ -97,7 +97,7 @@ void ClearScene::Initialize(SceneManager* sceneManager) {
 	}
 
 	//=============光のエフェクト===============
-	uint32_t shineTex = TextureManager::Load("./Resources/Effect/shine.png");
+	uint32_t shineTex = TextureManager::Load("./Resources/Effect/shine.dds");
 	shineSprite_ = KamataEngine::Sprite::Create(shineTex, {0, 0});
 	shineSprite_->SetSize({200, 40});
 	shineSprite_->SetColor({1, 1, 1, 0}); // 初期は透明

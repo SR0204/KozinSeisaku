@@ -25,8 +25,8 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	input_ = KamataEngine::Input::GetInstance();
 
 	// === 2Dリソース ===
-	TitleTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.png");
-	TitleBackGroundTextureHandle_ = TextureManager::Load("./Resources/Title/TitleBack.png");
+	TitleTextureHandle_ = TextureManager::Load("./Resources/Title/TitleKey.dds");
+	TitleBackGroundTextureHandle_ = TextureManager::Load("./Resources/Title/TitleBack.dds");
 	fadeTextureHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 
 	sprite_ = KamataEngine::Sprite::Create(TitleTextureHandle_, {0, 0});

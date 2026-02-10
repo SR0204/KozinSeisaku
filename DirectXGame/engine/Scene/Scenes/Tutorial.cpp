@@ -2,7 +2,7 @@
 #include <numbers>
 
 void TutorialUI::Initialize() {
-	uint32_t tex = TextureManager::Load("./Resources/OperationHelp/OperationHelp.png");
+	uint32_t tex = TextureManager::Load("./Resources/OperationHelp/OperationHelp.dds");
 	sprite_.reset(Sprite::Create(tex, {640.0f, 360.0f}));
 
 	sprite_->SetAnchorPoint({0.5f, 0.5f});

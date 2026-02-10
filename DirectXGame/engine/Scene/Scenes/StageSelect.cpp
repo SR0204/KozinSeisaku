@@ -35,7 +35,7 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	input_ = Input::GetInstance();
 
 	// === 背景 ===
-	bgTexHandle_ = TextureManager::Load("./Resources/Title/TitleBack.png");
+	bgTexHandle_ = TextureManager::Load("./Resources/Title/TitleBack.dds");
 	BackGround_[0].reset(Sprite::Create(bgTexHandle_, {0, 0}));
 	BackGround_[1].reset(Sprite::Create(bgTexHandle_, {1280, 0}));
 
@@ -53,7 +53,7 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	}
 
 	// === カーソル ===
-	cursorTexHandle_ = TextureManager::Load("./Resources/Stage/cursor.png");
+	cursorTexHandle_ = TextureManager::Load("./Resources/Stage/cursor.dds");
 	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {0, 0}));
 
 	float cursorScale = 0.5f; // ← カーソルの大きさ調整
@@ -92,7 +92,7 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 	tutorial_.Initialize();
 
 	// === F1 操作説明UI ===
-	f1HelpTexHandle_ = TextureManager::Load("./Resources/UI/tutorial.png");
+	f1HelpTexHandle_ = TextureManager::Load("./Resources/UI/tutorial.dds");
 
 	// 画面上中央ちょい上
 	f1HelpSprite_.reset(Sprite::Create(f1HelpTexHandle_, {640.0f, 100.0f}));

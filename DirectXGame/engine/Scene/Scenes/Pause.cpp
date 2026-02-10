@@ -8,7 +8,7 @@ void Pause::Initialize(SceneManager* sceneManager) {
 	sceneManager_ = sceneManager;
 
 	// ポーズPNG読み込み
-	uint32_t tex = TextureManager::Load("./Resources/Pause/Pause.png");
+	uint32_t tex = TextureManager::Load("./Resources/Pause/Pause.dds");
 	PauseSprite_ = Sprite::Create(tex, {640.0f, 360.0f});
 	PauseSprite_->SetAnchorPoint({0.5f, 0.5f});
 	PauseSprite_->SetSize({1280.0f, 720.0f});

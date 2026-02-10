@@ -128,22 +128,22 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	fadeScele_ = 4.0f;
 
 	// ----------------------------カウントダウンUI---------------------------- //
-	uint32_t Count1Tex = TextureManager::Load("./Resources/UI/Count1.png");
+	uint32_t Count1Tex = TextureManager::Load("./Resources/UI/Count1.dds");
 	Count1Sprite_ = Sprite::Create(Count1Tex, {640, 360});
 	Count1Sprite_->SetAnchorPoint({0.5f, 0.5f});
 	Count1Sprite_->SetSize({400, 200});
 
-	uint32_t Count2Tex = TextureManager::Load("./Resources/UI/Count2.png");
+	uint32_t Count2Tex = TextureManager::Load("./Resources/UI/Count2.dds");
 	Count2Sprite_ = Sprite::Create(Count2Tex, {640, 360});
 	Count2Sprite_->SetAnchorPoint({0.5f, 0.5f});
 	Count2Sprite_->SetSize({400, 200});
 
-	uint32_t Count3Tex = TextureManager::Load("./Resources/UI/Count3.png");
+	uint32_t Count3Tex = TextureManager::Load("./Resources/UI/Count3.dds");
 	Count3Sprite_ = Sprite::Create(Count3Tex, {640, 360});
 	Count3Sprite_->SetAnchorPoint({0.5f, 0.5f});
 	Count3Sprite_->SetSize({400, 200});
 
-	uint32_t StartTex = TextureManager::Load("./Resources/UI/Start.png");
+	uint32_t StartTex = TextureManager::Load("./Resources/UI/Start.dds");
 	startSprite_ = Sprite::Create(StartTex, {640, 360});
 	startSprite_->SetAnchorPoint({0.5f, 0.5f});
 	startSprite_->SetSize({400, 200});
