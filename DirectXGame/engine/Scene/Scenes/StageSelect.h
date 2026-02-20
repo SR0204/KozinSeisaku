@@ -54,9 +54,6 @@ private:
 	bool isStageRotating_ = false;
 	int rotateTimer_ = 0;
 
-	// === カーソル ===
-	std::unique_ptr<KamataEngine::Sprite> cursorSprite_;
-	uint32_t cursorTexHandle_ = 0;
 	int currentStage_ = 0;
 	bool isDecide_ = false;
 
@@ -65,6 +62,9 @@ private:
 	uint32_t fadeTexHandle_ = 0;
 	float fadeAlpha_ = 0.0f;
 	bool isFadingOut_ = false;
+
+	float fadeScale_ = 2.0f;
+	bool isFadeIn_ = true;
 
 	// === BGM ===
 	int bgmHandle_ = -1;

@@ -18,7 +18,6 @@ StageSelect::~StageSelect() {
 		delete stageCubeModel_[i].release();
 		delete stageTextModel_[i].release();
 	}
-	delete cursorSprite_.release();
 	delete fadeSprite_.release();
 	delete model_.release();
 
@@ -52,22 +51,18 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 		baseScale_[i] = {3.5f, 3.5f, 3.5f};
 	}
 
-	// === カーソル ===
-	cursorTexHandle_ = TextureManager::Load("./Resources/Stage/cursor.png");
-	cursorSprite_.reset(Sprite::Create(cursorTexHandle_, {0, 0}));
-
-	float cursorScale = 0.5f; // ← カーソルの大きさ調整
-	cursorSprite_->SetSize({128.0f * cursorScale, 128.0f * cursorScale});
-
-	// 初期位置をステージ0に合わせる
-	Vector3 pos = stageTransform_[currentStage_].translation_;
-	cursorSprite_->SetPosition({640 + pos.x * 50.0f, 360 - pos.y * 50.0f});
-
 	// === フェード ===
 	fadeTexHandle_ = TextureManager::Load("./Resources/Title/fadeTexture.png");
 	fadeSprite_.reset(Sprite::Create(fadeTexHandle_, {0, 0}));
 	fadeSprite_->SetSize({1280, 720});
-	fadeSprite_->SetColor({0, 0, 0, 0});
+	fadeSprite_->SetColor({0, 0, 0, 1});
+
+	// === フェード初期状態（中央から開く）===
+	fadeSprite_->SetAnchorPoint({0.5f, 0.5f});
+	fadeSprite_->SetPosition({640.0f, 360.0f});
+
+	fadeScale_ = 2.0f; // 最初は画面より大きく
+	isFadeIn_ = true;
 
 	// === モデル（中央に飾り3D） ===
 	model_.reset(KamataEngine::Model::CreateFromOBJ("SelectModel", true));
@@ -114,11 +109,24 @@ void StageSelect::Initialize(SceneManager* sceneManager) {
 
 	currentStage_ = 0;
 	isFadingOut_ = false;
-	isDecide_ = false;
-	fadeAlpha_ = 0.0f;
 }
 
 void StageSelect::Update() {
+	// ================= フェードイン（中央から開く） =================
+	if (isFadeIn_) {
+
+		fadeScale_ -= 0.05f; // ← 速度調整ポイント
+
+		if (fadeScale_ <= 0.0f) {
+			fadeScale_ = 0.0f;
+			isFadeIn_ = false;
+		}
+
+		fadeSprite_->SetSize({1280.0f * fadeScale_, 720.0f * fadeScale_});
+
+		return;
+	}
+
 	frameCount_++;
 
 	if (state_ == StageSelectState::Help) {
@@ -157,12 +165,16 @@ void StageSelect::Update() {
 			isDecide_ = true;
 			isStageRotating_ = true;
 			rotateTimer_ = 0;
+
+			fadeAlpha_ = 0.0f;
 		}
 
 		// タイトルに戻る
 		if (input_->TriggerKey(DIK_ESCAPE)) {
 			isFadingOut_ = true;
 			isDecide_ = false;
+
+			fadeSprite_->SetSize({1280, 720});
 		}
 	}
 
@@ -190,6 +202,8 @@ void StageSelect::Update() {
 		if (rotateTimer_ >= 60) {
 			isStageRotating_ = false;
 			isFadingOut_ = true; // 回転後にフェード
+
+			fadeSprite_->SetSize({1280, 720});
 		}
 	}
 
@@ -208,6 +222,7 @@ void StageSelect::Update() {
 
 	// === フェードアウト処理 ===
 	if (isFadingOut_) {
+
 		bgmVolume_ -= 0.02f;
 		if (bgmVolume_ < 0.0f)
 			bgmVolume_ = 0.0f;
@@ -216,19 +231,16 @@ void StageSelect::Update() {
 		fadeAlpha_ += 0.02f;
 		if (fadeAlpha_ > 1.0f)
 			fadeAlpha_ = 1.0f;
+
 		fadeSprite_->SetColor({0, 0, 0, fadeAlpha_});
 
 		if (fadeAlpha_ >= 1.0f) {
 			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 
 			if (isDecide_) {
-				// ここで選択中ステージをSceneManagerに渡す
 				sceneManager_->SetSelectedStage(currentStage_);
-
-				// そしてGameSceneへ
 				sceneManager_->ChangeScene(SceneID::Game);
 			} else {
-				// Escで戻った場合
 				sceneManager_->ChangeScene(SceneID::TitleScene);
 			}
 			return;
@@ -242,24 +254,6 @@ void StageSelect::Update() {
 	lightDir.z = std::sin(frameCount_ * 0.01f) * 0.5f;
 	lightGroup_->SetDirLightDir(0, lightDir);
 	lightGroup_->Update();
-
-	// === カーソル位置更新（アイコン中心基準） ===
-
-	// 画面中央
-	const float baseX = 640.0f;
-	const float baseY = 360.0f;
-
-	// アイコン同士の間隔（見た目に合わせて調整）
-	const float iconSpacing = 550.0f;
-
-	// 現在ステージのオフセット
-	float offsetX = (currentStage_ - (kMaxStage - 1) / 2.0f) * iconSpacing;
-
-	// カーソルサイズ
-	Vector2 cursorSize = cursorSprite_->GetSize();
-
-	// アイコン中心に合わせる
-	cursorSprite_->SetPosition({baseX + offsetX - cursorSize.x * 0.5f, baseY - cursorSize.y * 0.5f});
 }
 
 void StageSelect::Draw() {
@@ -299,11 +293,6 @@ void StageSelect::Draw() {
 	// ★ F1 操作説明（常時）
 	if (f1HelpSprite_) {
 		f1HelpSprite_->Draw();
-	}
-
-	// カーソル（点滅演出）
-	if (frameCount_ % 60 < 40 && cursorSprite_) {
-		cursorSprite_->Draw();
 	}
 
 	// ゲーム内チュートリアル
