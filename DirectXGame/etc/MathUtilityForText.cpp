@@ -223,6 +223,18 @@ float Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }
 
 Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) { return Vector3(Lerp(v1.x, v2.x, t), Lerp(v1.y, v2.y, t), Lerp(v1.z, v2.z, t)); }
 
+Vector4 Multiply(const Vector4& v, const Matrix4x4& m) {
+
+	Vector4 result;
+
+	result.x = v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + v.w * m.m[3][0];
+	result.y = v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + v.w * m.m[3][1];
+	result.z = v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + v.w * m.m[3][2];
+	result.w = v.x * m.m[0][3] + v.y * m.m[1][3] + v.z * m.m[2][3] + v.w * m.m[3][3];
+
+	return result;
+}
+
 bool IsColision(const AABB& aabb1, const AABB& aabb2) {
 	return (aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && // X軸
 	       (aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && // Y軸

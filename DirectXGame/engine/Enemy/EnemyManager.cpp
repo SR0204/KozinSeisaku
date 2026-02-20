@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "EnemyManager.h"
-#include "../../DirectXGame/etc/MathUtilityForText.h" // IsColision 用
+#include "../../DirectXGame/etc/MathUtilityForText.h"
 #include "../../engine/Player/Player.h"
 #include <algorithm>
 #include <engine/Score/ScoreManager/ScoreManager.h>
@@ -151,7 +151,6 @@ void EnemyManager::CheckAllCollisions(Player* player) {
 				//------------------------------------------
 				// ★ 連続踏みポイントを増やす（最大5）
 				player->consecutiveBouncePoints_ = std::min(player->consecutiveBouncePoints_ + 1, Player::kMaxBouncePoints);
-
 
 				//------------------------------------------
 				// ★ 高く飛ぶ処理（スペース押しっぱで強化）
@@ -328,6 +327,11 @@ void EnemyManager::SpawnBullet(const Vector3& pos, const Vector3& vel) {
 }
 
 void EnemyManager::SpawnBulletRandom(const Vector3& pos, bool toRight) {
+	
+	// カメラ外なら撃たない
+	if (!IsInCameraView(pos))
+		return;
+
 	float speed = 0.25f;
 
 	// 角度範囲（-30° ～ +30°）
@@ -342,4 +346,33 @@ void EnemyManager::SpawnBulletRandom(const Vector3& pos, bool toRight) {
 	vel.z = 0.0f;
 
 	SpawnBullet(pos, vel);
+}
+
+bool EnemyManager::IsInCameraView(const Vector3& worldPos) const {
+	if (!camera_)
+		return false;
+
+	// ViewProjection作成
+	Matrix4x4 view = camera_->GetViewMatrix();
+	Matrix4x4 proj = camera_->GetProjectionMatrix();
+	Matrix4x4 viewProj = Multply(view, proj);
+
+	// ワールド → クリップ座標
+	Vector4 clip = Multiply({worldPos.x, worldPos.y, worldPos.z, 1.0f}, viewProj);
+
+	// カメラ後ろは除外
+	if (clip.w <= 0.0f)
+		return false;
+
+	// 正規化デバイス座標（-1 ～ 1）
+	float ndcX = clip.x / clip.w;
+	float ndcY = clip.y / clip.w;
+
+	// 画面内判定（少し余裕あり）
+	if (ndcX < -1.2f || ndcX > 1.2f)
+		return false;
+	if (ndcY < -1.2f || ndcY > 1.2f)
+		return false;
+
+	return true;
 }

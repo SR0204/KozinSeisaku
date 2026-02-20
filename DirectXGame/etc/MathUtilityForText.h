@@ -63,3 +63,11 @@ Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 /// <param name="m"></param>
 /// <returns></returns>
 Vector4 Transform(const Vector4& v, const Matrix4x4& m);
+
+/// <summary>///
+/// Vector4 * Matrix4x4
+/// </summary>///
+/// <param name="v"></param>///
+/// <param name="m"></param>///
+/// <returns></returns>
+Vector4 Multiply(const Vector4& v, const Matrix4x4& m);

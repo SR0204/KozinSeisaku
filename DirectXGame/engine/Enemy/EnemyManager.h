@@ -92,6 +92,13 @@ public:
 	/// <param name="toRight"></param>
 	void SpawnBulletRandom(const Vector3& pos, bool toRight);
 
+	/// <summary>
+	/// 敵がカメラ内かの判断
+	/// </summary>
+	/// <param name="worldPos"></param>
+	/// <returns></returns>
+	bool IsInCameraView(const Vector3& worldPos) const;
+
 private:
 	std::vector<Enemy*> enemies_;
 	KamataEngine::Model* enemyModel_;

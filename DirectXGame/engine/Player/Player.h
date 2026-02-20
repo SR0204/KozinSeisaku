@@ -279,6 +279,16 @@ public:
 
 	float GetMoveDirection() const;
 
+	/// <summary>
+	/// HPアニメーション
+	/// </summary>
+	void HpAnimation();
+
+	/// <summary>
+	/// HPをプレイヤーに追従させるためのもの
+	/// </summary>
+	void UpdateHpPosition();
+
 private:
 	// マップチップフィールド
 	MapChipField* mapChipField_ = nullptr;
@@ -394,4 +404,15 @@ private:
 
 	int comboCount_ = 0;
 	float comboTimer_ = 0.0f;
+
+	/// <summary>
+	/// HP表記
+	/// </summary>
+	static const int kMaxHP = 5;
+	Model* HpModel_ = nullptr;
+	Model* HpBreakModel_ = nullptr;
+	WorldTransform HpTransforms_[kMaxHP];
+	bool isHeartBreaking_ = false;
+	int heartBreakIndex_ = -1;
+	int heartAnimTimer_ = 0;
 };

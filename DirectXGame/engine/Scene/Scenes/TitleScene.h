@@ -75,4 +75,12 @@ private:
 	// ライト設定用
 	KamataEngine::DirectionalLight light{};
 	std::unique_ptr<KamataEngine::LightGroup> lightGroup_;
+
+	//カメラアニメーション用
+	float cameraBaseZ_ = -20.0f;
+	float cameraMoveAmp_ = 0.2f;
+	float cameraRotAmp_ = 0.03f;
+
+	bool isCameraZoom_ = false;
+	int cameraZoomTimer_ = 0;
 };

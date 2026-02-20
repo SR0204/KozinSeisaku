@@ -50,7 +50,20 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// シールドモデル
 	shieldModel_ = Model::CreateFromOBJ("shieldQuad", true);
 	shieldTransform_.Initialize();
-	shieldTransform_.scale_ = {0.8f, 0.8f, 0.8f};
+	shieldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
+
+	// プレイヤーHPモデル
+	HpModel_ = Model::CreateFromOBJ("Heart_Full", true);
+	HpBreakModel_ = Model::CreateFromOBJ("Heart_Half", true);
+
+	for (int i = 0; i < kMaxHP; i++) {
+
+		HpTransforms_[i].Initialize();
+
+		HpTransforms_[i].translation_ = {-3.0f + i * 0.8f, 3.0f, 0.0f};
+
+		HpTransforms_[i].scale_ = {0.3f, 0.3f, 0.3f};
+	}
 }
 
 /// <summary>
@@ -104,8 +117,14 @@ void Player::Update() {
 		}
 	}
 
+	// HPアニメーション
+	HpAnimation();
+
 	// 行列更新
 	worldTransform_.UpdateMatrix();
+
+	// HPプレイヤー追従
+	UpdateHpPosition();
 }
 
 /// <summary>
@@ -126,6 +145,23 @@ void Player::Draw() {
 	// シールド描画
 	if (isShield_) {
 		shieldModel_->Draw(shieldTransform_, *camera_);
+	}
+
+	// プレイヤーHP描画
+	for (int i = 0; i < kMaxHP; i++) {
+
+		if (i >= Hp_ && i != heartBreakIndex_) {
+			continue; // HP無い分は描画しない
+		}
+
+		HpTransforms_[i].UpdateMatrix();
+
+		// 割れ中のハート
+		if (isHeartBreaking_ && i == heartBreakIndex_) {
+			HpBreakModel_->Draw(HpTransforms_[i], *camera_);
+		} else if (i < Hp_) {
+			HpModel_->Draw(HpTransforms_[i], *camera_);
+		}
 	}
 }
 
@@ -533,6 +569,11 @@ void Player::OnDamage() {
 	// HP 減少
 	Hp_--;
 
+	// HPアニメーション
+	heartBreakIndex_ = Hp_;
+	isHeartBreaking_ = true;
+	heartAnimTimer_ = 30;
+
 	// 無敵時間開始
 	isInvincible_ = true;
 	invincibleTimer_ = invincibleDuration_;
@@ -576,7 +617,7 @@ void Player::UpdateShieldTransform() {
 	// プレイヤーの正面に配置
 	shieldTransform_.translation_ = worldTransform_.translation_;
 	shieldTransform_.translation_.x += dir * (kWidth * 1.4f);
-	shieldTransform_.translation_.y += 0.0f;
+	shieldTransform_.translation_.y += 0.3f;
 	shieldTransform_.translation_.z += 0.0f;
 
 	// 向きはプレイヤーと完全同期
@@ -612,6 +653,42 @@ bool Player::IsJumpApex() const { return IsJumping() && std::abs(velocity_.y) < 
 
 float Player::GetMoveDirection() const { return velocity_.x; }
 
+void Player::HpAnimation() {
+	if (isHeartBreaking_) {
+
+		heartAnimTimer_--;
+
+		// 割れ演出：回転 + 上昇
+		HpTransforms_[heartBreakIndex_].rotation_.z += 0.2f;
+		HpTransforms_[heartBreakIndex_].translation_.y += 0.02f;
+
+		if (heartAnimTimer_ <= 0) {
+			isHeartBreaking_ = false;
+		}
+	}
+}
+
+void Player::UpdateHpPosition() {
+
+	Vector3 playerPos = worldTransform_.translation_;
+
+	float offsetY = 1.5f; // プレイヤー上の高さ
+	float spacing = 0.6f; // ハート間隔
+
+	for (int i = 0; i < kMaxHP; i++) {
+
+		// 中央揃え
+		float offsetX = (i - (kMaxHP - 1) * 0.5f) * spacing;
+
+		HpTransforms_[i].translation_ = {playerPos.x + offsetX, playerPos.y + offsetY, playerPos.z};
+
+		// カメラ向き（超おすすめ）
+		HpTransforms_[i].rotation_.y = camera_->rotation_.y;
+
+		HpTransforms_[i].UpdateMatrix();
+	}
+}
+
 // Quadモデルを作成する
 KamataEngine::Model* Player::CreateQuadModel() {
 
@@ -636,6 +713,11 @@ void Player::OnCollision(const Enemy* enemy) {
 		return; // 既に死亡 or 無敵中なら何もしない
 
 	Hp_--;
+
+	// HPアニメーション
+	heartBreakIndex_ = Hp_;
+	isHeartBreaking_ = true;
+	heartAnimTimer_ = 30;
 
 	// ダメージリアクション
 	velocity_.y = 0.3f;

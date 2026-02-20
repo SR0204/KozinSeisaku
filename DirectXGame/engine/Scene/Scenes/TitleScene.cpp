@@ -80,6 +80,11 @@ void TitleScene::Initialize(SceneManager* sceneManager) {
 	lightGroup_->SetAmbientColor({0.2f, 0.05f, 0.05f});
 
 	titleModel_->SetLightGroup(lightGroup_.get());
+
+	// カメラアニメーション
+	cameraBaseZ_ = -20.0f;
+	cameraZoomTimer_ = 0;
+	isCameraZoom_ = false;
 }
 
 void TitleScene::Update() {
@@ -87,7 +92,8 @@ void TitleScene::Update() {
 
 	if (isTitle_ && input_->TriggerKey(DIK_SPACE)) {
 		isTitle_ = false;
-		isFadingOut_ = true;
+		isCameraZoom_ = true;
+		cameraZoomTimer_ = 30;
 	}
 
 	// === 点滅 ===
@@ -122,7 +128,7 @@ void TitleScene::Update() {
 			}
 		}
 	} else {
-		// ✨ ゆらゆらアニメ
+		// スペース押す前のゆらゆらアニメーション
 		float baseRotY = 15.7f; // ← 初期の向き（正面）
 		titleTransform_.rotation_.y = baseRotY + std::sin(frameCount_ * 0.01f) * 0.2f;
 
@@ -173,6 +179,49 @@ void TitleScene::Update() {
 		}
 		BackGround_[i]->SetPosition(pos);
 	}
+
+	// カメラアニメーション(決定後)
+	if (!isCameraZoom_ && !isFadingOut_) {
+
+		// 前後ゆらゆら
+		Camera_.translation_.z = cameraBaseZ_ + std::sin(frameCount_ * 0.01f) * cameraMoveAmp_;
+
+		// 左右回転
+		Camera_.rotation_.y = std::sin(frameCount_ * 0.005f) * cameraRotAmp_;
+
+	} else {
+		Vector3 targetPos = {-4.0f, 5.0f, 5.0f};
+		Vector3 targetRot = {0.1f, 0.0f, 0.0f};
+
+		float targetFov = 0.22f;
+		float zoomSpeed = 0.02f;
+
+		Camera_.translation_.x += (targetPos.x - Camera_.translation_.x) * zoomSpeed;
+		Camera_.translation_.y += (targetPos.y - Camera_.translation_.y) * zoomSpeed;
+		Camera_.translation_.z += (targetPos.z - Camera_.translation_.z) * zoomSpeed;
+
+		Camera_.rotation_.x += (targetRot.x - Camera_.rotation_.x) * zoomSpeed;
+		Camera_.rotation_.y += (targetRot.y - Camera_.rotation_.y) * zoomSpeed;
+		Camera_.rotation_.z += (targetRot.z - Camera_.rotation_.z) * zoomSpeed;
+
+		Camera_.fovAngleY += (targetFov - Camera_.fovAngleY) * zoomSpeed;
+
+		float shake = std::sin(frameCount_ * 0.8f) * 0.02f;
+		Camera_.translation_.x += shake;
+
+		cameraZoomTimer_--;
+
+		if (cameraZoomTimer_ <= 0) {
+			isCameraZoom_ = false;
+			isFadingOut_ = true;
+		}
+	}
+
+	if (isFadingOut_) {
+		Camera_.translation_.z += 0.15f;
+	}
+
+	Camera_.UpdateMatrix();
 }
 
 void TitleScene::Draw() {
