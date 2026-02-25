@@ -23,7 +23,7 @@ StageSelect::~StageSelect() {
 
 	if (bgmVoiceHandle_ != -1) {
 		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
-	}
+	} 
 
 	delete f1HelpSprite_.release();
 }
