@@ -234,6 +234,16 @@ private: // メンバ変数（関数）
 	Sprite* PauseSprite_ = nullptr;
 
 	WorldTransform PauseModelTransform;
+
+	//=======ミッションテキスト=======//
+	Model* MissionModel_ = nullptr;
+	WorldTransform MissionTransform_;
+
+	int MissionTimer_ = 0;
+	bool isShowingMission_ = true;
+
+	float missionRotationY_ = 0.0f;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

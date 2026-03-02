@@ -159,7 +159,7 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 		numberTextures_[i] = TextureManager::Load(path);
 	}
 
-	constexpr float kTimeLimit = 60.0f;
+	constexpr float kTimeLimit = 30.0f;
 	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
 	timer_->Initialize();
 
@@ -209,6 +209,16 @@ void GameScene::Initialize(SceneManager* sceneManager) {
 	PauseSprite_ = Sprite::Create(PauseUI_, {640.0f, 50.0f});
 	PauseSprite_->SetAnchorPoint({0.5f, 0.5f});
 	PauseSprite_->SetSize({400.0f, 200.0f});
+
+	//=======ミッションテキスト=======
+	MissionModel_ = Model::CreateFromOBJ("MissionText");
+
+	Vector3 cameraPos = camera_.translation_;
+
+	MissionTransform_.Initialize();
+	MissionTransform_.translation_ = {0.0f, 0.0f, 10.0f}; // カメラ前
+	MissionTransform_.scale_ = {3.0f, 3.0f, 3.0f};        // 最初小さく
+	MissionTransform_.UpdateMatrix();
 }
 
 void GameScene::Update() {
@@ -225,6 +235,24 @@ void GameScene::Update() {
 
 	// 制限時間更新
 	timer_->Update();
+
+	//========ミッションテキスト演出===========//
+	if (isShowingMission_) {
+
+		MissionTimer_++;
+
+		// 回転させる
+		missionRotationY_ += 0.02f; // ← 回転速度（小さいほどゆっくり）
+
+		MissionTransform_.rotation_.y = missionRotationY_;
+		MissionTransform_.UpdateMatrix();
+
+		if (MissionTimer_ > 360) { // 6秒
+			isShowingMission_ = false;
+		}
+
+		return; // 他の処理止める
+	}
 
 	// ----------------------------スリーカウント演出---------------------------- //
 	if (isStarting_) {
@@ -264,6 +292,11 @@ void GameScene::Update() {
 
 		tutorial_.Update();
 
+		if (player_->IsDead()) {
+			sceneManager_->ChangeScene(SceneID::GameOver);
+			return;
+		}
+
 		if (input_->TriggerKey(DIK_F1)) {
 			if (tutorial_.IsVisible()) {
 				tutorial_.Hide();
@@ -274,7 +307,18 @@ void GameScene::Update() {
 
 		// ★制限時間切れチェック
 		if (timer_->IsTimeOver()) {
-			sceneManager_->ChangeScene(SceneID::GameOver);
+
+			int score = score_.GetScore();
+
+			if (score >= kClearScore) {
+				// 目標スコア以上ならクリア
+				sceneManager_->SetFinalScore(score);
+				sceneManager_->ChangeScene(SceneID::Clear);
+			} else {
+				// 未満ならゲームオーバー
+				sceneManager_->ChangeScene(SceneID::GameOver);
+			}
+
 			return;
 		}
 
@@ -284,13 +328,6 @@ void GameScene::Update() {
 		float progress = std::clamp((float)score / kClearScore, 0.0f, 1.0f);
 
 		progressFill_->SetSize({300 * progress, 20});
-
-		// ★スコアクリア判定
-		if (score_.GetScore() >= 100) {
-			sceneManager_->SetFinalScore(score); // スコア格納
-			sceneManager_->ChangeScene(SceneID::Clear);
-			return;
-		}
 
 		// 敵更新
 		enemyManager_->Update(mapManager_->GetMapChipField());
@@ -342,6 +379,21 @@ void GameScene::Draw() {
 		}
 	}
 	phaseManager_->Draw();
+
+	//===============ミッションテキスト描画=====================//
+	if (isShowingMission_) {
+
+		//====2D黒背景===//
+		Sprite::PreDraw(commandList);
+		blackSprite_->Draw();
+		Sprite::PostDraw();
+
+		//======ミッションテキスト3D========//
+		Model::PreDraw(Model::CullingMode::kNone, Model::BlendMode::kNormal, Model::DepthTestMode::kOff);
+		MissionModel_->Draw(MissionTransform_, camera_);
+		Model::PostDraw();
+		return;
+	}
 
 	Model::PostDraw();
 
