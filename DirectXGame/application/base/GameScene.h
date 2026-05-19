@@ -199,7 +199,7 @@ private: // メンバ変数（関数）
 
 	const int kClearScore = 100;
 
-	std::vector<Sprite*> resultScoreSprites_;
+	std::vector<KamataEngine::Sprite*> resultScoreSprites_;
 	int lastDrawScore_ = -1;
 
 	// 進捗バー用
@@ -231,7 +231,7 @@ private: // メンバ変数（関数）
 	Pause pause_;
 
 	uint32_t PauseUI_ = 0;
-	Sprite* PauseSprite_ = nullptr;
+	KamataEngine::Sprite* PauseSprite_ = nullptr;
 
 	WorldTransform PauseModelTransform;
 
