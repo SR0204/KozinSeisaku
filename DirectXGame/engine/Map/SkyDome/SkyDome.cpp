@@ -14,6 +14,7 @@ void Skydome::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camer
 	// 引数
 	model_ = model;
 
+
 	camera_ = camera;
 
 	// ワールド変換の初期化
