@@ -1,68 +1,67 @@
 #pragma once
-#include "../../DirectXGame/engine/Camera/CameraManager.h"
-#include "../../DirectXGame/engine/Enemy/EnemyManager.h"
-#include "../../DirectXGame/engine/Player/Player.h"
-#include "engine/Map/MapChipField.h"
-#include "engine/Map/SkyDome/SkyDome.h"
-#include "engine/Particle/DeathParticles.h"
-#include "engine/Scene/SceneManager/SceneManager.h"
-#include <3d/Model.h>
-#include <3d/WorldTransform.h>
-#include <KamataEngine.h>
+#include "../../Scene/SceneManager/SceneID.h"
+#include "KamataEngine.h"
+#include "PhaseState.h" // ★追加
+#include <memory>
+#include <optional>
+#include <vector>
 
+// 前方宣言
+class Player;
+class EnemyManager;
+class Skydome;
+class CameraManager;
+class MapChipField;
+class SceneManager;
+class DeathParticles;
+namespace KamataEngine {
+class Model;
+}
 
-/// <summary>
-/// プレイヤーや敵の現在の状態を作るクラス
-/// </summary>
 class PhaseManager {
 public:
-	enum class Phase { kTitle, kPlay, kDeath };
+	PhaseManager() = default;
+	~PhaseManager();
 
 	void Initialize(
-	    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<WorldTransform*>>* blocks, MapChipField* mapChipField,
+	    Player* player, EnemyManager* enemyManager, Skydome* skydome, CameraManager* cameraManager, std::vector<std::vector<KamataEngine::WorldTransform*>>* blocks, MapChipField* mapChipField,
 	    SceneManager* sceneManager);
 
+	// ★ switch文が無くなり、状態クラスに丸投げするだけのUpdate
 	std::optional<SceneID> Update();
-
 	void Draw();
 
-	/// <summary>
-	/// フェーズのゲッター
-	/// </summary>
-	/// <returns></returns>
-	Phase GetPhase() const { return phase_; }
+	// ★ 状態を切り替えるための関数
+	void ChangeState(std::unique_ptr<PhaseState> nextState);
 
-	/// <summary>
-	///倒されているかの判定
-	/// </summary>
-	/// <returns></returns>
-	bool IsDead() const { return isDead_; }
+	// ★ 状態クラス（Play/Death）からアクセスするためのゲッター・セッター
+	Player* GetPlayer() const { return player_; }
+	EnemyManager* GetEnemyManager() const { return enemyManager_; }
+	Skydome* GetSkydome() const { return skydome_; }
+	CameraManager* GetCameraManager() const { return cameraManager_; }
+	std::vector<std::vector<KamataEngine::WorldTransform*>>* GetBlocks() const { return blocks_; }
+	MapChipField* GetMapChipField() const { return mapChipField_; }
 
-	/// <summary>
-	/// デスパーティクルモデル
-	/// </summary>
-	/// <returns></returns>
-	Model* GetDeathParticleModel() const { return deathParticleModel_; }
+	DeathParticles* GetDeathParticles() const { return deathParticles_; }
+	void SetDeathParticles(DeathParticles* dp) { deathParticles_ = dp; }
 
-	bool IsDeathEffectFinished() const { return isDeathEffectFinished_; }
+	KamataEngine::Model* GetDeathParticleModel() const { return deathParticleModel_; }
+	void CreateDeathParticleModel();
 
 private:
-	Phase phase_ = Phase::kTitle;
-
+	// 共通保持ポインタ
 	Player* player_ = nullptr;
 	EnemyManager* enemyManager_ = nullptr;
 	Skydome* skydome_ = nullptr;
 	CameraManager* cameraManager_ = nullptr;
-	std::vector<std::vector<WorldTransform*>>* blocks_ = nullptr;
-
-	bool isDead_ = false;
-	Model* deathParticleModel_ = nullptr;
-	DeathParticles* deathParticles_ = nullptr;
+	std::vector<std::vector<KamataEngine::WorldTransform*>>* blocks_ = nullptr;
 	MapChipField* mapChipField_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 
-	bool isChangingScene_ = false;
-	Vector3 deathPosition_;
+	// ★ enum phase_ を廃止し、現在の状態ポインタに変更
+	std::unique_ptr<PhaseState> currentState_;
 
-	bool isDeathEffectFinished_ = false;
+	// 死亡演出用
+	DeathParticles* deathParticles_ = nullptr;
+	KamataEngine::Model* deathParticleModel_ = nullptr;
 };

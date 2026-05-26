@@ -184,6 +184,9 @@
     <ClCompile Include="engine\Score\Log\ScoreLog.cpp" />
     <ClCompile Include="engine\Scene\Scenes\Tutorial.cpp" />
     <ClCompile Include="engine\Scene\Scenes\Pause.cpp" />
+    <ClCompile Include="engine\Scene\SceneManager\PhaseState.cpp" />
+    <ClCompile Include="engine\Scene\SceneManager\PhaseStatePlay.cpp" />
+    <ClCompile Include="engine\Scene\SceneManager\PhaseStateDeath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -315,6 +318,9 @@
     <ClInclude Include="engine\Score\Log\ScoreLog.h" />
     <ClInclude Include="engine\Scene\Scenes\Tutorial.h" />
     <ClInclude Include="engine\Scene\Scenes\Pause.h" />
+    <ClInclude Include="engine\Scene\SceneManager\PhaseState.h" />
+    <ClInclude Include="engine\Scene\SceneManager\PhaseStatePlay.h" />
+    <ClInclude Include="engine\Scene\SceneManager\PhaseStateDeath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
